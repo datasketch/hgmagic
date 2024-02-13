@@ -2,10 +2,9 @@ data_prep <- function(data,
                       dic = NULL,
                       var_group = NULL,
                       var_num = NULL,
-                      viz,
-                      hdtype, ...) {
+                      ...) {
 
-
+  dsopts::dsopts_merge(..., "dataprep")
   dic <- dic %||% hdtable(data)$dic
   var_group <- var_group %||% default_var_group(dic)
 
@@ -17,10 +16,6 @@ data_prep <- function(data,
   data <- wrap_sort_data(data = data,
                          var_cat_order = var_group,
                          var_num_sort = var_num, ...)
-
-  if (hdtype %in% c("CatDatNum", "CatCatNum")) {
-    data <- completevalues(data)
-  }
 
   data
 

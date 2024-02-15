@@ -4,7 +4,7 @@ data_prep <- function(data,
                       var_num = NULL,
                       ...) {
 
-  dsopts::dsopts_merge(..., "dataprep")
+
   dic <- dic %||% hdtable(data)$dic
   var_group <- var_group %||% default_var_group(dic)
 

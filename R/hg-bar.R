@@ -13,6 +13,7 @@ hg_bar <- function(data,
 
   ht <- hdtable(data)
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  print(data_viz)
   color_by <- NULL
   if (length(var_cat) > 1) {
     color_by <- var_cat[1]

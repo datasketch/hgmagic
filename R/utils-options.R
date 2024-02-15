@@ -31,4 +31,6 @@ common_options <- list(
   enableMouseTracking = TRUE
 )
 
-
+# bar_options <- function(opts) {
+#
+# }

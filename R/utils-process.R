@@ -1,3 +1,31 @@
+#' @keywords internal
+hg_list <- function(data, hdtype, viz = NULL) {
+
+  if (is.null(viz) | is.null(hdtype)) return()
+
+  if (hdtype %in% "CatNum") {
+    return(process_CatNum(data, viz))
+  }
+
+  if (hdtype %in% c("CatCatNum")) {
+    return(process_CatCatNum(data, viz))
+  }
+
+  if (hdtype %in% c("CatNumNum")) {
+    return(process_CatNumNum(data, viz))
+  }
+
+  if (hdtype %in% c("DatNum")) {
+    return(process_DatNum(data, viz))
+  }
+
+  if (hdtype %in% c("CatDatNum")) {
+    return(process_CatDatNum(data, viz))
+  }
+
+}
+
+
 process_CatNum <- function(d, viz) {
   if (viz %in% c("bar", "pie", "donut")) {
     data <- purrr::pmap(.l = list(d[[1]], d[[2]], d[[3]], d[[4]]),
@@ -13,3 +41,42 @@ process_CatNum <- function(d, viz) {
   }
   data
 }
+
+
+process_CatCatNum <- function(d, viz) {
+  if (viz == "bar") {
+    d$..labels <- as.character(d$..labels)
+    axis_cat <- unique(d[[2]])
+    if (all(grepl("^[0-9]+$", d[[2]]))) {
+      axis_cat <- sort(unique(d[[2]]))
+    }
+
+    data_groups <- list(unique(d[[1]]),
+                        split(d[complete.cases(
+                          d[,c(setdiff(names(d), names(d)[1]))]),], d[[1]]))
+
+    data <- list(
+      categories = purrr::map(as.character(axis_cat), function(z) z),
+      data = purrr::map(unique(d[[1]]), function(i) {
+        d0 <- d |>
+          dplyr::filter(!!sym(names(d)[1]) %in% i) #|>
+        #dplyr::arrange(..index)
+        label_info <- d0 %>% .$..labels %>% unlist()
+        l0 <- list("name" = i,
+                   "color" = unique(d0$..colors),
+                   #"legendIndex" = unique(d0$..legendIndex),
+                   "data" = purrr::map(seq_along(d0[[3]]), function(i){
+                     list("label" =  label_info[i],
+                          "y" = d0[[3]][i]
+                     )
+                   })
+        )
+      })
+    )
+  }
+
+
+  data
+}
+
+

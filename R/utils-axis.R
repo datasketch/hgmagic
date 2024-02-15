@@ -1,5 +1,5 @@
 #' @export
-hc_axis <- function(hc, axis = "x", ...) {
+hc_axis <- function(hc, axis = "x", categories = NULL, type = NULL, ...) {
   if (!axis %in% c("x", "y")) {
     stop("axis must be 'x' or 'y'")
   }
@@ -18,7 +18,7 @@ hc_axis <- function(hc, axis = "x", ...) {
         #repeat = 0,
         to= NULL
       ),
-      categories= NULL,
+      categories = categories,
       ceiling= NULL,
       className= NULL,
       crosshair = list(
@@ -240,7 +240,7 @@ hc_axis <- function(hc, axis = "x", ...) {
       ),
       tooltipValueFormat = NULL,
       top = NULL,
-      type = "linear",
+      type = type,
       uniqueNames = TRUE,
       units = NULL,
       visible = TRUE,

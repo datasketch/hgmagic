@@ -30,5 +30,5 @@ test_that("completevalues", {
 })
 
 test_that("hdtype_viz", {
-
+  hdt
 })

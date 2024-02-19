@@ -19,6 +19,7 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
 
   # Handle different hdtype scenarios with consolidated conditional logic
   if (hdtype == "CatNum") {
+    opts$legend_show <- FALSE
     hc <- hc |> add_CatNum_features(data, opts)
   }
 
@@ -40,7 +41,7 @@ add_CatNum_features <- function(hc, data, opts) {
     hc_axis("x", categories = data$categories,
             type = "category", opts = opts) |>
     hc_axis(axis = "y", opts = opts) |>
-    hc_add_legend(opts = list(legend_show = FALSE))
+    hc_add_legend(opts)
   hc
 }
 

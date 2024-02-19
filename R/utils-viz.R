@@ -1,6 +1,9 @@
 hc_add_bar <- function(hc, data, hdtype, ...) {
 
-  opts <- dsopts_merge(..., categories = "bar")
+  print("info bar")
+  opts <- c(dsopts_merge(..., categories = "bar"),
+            dsopts_merge(..., categories = "axis")
+  )
 
   # Common hc_chart setup
   hc <- hc |>
@@ -24,11 +27,14 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
 
 
 add_CatNum_features <- function(hc, data, opts) {
+
+  print(opts)
+
   hc <- hc |>
     hc_data_series(data$data) |>
     hc_axis("x", categories = data$categories,
-            type = "category") |>
-    hc_axis(axis = "y") |>
+            type = "category", opts = opts) |>
+    hc_axis(axis = "y", opts = opts) |>
     hc_add_legend()
   hc
 }

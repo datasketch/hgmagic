@@ -39,7 +39,10 @@ process_CatNum <- function(d, viz) {
 
     data <- list(data = data)
   }
-  data
+  list(
+  data = data,
+  categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
+  )
 }
 
 

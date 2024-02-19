@@ -72,9 +72,9 @@ hc_axis <- function(hc, axis = "x", categories = NULL, type = NULL, ...) {
         staggerLines = 0,
         step = 0,
         # style = list(...)
-        useHTML = FALSE,
-        x = NULL,
-        y = 3,
+        useHTML = TRUE,
+        x = NULL, #separacion de etiquetas respecto al eje x
+        y = NULL, #separacion de etiquetas respecto al eje y
         zIndex = 7
       ),
       left = NULL,

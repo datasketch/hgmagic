@@ -13,7 +13,7 @@ hg_bar <- function(data,
 
   ht <- hdtable(data)
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
-  print(data_viz)
+
   color_by <- NULL
   if (length(var_cat) > 1) {
     color_by <- var_cat[1]
@@ -21,7 +21,7 @@ hg_bar <- function(data,
                                var_expand = var_cat[2], var_num = var_num)
   }
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
-  print(data_viz)
+
   data_viz <- hg_list(data_viz, hdtype, "bar")
 
   highchart() |>

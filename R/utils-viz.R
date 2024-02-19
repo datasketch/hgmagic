@@ -25,8 +25,9 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
 
 add_CatNum_features <- function(hc, data, opts) {
   hc <- hc |>
-    hc_data_series(data) |>
-    hc_axis(axis = "x") |>
+    hc_data_series(data$data) |>
+    hc_axis("x", categories = data$categories,
+            type = "category") |>
     hc_axis(axis = "y") |>
     hc_add_legend()
   hc
@@ -35,23 +36,23 @@ add_CatNum_features <- function(hc, data, opts) {
 
 add_CatCatNum_features_bar <- function(hc, data, opts) {
 
-    hc <- hc |>
-      hc_data_series(data$data) |>
-      hc_axis("x", categories = data$categories,
-               type = "category") |>
-      hc_axis("y")
+  hc <- hc |>
+    hc_data_series(data$data) |>
+    hc_axis("x", categories = data$categories,
+            type = "category") |>
+    hc_axis("y")
 
-    if (opts$bar_graph_type == "stacked") {
-      stackingOption <- ifelse(opts$percentage, "percent", "normal")
-      hc <- hc |> hc_add_options(viz = "bar", user_options = opts)
+  if (opts$bar_graph_type == "stacked") {
+    stackingOption <- ifelse(opts$percentage, "percent", "normal")
+    hc <- hc |> hc_add_options(viz = "bar", user_options = opts)
 
-      if (opts$percentage) {
-        hc <- hc |>
-          hc_yAxis(maxRange = 100, max = 100)
-      }
+    if (opts$percentage) {
+      hc <- hc |>
+        hc_yAxis(maxRange = 100, max = 100)
     }
+  }
 
-    hc
+  hc
 
   hc
 }

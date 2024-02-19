@@ -1,5 +1,5 @@
 #' @export
-hc_add_legend <- function(hc) {
+hc_add_legend <- function(hc, opts) {
 
   hc |>
     hc_legend(
@@ -52,7 +52,7 @@ hc_add_legend <- function(hc) {
         # )
       ),
         #className = "highcharts-no-tooltip",
-        enabled = TRUE,
+        enabled = opts$legend_show,
         floating = FALSE,
         # itemCheckboxStyle = list("width" =  "13px",
         #                          "height" =  "13px",

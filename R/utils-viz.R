@@ -1,6 +1,5 @@
 hc_add_bar <- function(hc, data, hdtype, ...) {
 
-  print("info bar")
   opts <- c(dsopts_merge(..., categories = "bar"),
             dsopts_merge(..., categories = "axis")
   )
@@ -8,6 +7,15 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
   # Common hc_chart setup
   hc <- hc |>
     hc_chart(type = ifelse(opts$bar_orientation == "ver", "column", "bar"))
+
+
+  if (opts$bar_orientation == "hor") {
+    title_axis_x <- opts$title_axis_y
+    title_axis_y <- opts$title_axis_x
+    opts$title_axis_x <- title_axis_x
+    opts$title_axis_y <- title_axis_y
+  }
+
 
   # Handle different hdtype scenarios with consolidated conditional logic
   if (hdtype == "CatNum") {
@@ -27,15 +35,12 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
 
 
 add_CatNum_features <- function(hc, data, opts) {
-
-  print(opts)
-
   hc <- hc |>
     hc_data_series(data$data) |>
     hc_axis("x", categories = data$categories,
             type = "category", opts = opts) |>
     hc_axis(axis = "y", opts = opts) |>
-    hc_add_legend()
+    hc_add_legend(opts = list(legend_show = FALSE))
   hc
 }
 

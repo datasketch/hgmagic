@@ -5,7 +5,7 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
   )
   bar_type <- if (opts$bar_orientation == "ver") "column" else "bar"
 
-   # Common hc_chart setup
+  # Common hc_chart setup
   hc <- hc |>
     hc_chart(type = bar_type)
 
@@ -34,13 +34,30 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
 
 }
 
+hc_add_pie <- function(hc, data, hdtype, ...) {
+
+  opts <- dsopts_merge(..., categories = "pie")
+
+  hc <- hc |>
+    hc_chart(type = "pie") |>
+    add_CatNum_features(data, opts, "pie")
+  hc
+
+}
+
 
 add_CatNum_features <- function(hc, data, opts, viz) {
   hc <- hc |>
-    hc_data_series(data$data) |>
-    hc_axis("x", categories = data$categories,
-            type = "category", opts = opts) |>
-    hc_axis(axis = "y", opts = opts) |>
+    hc_data_series(data$data)
+
+  if (viz %in% c("bar", "column")) {
+    hc <- hc |>
+      hc_axis("x", categories = data$categories,
+              type = "category", opts = opts) |>
+      hc_axis(axis = "y", opts = opts)
+  }
+
+  hc <- hc |>
     hc_add_options(viz = viz, opts) |>
     hc_add_legend(opts)
   hc

@@ -13,9 +13,8 @@ hc_add_options <- function(hc, viz, opts = NULL) {
 
 default_options <- function(viz, opts) {
 
-
+  stacking <- NULL
   if (viz %in% c("bar", "column")) {
-    stacking <- NULL
     if (opts$bar_graph_type == "stacked") {
       stacking <- "normal"
       stacking <- if (opts$percentage) "percent" else "normal"
@@ -28,6 +27,9 @@ default_options <- function(viz, opts) {
     ),
     column = list(
       stacking = stacking
+    ),
+    pie = list(
+
     ),
     line = list(
       color = "blue",

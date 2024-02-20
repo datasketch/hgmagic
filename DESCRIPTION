@@ -1,6 +1,6 @@
 Package: hgmagic
 Title: hgmagic a wrapper for hichcharter R package
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person("Camila", "Achuri", email = "camila@randommonkey.io", role = c("aut", "cre"))
 Description: hgmagic is a wrapper designed to enhance the usability and functionality of the Highcharter R package.

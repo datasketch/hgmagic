@@ -11,4 +11,5 @@ test_that("hg_bar", {
 
   hg_bar(data = starwars, var_cat = c("sex", "hair_color"))
   hg_bar(data = starwars, var_cat = c("sex", "hair_color"), bar_graph_type = "stacked")
+  hg_bar(data = starwars, var_cat = c("sex"), var_num = c("height", "mass"))
 })

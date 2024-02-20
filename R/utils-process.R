@@ -27,7 +27,7 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
 
 process_CatNum <- function(d, viz) {
-  if (viz %in% c("bar", "pie", "donut")) {
+  if (viz %in% c("bar", "column","pie", "donut")) {
     data <- purrr::pmap(.l = list(d[[1]], d[[2]], d[[3]], d[[4]]),
                         .f = function(name, y, label, color) {
                           list("name" = as.character(name),
@@ -47,7 +47,7 @@ process_CatNum <- function(d, viz) {
 
 
 process_CatCatNum <- function(d, viz) {
-  if (viz == "bar") {
+  if (viz %in% c("bar", "column")) {
     d$..labels <- as.character(d$..labels)
     axis_cat <- unique(d[[2]])
     if (all(grepl("^[0-9]+$", d[[2]]))) {
@@ -83,3 +83,39 @@ process_CatCatNum <- function(d, viz) {
 }
 
 
+process_CatNumNum <- function(d, viz) {
+  if (viz %in% c("bar", "column")) {
+    color <- unique(d$..colors)
+    if (length(color) != 2) {
+      color <- strsplit(color, split = "-") |> unlist()
+    }
+    if (length(unique(d[[1]])) > 1) {
+      series <- map(c(2,3), function(col) {
+        list(
+          name = names(d)[col],
+          color = color[col-1],
+          type = viz,
+          yAxis = col - 2,
+          data = d[[col]]
+        )
+      })
+    } else {
+      series <- map(c(2,3), function(col) {
+        list(
+          name = names(d)[col],
+          color = color[col-1],
+          type = viz,
+          yAxis = col - 2,
+          data = list(d[[col]])
+        )
+      })
+
+    }
+    data <- list(
+      title_axis = names(d)[2:3],
+      categories = purrr::map(unique(d[[1]]), ~as.character(.x)),
+      data = series
+    )
+  }
+  data
+}

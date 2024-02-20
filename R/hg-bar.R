@@ -12,6 +12,7 @@ hg_bar <- function(data,
                        var_num = var_num %||% 'count')
 
   ht <- hdtable(data)
+  var_cat <- c(var_cat, var_yea)
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
 
   color_by <- NULL

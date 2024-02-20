@@ -30,3 +30,35 @@ hg_bar <- function(data,
     hc_add_bar(data_viz, hdtype, ...)
 }
 
+
+#' @export
+hg_bar_Cat <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_cat = vars[1], ...)
+}
+
+#' @export
+hg_bar_CatNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_cat = vars[1], var_num = vars[2], ...)
+}
+
+
+#' @export
+hg_bar_CatCat <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_cat = c(vars[1], vars[2]), ...)
+}
+
+#' @export
+hg_bar_CatCatNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_cat = c(vars[1], vars[2]), var_num = vars[3], ...)
+}
+
+#' @export
+hg_bar_CatNumNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_cat = vars[1], var_num = c(vars[2], vars[3]), ...)
+}
+

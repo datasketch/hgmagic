@@ -21,6 +21,12 @@ default_options <- function(viz, opts) {
     }
   }
 
+  donut_inner_size <- NULL
+  if (!is.null(opts$donut_inner_size)) {
+    donut_inner_size <- paste0(opts$donut_inner_size, "%")
+  }
+
+
   options <- list(
     bar = list(
       stacking = stacking
@@ -29,7 +35,8 @@ default_options <- function(viz, opts) {
       stacking = stacking
     ),
     pie = list(
-      showInLegend = opts$legend_show
+      showInLegend = opts$legend_show,
+      innerSize = donut_inner_size
     ),
     line = list(
       color = "blue",

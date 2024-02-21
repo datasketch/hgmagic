@@ -45,6 +45,17 @@ hc_add_pie <- function(hc, data, hdtype, ...) {
 
 }
 
+hc_add_donut <- function(hc, data, hdtype, ...) {
+
+  opts <- dsopts_merge(..., categories = "donut")
+
+  hc <- hc |>
+    hc_chart(type = "pie") |>
+    add_CatNum_features(data, opts, "pie")
+  hc
+
+}
+
 
 add_CatNum_features <- function(hc, data, opts, viz) {
   hc <- hc |>

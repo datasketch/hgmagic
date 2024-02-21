@@ -161,8 +161,10 @@ process_CatDatNum <- function(d, viz) {
     data_groups <- list(unique(d[[1]]), data_groups)
     series <- purrr::pmap(.l = data_groups, function(name, d0) {
       names(d0)[3] <- "y"
-      dl <- d0 |> transmute(y, label = ..labels, color = ..colors
-      )
+      dl <- d0 |>
+        transmute(y,
+                  #label = ..labels,
+                  color = ..colors)
       list(data = purrr::transpose(dl), name = name,
            color = unique(dl$color)
       )
@@ -172,6 +174,7 @@ process_CatDatNum <- function(d, viz) {
       data = series
     )
   }
+
   data
 }
 

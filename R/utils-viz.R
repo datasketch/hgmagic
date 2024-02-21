@@ -75,6 +75,10 @@ hc_add_line <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_DatNum_features(data, opts, 'line')
   }
 
+  if (hdtype == "CatDatNum") {
+    hc <- hc |> add_CatDatNum_features(data, opts, 'line')
+  }
+
 
   hc
 
@@ -154,4 +158,5 @@ add_CatDatNum_features <- function(hc, data, opts, viz) {
     ) |>
     hc_add_options(viz = viz, opts) |>
     hc_add_legend(opts)
+  hc
 }

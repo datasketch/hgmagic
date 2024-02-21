@@ -3,7 +3,7 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
   if (is.null(viz) | is.null(hdtype)) return()
 
-  if (hdtype %in% "CatNum") {
+  if (hdtype %in% c("CatNum")) {
     return(process_CatNum(data, viz))
   }
 
@@ -40,8 +40,8 @@ process_CatNum <- function(d, viz) {
     data <- list(data = data)
   }
   list(
-  data = data,
-  categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
+    data = data,
+    categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
   )
 }
 
@@ -119,3 +119,42 @@ process_CatNumNum <- function(d, viz) {
   }
   data
 }
+
+process_DatNum <- function(d, viz) {
+
+  if (viz %in% c("line")) {
+    dl <- d |> select(y = 2, label = ..labels)
+    data <- list(
+      categories = unique(d[[1]]),
+      data = list(data = purrr::transpose(dl),
+                  color = d$..colors |> unique()
+      )
+    )
+  }
+  data
+}
+
+
+process_CatDatNum <- function(d, viz) {
+  if (viz %in% c("line")) {
+    var_cat <- names(d)[1]
+    data_groups <- purrr::map(unique(d[[1]]), ~
+                                d |> filter(!!sym(var_cat) %in% .x))
+    names(data_groups) <- unique(d[[1]])
+    data_groups <- list(unique(d[[1]]), data_groups)
+    series <- purrr::pmap(.l = data_groups, function(name, d0) {
+      names(d0)[3] <- "y"
+      dl <- d0 |> transmute(y, label = ..labels, color = ..colors
+      )
+      list(data = purrr::transpose(dl), name = name,
+           color = unique(dl$color)
+      )
+    })
+    data <- list(
+      categories = unique(d[[2]]),
+      data = series
+    )
+  }
+  data
+}
+

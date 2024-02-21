@@ -25,7 +25,23 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
 }
 
+#' Data processing for visualization
+#'
+#' This set of functions provides tools to process data for visualisation in different types of charts.
+#'
+#' @param d A data frame containing the data to process. The structure of the data frame varies depending on the processing function.
+#' @param viz The desired type of visualisation. It can be "bar", "column", "pie", or "donut".
+#' @return A list with the processed data for visualisation.
+#' @examples
+#' # Example usage of data processing functions
+#' d <- data.frame(
+#'   category = c("A", "A", "B", "B"),
+#'   value = c(10, 20, 30, 40)
+#' )
+#' process_CatNum(d, "bar")
+#' @export
 
+#' @rdname process_functions
 process_CatNum <- function(d, viz) {
   if (viz %in% c("bar", "column","pie", "donut")) {
     data <- purrr::pmap(.l = list(d[[1]], d[[2]], d[[3]], d[[4]]),
@@ -45,7 +61,7 @@ process_CatNum <- function(d, viz) {
   )
 }
 
-
+#' @rdname process_functions
 process_CatCatNum <- function(d, viz) {
   if (viz %in% c("bar", "column")) {
     d$..labels <- as.character(d$..labels)
@@ -82,7 +98,7 @@ process_CatCatNum <- function(d, viz) {
   data
 }
 
-
+#' @rdname process_functions
 process_CatNumNum <- function(d, viz) {
   if (viz %in% c("bar", "column")) {
     color <- unique(d$..colors)
@@ -120,6 +136,7 @@ process_CatNumNum <- function(d, viz) {
   data
 }
 
+#' @rdname process_functions
 process_DatNum <- function(d, viz) {
 
   if (viz %in% c("line")) {
@@ -134,7 +151,7 @@ process_DatNum <- function(d, viz) {
   data
 }
 
-
+#' @rdname process_functions
 process_CatDatNum <- function(d, viz) {
   if (viz %in% c("line")) {
     var_cat <- names(d)[1]

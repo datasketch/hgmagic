@@ -57,6 +57,29 @@ hc_add_donut <- function(hc, data, hdtype, ...) {
 }
 
 
+hc_add_line <- function(hc, data, hdtype, ...) {
+
+  opts <- c(dsopts_merge(..., categories = "line"),
+            dsopts_merge(..., categories = "axis")
+  )
+  line_type <- if (opts$line_spline) "spline" else "line"
+
+  # Common hc_chart setup
+  hc <- hc |>
+    hc_chart(type = line_type)
+
+
+  # Handle different hdtype scenarios with consolidated conditional logic
+  if (hdtype == "DatNum") {
+    opts$legend_show <- FALSE
+    hc <- hc |> add_DatNum_features(data, opts, 'line')
+  }
+
+
+  hc
+
+}
+
 add_CatNum_features <- function(hc, data, opts, viz) {
   hc <- hc |>
     hc_data_series(data$data)
@@ -100,4 +123,35 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
     hc_tooltip(useHTML = TRUE, shared = TRUE) |>
     hc_data_series(data$data)
   hc
+}
+
+
+add_DatNum_features <- function(hc, data, opts, viz) {
+
+  hc <- hc |>
+    hc_axis("x",
+            categories = data$categories,
+            type = 'datetime', opts = opts) |>
+    hc_axis("y", opts = opts) |>
+    hc_data_series(
+      data$data
+    ) |>
+    hc_add_options(viz = viz, opts) |>
+    hc_add_legend(opts)
+  hc
+}
+
+
+
+add_CatDatNum_features <- function(hc, data, opts, viz) {
+  hc <- hc |>
+    hc_axis("x",
+            categories = data$categories,
+            type = 'datetime', opts = opts) |>
+    hc_axis("y", opts = opts) |>
+    hc_data_series(
+      data$data
+    ) |>
+    hc_add_options(viz = viz, opts) |>
+    hc_add_legend(opts)
 }

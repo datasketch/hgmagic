@@ -1,5 +1,5 @@
 #' @export
-hg_bar <- function(data,
+hg_line <- function(data,
                    dic = NULL,
                    var_cat = NULL,
                    var_yea = NULL,
@@ -25,7 +25,7 @@ hg_bar <- function(data,
   }
   if (length(var_num) > 1) color_by <- var_cat
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
-  data_viz <- hg_list(data_viz, hdtype, "bar")
+  data_viz <- hg_list(data_viz, hdtype, "line")
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>

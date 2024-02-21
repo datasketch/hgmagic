@@ -29,7 +29,7 @@ default_options <- function(viz, opts) {
       stacking = stacking
     ),
     pie = list(
-
+      showInLegend = opts$legend_show
     ),
     line = list(
       color = "blue",

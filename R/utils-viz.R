@@ -84,6 +84,29 @@ hc_add_line <- function(hc, data, hdtype, ...) {
 
 }
 
+
+hc_add_item <- function(hc, data, hdtype, ...) {
+print(data)
+  hc <- hc |>
+    hc_chart(type = "item") |>
+    hc_add_series(
+      layout= 'horizontal',
+      data = data
+    ) |>
+    # hc_tooltip(useHTML = TRUE,
+    #            formatter = JS(paste0("function () {return this.point.label;}")))|>
+    hc_plotOptions(
+      series = list(
+        states = list(
+          hover = list(
+            brightness= 0.1
+          )
+        ))
+    )
+  hc
+
+}
+
 add_CatNum_features <- function(hc, data, opts, viz) {
   hc <- hc |>
     hc_data_series(data$data)

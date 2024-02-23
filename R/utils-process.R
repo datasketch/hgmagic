@@ -54,11 +54,27 @@ process_CatNum <- function(d, viz) {
                         })
 
     data <- list(data = data)
+    data <- list(
+      data = data,
+      categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
+    )
   }
-  list(
-    data = data,
-    categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
-  )
+
+
+  if (viz == "item") {
+    data <- purrr::map(unique(d[[1]]), function(z){
+      d0 <- d[d[[1]] %in% z,]
+      list("name" = z,
+           "y" = as.numeric(d0[[2]]),
+           "color" = d0$..colors,
+           marker = list(
+             symbol= 'point'
+           ))
+    })
+  }
+
+  data
+
 }
 
 #' @rdname process_functions

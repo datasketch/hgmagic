@@ -46,9 +46,35 @@ default_options <- function(viz, opts) {
       )
     ),
     treemap = list(
-      layoutAlgorithm = "sliceAndDice"
+      layoutAlgorithm  = 'sliceAndDice',
+      alternateStartingDirection  = TRUE,
+      borderColor  = '#fff',
+      borderRadius  = 6,
+      borderWidth  = 2,
+      dataLabels  = list(
+        enabled  = TRUE,
+        style  = list(
+          textOutline  = 'none'
+        )
+      ),
+      levels  = list(
+        list(
+          level  = 1,
+          layoutAlgorithm  = 'sliceAndDice',
+          dataLabels  = list(
+            enabled  = TRUE,
+            align  = 'left',
+            verticalAlign  = 'top',
+            style  = list(
+              fontSize  = '15px',
+              fontWeight  = 'bold'
+            )
+          )
+        )
+      )
     )
   )
+
   options[[viz]]
 }
 

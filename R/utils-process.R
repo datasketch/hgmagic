@@ -59,6 +59,19 @@ process_CatNum <- function(d, viz) {
       categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
     )
   }
+  if (viz == "treemap") {
+    data <- purrr::pmap(
+      list(d[[1]], d[[2]], d$..labels, d$..colors),
+      function(name, value, label, color) {
+        list(
+          "name" = name,
+          "value" = value,
+          "label" = label,
+          "color" = as.character(color)
+        )
+      }
+    )
+  }
 
 
   if (viz == "item") {

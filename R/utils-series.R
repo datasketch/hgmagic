@@ -10,7 +10,7 @@ hc_data_series <- function(hc, data) {
       return(hc_add_series_list(hc, data))
     } else {
       # Si es una única serie pero aún así es una lista, utiliza hc_series
-      return(hc_series(hc, data))
+      return(hc_series(hc, list(data = data)))
     }
   } else {
     # Para un único conjunto de datos que no está dentro de una lista de series

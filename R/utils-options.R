@@ -44,6 +44,9 @@ default_options <- function(viz, opts) {
         lineWidth = 2,
         lineColor = NULL
       )
+    ),
+    treemap = list(
+      layoutAlgorithm = "sliceAndDice"
     )
   )
   options[[viz]]

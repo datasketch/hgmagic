@@ -86,7 +86,7 @@ hc_add_line <- function(hc, data, hdtype, ...) {
 
 
 hc_add_item <- function(hc, data, hdtype, ...) {
-print(data)
+
   hc <- hc |>
     hc_chart(type = "item") |>
     hc_add_series(
@@ -107,9 +107,39 @@ print(data)
 
 }
 
-add_CatNum_features <- function(hc, data, opts, viz) {
+
+hc_add_treemap <- function(hc, data, hdtype, ...) {
+
+  opts <- dsopts_merge(..., categories = "treemap")
+
   hc <- hc |>
-    hc_data_series(data$data)
+    hc_chart(type = "treemap")
+
+
+  # Handle different hdtype scenarios with consolidated conditional logic
+  if (hdtype == "CatNum") {
+    hc <- hc |> add_CatNum_features(data, opts, "treemap")
+  }
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "treemap")
+  }
+
+  hc
+
+}
+
+
+
+add_CatNum_features <- function(hc, data, opts, viz) {
+
+  if (viz == "treemap") {
+    hc <- hc |>
+      hc_data_series(data)
+  } else {
+    hc <- hc |>
+      hc_data_series(data$data)
+  }
 
   if (viz %in% c("bar", "column")) {
     hc <- hc |>

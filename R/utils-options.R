@@ -47,12 +47,16 @@ default_options <- function(viz, opts) {
     ),
     treemap = list(
       layoutAlgorithm  = 'sliceAndDice',
+      allowDrillToNode = TRUE,
+      animationLimit = 1000,
       alternateStartingDirection  = TRUE,
       borderColor  = '#fff',
       borderRadius  = 6,
       borderWidth  = 2,
+      accessibility = list(
+        exposeAsGroupOnly = TRUE
+      ),
       dataLabels  = list(
-        enabled  = TRUE,
         style  = list(
           textOutline  = 'none'
         )

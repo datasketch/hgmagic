@@ -23,6 +23,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_CatDatNum(data, viz))
   }
 
+  if (hdtype %in% c("DatNumNum")) {
+    return(process_DatNumNum(data, viz))
+  }
+
 }
 
 #' Data processing for visualization
@@ -43,6 +47,7 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
 #' @rdname process_functions
 process_CatNum <- function(d, viz) {
+  print("Process CatNum")
   if (viz %in% c("bar", "column","pie", "donut")) {
     data <- purrr::pmap(.l = list(d[[1]], d[[2]], d[[3]], d[[4]]),
                         .f = function(name, y, label, color) {
@@ -52,8 +57,6 @@ process_CatNum <- function(d, viz) {
                                "color" = color
                           )
                         })
-
-    data <- list(data = data)
     data <- list(
       data = data,
       categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
@@ -193,14 +196,15 @@ process_CatNumNum <- function(d, viz) {
 process_DatNum <- function(d, viz) {
 
   if (viz %in% c("line")) {
-    dl <- d |> select(y = 2, label = ..labels)
+    dl <- d |> select(y = 2, label = ..labels, color = ..colors)
     data <- list(
       categories = unique(d[[1]]),
-      data = list(data = purrr::transpose(dl),
-                  color = d$..colors |> unique()
-      )
+      data =  purrr::transpose(dl)
+                 # color = d$..colors |> unique()
+
     )
   }
+
   data
 }
 
@@ -231,3 +235,40 @@ process_CatDatNum <- function(d, viz) {
   data
 }
 
+#' @rdname process_functions
+process_DatNumNum <- function(d, viz) {
+  if (viz %in% c("line")) {
+    color <- unique(d$..colors)
+    if (length(color) != 2) {
+      color <- strsplit(color, split = "-") |> unlist()
+    }
+    if (length(unique(d[[1]])) > 1) {
+      series <- map(c(2,3), function(col) {
+        list(
+          name = names(d)[col],
+          color = color[col-1],
+          type = "line",
+          yAxis = col - 2,
+          data = d[[col]]
+        )
+      })
+    } else {
+      series <- map(c(2,3), function(col) {
+        list(
+          name = names(d)[col],
+          color = color[col-1],
+          type = "line",
+          yAxis = col - 2,
+          data = list(d[[col]])
+        )
+      })
+
+    }
+    data <- list(
+      title_axis = names(d)[2:3],
+      categories = purrr::map(unique(d[[1]]), ~as.character(.x)),
+      data = series
+    )
+  }
+  data
+}

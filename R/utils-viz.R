@@ -79,6 +79,9 @@ hc_add_line <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_CatDatNum_features(data, opts, 'line')
   }
 
+  if (hdtype == "DatNumNum") {
+    hc <- hc |> add_DatNumNum_features(data, opts, 'line')
+  }
 
   hc
 
@@ -137,6 +140,7 @@ add_CatNum_features <- function(hc, data, opts, viz) {
     hc <- hc |>
       hc_data_series(data)
   } else {
+    print("aca")
     hc <- hc |>
       hc_data_series(data$data)
   }
@@ -211,5 +215,20 @@ add_CatDatNum_features <- function(hc, data, opts, viz) {
     ) |>
     hc_add_options(viz = viz, opts) |>
     hc_add_legend(opts)
+  hc
+}
+
+add_DatNumNum_features <- function(hc, data, opts, viz) {
+  hc <- hc |>
+    hc_chart(zoomType = 'xy') |>
+    hc_axis("x", categories = data$categories,
+            type = "datetime", opts = opts) |>
+    hc_yAxis_multiples(
+      list(title = list(text = opts$title_axis_y)),
+      list(title = list(text = opts$title_axis_y2),
+           opposite = TRUE)
+    ) |>
+    hc_tooltip(useHTML = TRUE, shared = TRUE) |>
+    hc_data_series(data$data)
   hc
 }

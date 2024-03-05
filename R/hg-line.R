@@ -31,3 +31,36 @@ hg_line <- function(data,
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
     hc_add_line(data_viz, hdtype, ...)
 }
+
+#' @export
+hg_line_Dat <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_line(data, dic, var_dat = vars[1], ...)
+}
+
+#' @export
+hg_line_DatNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_line(data, dic, var_dat = vars[1], var_num = vars[2], ...)
+}
+
+
+#' @export
+hg_line_CatDat <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_line(data, dic, var_cat = vars[1], var_dat = vars[2], ...)
+}
+
+#' @export
+hg_line_CatDatNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_line(data, dic, var_cat = vars[1], var_dat = vars[2], var_num = vars[3], ...)
+}
+
+#' @export
+hg_line_DatNumNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_line(data, dic, var_dat = vars[1], var_num = c(vars[2], vars[3]), ...)
+}
+
+

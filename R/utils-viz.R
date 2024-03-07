@@ -132,7 +132,47 @@ hc_add_treemap <- function(hc, data, hdtype, ...) {
 
 }
 
+hc_add_solid_gauge <- function(hc, data, hdtype) {
+  if (hdtype == "Num") {
+    col_stops <- data.frame(
+      q = c(0.15, 0.4, .8),
+      c = rev(c('#55BF3B', '#DDDF0D', '#DF5353')),
+      stringsAsFactors = FALSE
+    )
 
+    hc <- hc |>
+      hc_chart(type = "solidgauge") |>
+      hc_pane(
+        startAngle = -90,
+        endAngle = 90,
+        background = list(
+          outerRadius = '100%',
+          innerRadius = '60%',
+          shape = "arc"
+        )
+      ) |>
+      hc_tooltip(enabled = FALSE) |>
+      hc_yAxis(
+        stops = list_parse2(col_stops),
+        lineWidth = 0,
+        minorTickWidth = 0,
+        #tickAmount = 0,
+        min = 0,
+        max = 1, # TODO: agregar opción a dsopts
+        labels = list(y = 26, style = list(fontSize = "22px"))
+      ) |>
+      hc_add_series(
+        data = data,
+        dataLabels = list(
+          y = -50,
+          borderWidth = 0,
+          useHTML = TRUE,
+          style = list(fontSize = "40px")
+        )
+      )
+  }
+  hc
+}
 
 add_CatNum_features <- function(hc, data, opts, viz) {
 

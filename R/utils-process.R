@@ -95,6 +95,7 @@ process_CatNum <- function(d, viz) {
 
 #' @rdname process_functions
 process_CatCatNum <- function(d, viz) {
+
   if (viz %in% c("bar", "column")) {
     d$..labels <- as.character(d$..labels)
     axis_cat <- unique(d[[2]])

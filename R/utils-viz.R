@@ -180,7 +180,6 @@ add_CatNum_features <- function(hc, data, opts, viz) {
     hc <- hc |>
       hc_data_series(data)
   } else {
-    print("aca")
     hc <- hc |>
       hc_data_series(data$data)
   }

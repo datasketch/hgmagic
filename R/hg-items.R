@@ -24,3 +24,15 @@ hg_item <- function(data,
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
     hc_add_item(data_viz, hdtype, ...)
 }
+
+#' @export
+hg_item_Cat <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_item(data, dic, var_cat = vars[1], ...)
+}
+
+#' @export
+hg_item_CatNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_item(data, dic, var_cat = vars[1], var_num = vars[2], ...)
+}

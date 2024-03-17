@@ -193,6 +193,8 @@ add_CatNum_features <- function(hc, data, opts, viz) {
 
   hc <- hc |>
     hc_add_options(viz = viz, opts) |>
+    hc_tooltip(useHTML = TRUE,
+               formatter = JS(paste0("function () {return this.point.label;}"))) |>
     hc_add_legend(opts)
   hc
 }
@@ -205,6 +207,8 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
     hc_axis("x", categories = data$categories,
             type = "category", opts = opts) |>
     hc_axis("y", opts = opts) |>
+    hc_tooltip(useHTML = TRUE,
+               formatter = JS(paste0("function () {return this.point.label;}"))) |>
     hc_add_options(viz = viz, opts)
 
   hc
@@ -237,6 +241,8 @@ add_DatNum_features <- function(hc, data, opts, viz) {
       data$data
     ) |>
     hc_add_options(viz = viz, opts) |>
+    hc_tooltip(useHTML = TRUE,
+               formatter = JS(paste0("function () {return this.point.label;}"))) |>
     hc_add_legend(opts)
   hc
 }
@@ -253,6 +259,8 @@ add_CatDatNum_features <- function(hc, data, opts, viz) {
       data$data
     ) |>
     hc_add_options(viz = viz, opts) |>
+    hc_tooltip(useHTML = TRUE,
+               formatter = JS(paste0("function () {return this.point.label;}"))) |>
     hc_add_legend(opts)
   hc
 }

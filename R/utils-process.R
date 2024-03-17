@@ -221,7 +221,7 @@ process_CatDatNum <- function(d, viz) {
       names(d0)[3] <- "y"
       dl <- d0 |>
         transmute(y,
-                  #label = ..labels,
+                  label = ..labels,
                   color = ..colors)
       list(data = purrr::transpose(dl), name = name,
            color = unique(dl$color)

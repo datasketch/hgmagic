@@ -11,7 +11,7 @@ hg_donut <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% 'count')
 
-  ht <- hdtable(data)
+  ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
 

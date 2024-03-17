@@ -13,7 +13,7 @@ hg_line <- function(data,
                        var_dat = var_dat,
                        var_num = var_num %||% 'count')
 
-  ht <- hdtable(data)
+  ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea, var_dat)
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
   data_viz <- data_viz[!is.na(data_viz[[var_dat]]),]

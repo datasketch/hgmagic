@@ -309,11 +309,14 @@ add_DatNumNum_features <- function(hc, data, opts, viz) {
   }
   if (viz == "bar_line") {
     names <- names(data)
+    colors <- unique(data$..colors)
     hc <- hc |>
       hc_xAxis(categories = unique(data[[1]]),
               type = "datetime") |>
-      hc_add_series(name = names[2], data = data[[2]], type = "column") |>
-      hc_add_series(name = names[3], data = data[[3]], type = "spline", yAxis = 1)
+      hc_add_series(name = names[2], data = data[[2]],
+                    type = "column", color = colors[1]) |>
+      hc_add_series(name = names[3], data = data[[3]],
+                    type = "spline", yAxis = 1, color = colors[2])
 
   }
 

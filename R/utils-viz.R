@@ -174,6 +174,21 @@ hc_add_solid_gauge <- function(hc, data, hdtype) {
   hc
 }
 
+hc_add_bar_line <- function(hc, data, hdtype, ...) {
+
+  opts <- c(dsopts_merge(..., categories = "bar"),
+            dsopts_merge(..., categories = "line"),
+            dsopts_merge(..., categories = "axis")
+  )
+
+  if (hdtype == "CatNumNum") {
+    hc <- hc |> add_CatNumNum_features(data, opts, "bar_line" )
+  }
+
+  hc
+
+}
+
 add_CatNum_features <- function(hc, data, opts, viz) {
 
   if (viz == "treemap") {
@@ -215,17 +230,32 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
 }
 
 add_CatNumNum_features <- function(hc, data, opts, viz) {
-  hc <- hc |>
-    hc_chart(zoomType = 'xy') |>
-    hc_axis("x", categories = data$categories,
-            type = "category", opts = opts) |>
+
+  if (viz %in% "bar") {
+    hc <- hc |>
+      hc_chart(zoomType = 'xy') |>
+      hc_axis("x", categories = data$categories,
+              type = "category", opts = opts) |>
+      hc_tooltip(useHTML = TRUE, shared = TRUE) |>
+      hc_data_series(data$data)
+  }
+  if (viz == "bar_line") {
+    names <- names(data)
+    colors <- unique(data$..colors)
+    hc <- hc |>
+      hc_xAxis(categories = unique(data[[1]]))|>
+      hc_add_series(name = names[2], data = data[[2]],
+                    type = "column", color = colors[1]) |>
+      hc_add_series(name = names[3], data = data[[3]],
+                    type = "spline", yAxis = 1, color = colors[2])
+
+  }
+  hc <-  hc |>
     hc_yAxis_multiples(
       list(title = list(text = opts$title_axis_y)),
       list(title = list(text = opts$title_axis_y2),
            opposite = TRUE)
-    ) |>
-    hc_tooltip(useHTML = TRUE, shared = TRUE) |>
-    hc_data_series(data$data)
+    )
   hc
 }
 
@@ -266,16 +296,33 @@ add_CatDatNum_features <- function(hc, data, opts, viz) {
 }
 
 add_DatNumNum_features <- function(hc, data, opts, viz) {
+
+  if (viz %in% c("bar", "line")) {
+    hc <- hc |>
+      hc_chart(zoomType = 'xy') |>
+      hc_axis("x", categories = data$categories,
+              type = "datetime", opts = opts) |>
+      hc_data_series(data$data)
+  }
+  if (viz == "bar_line") {
+    names <- names(data)
+    hc <- hc |>
+      hc_axis("x", categories = unique(data[[1]]),
+              type = "datetime", opts = opts) |>
+      hc_add_series(name = names[2], data = data[[2]], type = "column") |>
+      hc_add_series(name = names[3], data = data[[3]], type = "spline", yAxis = 1)
+
+  }
+
   hc <- hc |>
-    hc_chart(zoomType = 'xy') |>
-    hc_axis("x", categories = data$categories,
-            type = "datetime", opts = opts) |>
     hc_yAxis_multiples(
       list(title = list(text = opts$title_axis_y)),
       list(title = list(text = opts$title_axis_y2),
            opposite = TRUE)
     ) |>
-    hc_tooltip(useHTML = TRUE, shared = TRUE) |>
-    hc_data_series(data$data)
+    hc_tooltip(useHTML = TRUE, shared = TRUE)
+
   hc
 }
+
+

@@ -14,7 +14,7 @@ hg_bar_line <- function(data,
                        var_num = var_num %||% 'count')
 
   ht <- hdtable(data, dic)
-  var_cat <- c(var_cat, var_yea)
+  var_cat <- c(var_cat, var_yea, var_dat)
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
 
   color_by <- NULL
@@ -33,34 +33,15 @@ hg_bar_line <- function(data,
 }
 
 
+
 #' @export
-hg_bar_Cat <- function(data, dic = NULL, ...) {
+hg_bar_line_CatNumNum <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
-  hg_bar(data, dic, var_cat = vars[1], ...)
+  hg_bar_line(data, dic, var_cat = vars[1], var_num = c(vars[2], vars[3]), ...)
 }
 
-#' @export
-hg_bar_CatNum <- function(data, dic = NULL, ...) {
+hg_bar_line_DatNumNum <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
-  hg_bar(data, dic, var_cat = vars[1], var_num = vars[2], ...)
-}
-
-
-#' @export
-hg_bar_CatCat <- function(data, dic = NULL, ...) {
-  vars <- data_vars(data)
-  hg_bar(data, dic, var_cat = c(vars[1], vars[2]), ...)
-}
-
-#' @export
-hg_bar_CatCatNum <- function(data, dic = NULL, ...) {
-  vars <- data_vars(data)
-  hg_bar(data, dic, var_cat = c(vars[1], vars[2]), var_num = vars[3], ...)
-}
-
-#' @export
-hg_bar_CatNumNum <- function(data, dic = NULL, ...) {
-  vars <- data_vars(data)
-  hg_bar(data, dic, var_cat = vars[1], var_num = c(vars[2], vars[3]), ...)
+  hg_bar_line(data, dic, var_dat = vars[1], var_num = c(vars[2], vars[3]), ...)
 }
 

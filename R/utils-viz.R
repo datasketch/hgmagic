@@ -182,7 +182,10 @@ hc_add_bar_line <- function(hc, data, hdtype, ...) {
   )
 
   if (hdtype == "CatNumNum") {
-    hc <- hc |> add_CatNumNum_features(data, opts, "bar_line" )
+    hc <- hc |> add_CatNumNum_features(data, opts, "bar_line")
+  }
+  if (hdtype == "DatNumNum") {
+    hc <- hc |> add_DatNumNum_features(data, opts, "bar_line")
   }
 
   hc
@@ -307,8 +310,8 @@ add_DatNumNum_features <- function(hc, data, opts, viz) {
   if (viz == "bar_line") {
     names <- names(data)
     hc <- hc |>
-      hc_axis("x", categories = unique(data[[1]]),
-              type = "datetime", opts = opts) |>
+      hc_xAxis(categories = unique(data[[1]]),
+              type = "datetime") |>
       hc_add_series(name = names[2], data = data[[2]], type = "column") |>
       hc_add_series(name = names[3], data = data[[3]], type = "spline", yAxis = 1)
 

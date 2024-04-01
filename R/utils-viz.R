@@ -24,6 +24,7 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
   }
 
   if (hdtype == "CatCatNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
     hc <- hc |> add_CatCatNum_features(data, opts, bar_type)
   }
   if (hdtype == "CatNumNum") {
@@ -36,7 +37,8 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
 
 hc_add_pie <- function(hc, data, hdtype, ...) {
 
-  opts <- dsopts_merge(..., categories = "pie")
+  opts <- c(dsopts_merge(..., categories = "pie"),
+            dsopts_merge(..., categories = "legend"))
 
   hc <- hc |>
     hc_chart(type = "pie") |>
@@ -47,7 +49,8 @@ hc_add_pie <- function(hc, data, hdtype, ...) {
 
 hc_add_donut <- function(hc, data, hdtype, ...) {
 
-  opts <- dsopts_merge(..., categories = "donut")
+  opts <- c(dsopts_merge(..., categories = "donut"),
+            dsopts_merge(..., categories = "legend"))
 
   hc <- hc |>
     hc_chart(type = "pie") |>
@@ -76,6 +79,7 @@ hc_add_line <- function(hc, data, hdtype, ...) {
   }
 
   if (hdtype == "CatDatNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
     hc <- hc |> add_CatDatNum_features(data, opts, 'line')
   }
 
@@ -227,7 +231,8 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
     hc_axis("y", opts = opts) |>
     hc_tooltip(useHTML = TRUE,
                formatter = JS(paste0("function () {return this.point.label;}"))) |>
-    hc_add_options(viz = viz, opts)
+    hc_add_options(viz = viz, opts) |>
+    hc_add_legend(opts)
 
   hc
 }
@@ -275,8 +280,7 @@ add_DatNum_features <- function(hc, data, opts, viz) {
     ) |>
     hc_add_options(viz = viz, opts) |>
     hc_tooltip(useHTML = TRUE,
-               formatter = JS(paste0("function () {return this.point.label;}"))) |>
-    hc_add_legend(opts)
+               formatter = JS(paste0("function () {return this.point.label;}")))
   hc
 }
 

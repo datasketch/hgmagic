@@ -18,7 +18,9 @@ test_that("hg_line_CatDat", {
 
 test_that("hg_line_CatDatNum", {
   data <- sample_data('Cat-Dat-Num', names = c('cat','date', 'value'), rep = TRUE, n = 50)
-  hg_line_CatDatNum(data = data)
+  hg_line_CatDatNum(data = data, legend_align = "right",
+                    legend_orientation = "vertical",
+                    legend_vertical_align = "middle")
 })
 
 test_that("hg_line_DatNumNum", {

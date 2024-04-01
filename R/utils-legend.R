@@ -1,6 +1,6 @@
 #' @export
 hc_add_legend <- function(hc, opts) {
-
+print(opts$legend_vertical_align)
   hc |>
     hc_legend(
       accessibility = list(
@@ -9,7 +9,7 @@ hc_add_legend <- function(hc, opts) {
           enabled = TRUE
         )
       ),
-      align = "center",
+      align = opts$legend_align,
       alignColumns = TRUE,
       backgroundColor = NULL,
       borderColor = "#999999",
@@ -70,7 +70,7 @@ hc_add_legend <- function(hc, opts) {
         # itemWidth = NULL,
         # #labelFormat = list(name),
         # labelFormatter = NULL,
-        layout = "horizontal",
+        layout = opts$legend_orientation, #horizontal, vertical or proximate
         lineHeight = 16,
         margin = 12,
         maxHeight = NULL,
@@ -99,7 +99,7 @@ hc_add_legend <- function(hc, opts) {
         useHTML = TRUE,
         valueDecimals = -1,
         valueSuffix = '',
-        verticalAlign = "bottom",
+        verticalAlign = opts$legend_vertical_align, #top, middle or bottom
         width = NULL,
         x = 0,
         y = 0

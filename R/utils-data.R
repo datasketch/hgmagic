@@ -53,7 +53,7 @@ completevalues <- function(data, var_find = NULL, var_expand = NULL ,var_num = N
 
   data <- data |>
     as_tibble() |>
-    tidyr::complete(!!sym(var_find),
+    tidyr::complete(!!!syms(var_find),
                     !!sym(var_expand),
                     fill = setNames(list(NA), var_num))
 

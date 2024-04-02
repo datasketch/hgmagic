@@ -21,3 +21,30 @@ test_that("hg_bar_grid_CatCatNum", {
   hg_bar_grid_CatCatNum(data, agg = "sum")
   hg_bar_grid_CatCatNum(data, agg = "mean")
 })
+
+test_that("hg_bar_grid_CatCatCat", {
+  data <- sample_data(
+    "Cat-Cat-Cat",
+    names = c("cat1", "cat2", "cat3"),
+    rep = TRUE,
+    n = 100,
+    nlevels = 3,
+    addNA = FALSE
+  )
+
+  hg_bar_grid_CatCatCat(data)
+})
+
+test_that("hg_bar_grid_CatCatCatNum", {
+  data <- sample_data(
+    "Cat-Cat-Cat-Num",
+    names = c("cat1", "cat2", "cat3", "value"),
+    rep = TRUE,
+    n = 100,
+    nlevels = 3,
+    addNA = FALSE
+  )
+
+  hg_bar_grid_CatCatCatNum(data, agg = "sum")
+  hg_bar_grid_CatCatCatNum(data, agg = "mean")
+})

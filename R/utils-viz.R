@@ -207,6 +207,10 @@ hc_add_bar_grid <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_CatCatNum_features(data, opts, "bar_grid")
   }
 
+  if (hdtype == "CatCatCatNum") {
+    hc <- hc |> add_CatCatCatNum_features(data, opts, "bar_grid")
+  }
+
   hc
 
 }
@@ -264,6 +268,46 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
     hc <- hc |>
       hc_add_series(
         name = names[3], data = data[[3]],
+        type = "column", color = colors[1]
+      ) |>
+      hc_xAxis(
+        categories = categories,
+        labels = list(style = list(fontSize = "10px"))
+      ) |>
+      hc_add_dependency("plugins/grouped-categories.js")
+  }
+
+  hc
+}
+
+add_CatCatCatNum_features <- function(hc, data, opts, viz) {
+
+  if (viz == "bar_grid") {
+    names <- names(data)
+    colors <- unique(data$..colors)
+
+    categories <- data |>
+      select(names[1:3]) |>
+      group_by(name = !!sym(names[1]), !!sym(names[2])) |>
+      summarise(
+        categories = list(
+          list(
+            name = unique(!!sym(names[2])),
+            categories = !!sym(names[3])
+          )
+        )
+      ) |>
+      group_by(name) |>
+      summarise(
+        categories = list(
+          categories = categories
+        )
+      ) |>
+      list_parse()
+
+    hc <- hc |>
+      hc_add_series(
+        name = names[4], data = data[[4]],
         type = "column", color = colors[1]
       ) |>
       hc_xAxis(

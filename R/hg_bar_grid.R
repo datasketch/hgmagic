@@ -18,8 +18,11 @@ hg_bar_grid <- function(data,
   color_by <- NULL
   if (length(var_cat) > 1) {
     color_by <- var_cat[1]
-    data_viz <- completevalues(data_viz, var_find = var_cat[1],
-                               var_expand = var_cat[2], var_num = var_num)
+    var_find <- if (length(var_cat) > 2) var_cat[1:2] else var_cat[1]
+    var_expand <- if (length(var_cat) > 2) var_cat[3] else var_cat[2]
+
+    data_viz <- completevalues(data_viz, var_find = var_find,
+                               var_expand = var_expand, var_num = var_num)
   }
 
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
@@ -39,4 +42,16 @@ hg_bar_grid_CatCat <- function(data, dic = NULL, ...) {
 hg_bar_grid_CatCatNum <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
   hg_bar_grid(data, dic, var_cat = vars[1:2], var_num = vars[3], ...)
+}
+
+#' @export
+hg_bar_grid_CatCatCat <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar_grid(data, dic, var_cat = vars[1:3], ...)
+}
+
+#' @export
+hg_bar_grid_CatCatCatNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar_grid(data, dic, var_cat = vars[1:3], var_num = vars[4], ...)
 }

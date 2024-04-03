@@ -59,7 +59,6 @@ hc_add_donut <- function(hc, data, hdtype, ...) {
 
 }
 
-
 hc_add_line <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "line"),
@@ -91,7 +90,6 @@ hc_add_line <- function(hc, data, hdtype, ...) {
 
 }
 
-
 hc_add_item <- function(hc, data, hdtype, ...) {
 
   hc <- hc |>
@@ -113,7 +111,6 @@ hc_add_item <- function(hc, data, hdtype, ...) {
   hc
 
 }
-
 
 hc_add_treemap <- function(hc, data, hdtype, ...) {
 
@@ -140,11 +137,12 @@ hc_add_scatter <- function(hc, data, hdtype, ...) {
 
   opts <- c(
     dsopts_merge(..., categories = "scatter"),
+    dsopts_merge(..., categories = "legend"),
     dsopts_merge(..., categories = "axis")
   )
 
   hc <- hc |>
-    hc_chart(type = "scatter", zoomType = "xy")
+    hc_chart(zoomType = "xy")
 
   if (hdtype == "NumNum") {
     hc <- hc |> add_NumNum_features(data, opts, "scatter")
@@ -286,7 +284,6 @@ add_CatNum_features <- function(hc, data, opts, viz) {
   hc
 }
 
-
 add_CatCatNum_features <- function(hc, data, opts, viz) {
 
   if (viz %in% c("bar", "column", "treemap")) {
@@ -321,6 +318,24 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
         labels = list(style = list(fontSize = "10px"))
       ) |>
       hc_add_dependency("plugins/grouped-categories.js")
+  }
+
+  if (viz == "scatter") {
+    # TODO: fix this
+    # x axis elements not displaying correctly
+    hc <- hc |>
+      # hc_axis(
+      #   axis = "x", type = "category",
+      #   categories = unique(data[[1]]), opts = opts
+      # ) |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      # hc_add_legend(opts = opts) |>
+      hc_add_series(
+        data = data,
+        type = "scatter",
+        hcaes(x = data[[1]], y = data[[3]], group = data[[2]])
+      )
   }
 
   hc
@@ -376,6 +391,7 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
       hc_tooltip(useHTML = TRUE, shared = TRUE) |>
       hc_data_series(data$data)
   }
+
   if (viz == "bar_line") {
     names <- names(data)
     colors <- unique(data$..colors)
@@ -387,15 +403,31 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
                     type = "spline", yAxis = 1, color = colors[2])
 
   }
-  hc <-  hc |>
-    hc_yAxis_multiples(
-      list(title = list(text = opts$title_axis_y)),
-      list(title = list(text = opts$title_axis_y2),
-           opposite = TRUE)
-    )
+
+  if (viz %in% c("bar", "bar_line")) {
+    hc <-  hc |>
+      hc_yAxis_multiples(
+        list(title = list(text = opts$title_axis_y)),
+        list(title = list(text = opts$title_axis_y2),
+             opposite = TRUE)
+      )
+  }
+
+  if (viz == "scatter") {
+    # TODO: fix for aggregated data
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      # hc_add_legend(opts = opts) |>
+      hc_add_series(
+        data = data,
+        type = "scatter",
+        hcaes(x = data[[2]], y = data[[3]], group = data[[1]])
+      )
+  }
+
   hc
 }
-
 
 add_DatNum_features <- function(hc, data, opts, viz) {
 
@@ -412,8 +444,6 @@ add_DatNum_features <- function(hc, data, opts, viz) {
                formatter = JS(paste0("function () {return this.point.label;}")))
   hc
 }
-
-
 
 add_CatDatNum_features <- function(hc, data, opts, viz) {
   hc <- hc |>
@@ -463,5 +493,4 @@ add_DatNumNum_features <- function(hc, data, opts, viz) {
 
   hc
 }
-
 

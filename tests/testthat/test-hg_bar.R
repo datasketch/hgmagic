@@ -27,7 +27,9 @@ test_that("hg_bar_Cat", {
 
 test_that("hg_bar_CatCatNum", {
   data <- starwars |> select(sex, hair_color, height)
-  hg_bar_CatCatNum(data)
+  hg_bar_CatCatNum(data, legend_align = "right",
+                   legend_orientation = "vertical",
+                   legend_vertical_align = "middle")
 })
 
 test_that("hg_bar_CatCat", {

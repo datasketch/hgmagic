@@ -132,6 +132,32 @@ hc_add_treemap <- function(hc, data, hdtype, ...) {
 
 }
 
+hc_add_scatter <- function(hc, data, hdtype, ...) {
+
+  opts <- c(
+    dsopts_merge(..., categories = "scatter"),
+    dsopts_merge(..., categories = "axis")
+  )
+
+  hc <- hc |>
+    hc_chart(type = "scatter", zoomType = "xy")
+
+  if (hdtype == "NumNum") {
+    hc <- hc |> add_NumNum_features(data, opts, "scatter")
+  }
+
+  if (hdtype == "CatNumNum") {
+    hc <- hc |> add_CatNumNum_features(data, opts, "scatter")
+  }
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "scatter")
+  }
+
+  hc
+
+}
+
 hc_add_solid_gauge <- function(hc, data, hdtype) {
   if (hdtype == "Num") {
     col_stops <- data.frame(
@@ -190,6 +216,26 @@ hc_add_bar_line <- function(hc, data, hdtype, ...) {
 
   hc
 
+}
+
+add_NumNum_features <- function(hc, data, opts, viz) {
+
+  if (viz %in% c("scatter")) {
+    colors <- unique(data$..colors)
+
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_add_series(
+        data = data,
+        type = "scatter",
+        color = colors[1],
+        hcaes(x = data[[1]], y = data[[2]])
+      ) |>
+      hc_legend(enabled = FALSE)
+  }
+
+  hc
 }
 
 add_CatNum_features <- function(hc, data, opts, viz) {

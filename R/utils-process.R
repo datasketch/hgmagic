@@ -27,6 +27,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_DatNumNum(data, viz))
   }
 
+  if (hdtype %in% c("CatImgNum")) {
+    return(process_CatImgNum(data, viz))
+  }
+
 }
 
 #' Data processing for visualization
@@ -273,3 +277,30 @@ process_DatNumNum <- function(d, viz) {
   }
   data
 }
+
+#' @rdname process_functions
+process_CatImgNum <- function(d, viz) {
+  if (viz %in% "bar_icons") {
+    d <- d |>
+      rename(cat = 1, img = 2, y = 3) |>
+      arrange(cat)
+
+    data <- purrr::pmap(d, function(cat, img, y) {
+      list(
+        name = as.character(cat),
+        y = as.numeric(y),
+        color = list(
+          pattern = list(
+            image = img,
+            aspectRatio = 0.5
+          )
+        )
+      )
+    })
+
+    data <- list(data = data, categories = d$cat)
+  }
+
+  data
+}
+

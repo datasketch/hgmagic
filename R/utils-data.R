@@ -63,13 +63,16 @@ completevalues <- function(data, var_find = NULL, var_expand = NULL ,var_num = N
 
 
 
-hdtype_viz <- function(var_cat = NULL, var_num = NULL, var_dat = NULL, var_yea = NULL) {
+hdtype_viz <- function(var_cat = NULL, var_num = NULL,
+                       var_dat = NULL, var_yea = NULL,
+                       var_img = NULL) {
 
   parts <- list()
 
   if (!is.null(var_cat)) parts <- c(parts, rep("Cat", length(var_cat)))
   if (!is.null(var_yea)) parts <- c(parts, rep("Yea", length(var_yea)))
   if (!is.null(var_dat)) parts <- c(parts, rep("Dat", length(var_dat)))
+  if (!is.null(var_img)) parts <- c(parts, rep("Img", length(var_img)))
   if (!is.null(var_num)) parts <- c(parts, rep("Num", length(var_num)))
 
   hdtype <- paste(parts, collapse = "")

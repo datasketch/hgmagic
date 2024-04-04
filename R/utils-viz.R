@@ -215,6 +215,20 @@ hc_add_bar_grid <- function(hc, data, hdtype, ...) {
 
 }
 
+hc_add_bar_icons <- function(hc, data, hdtype, ...) {
+
+  opts <- c(
+    dsopts_merge(..., categories = "bar"),
+    dsopts_merge(..., categories = "axis")
+  )
+
+  if (hdtype == "CatImgNum") {
+    hc <- hc |> add_CatImgNum_features(data, opts, "bar_icons")
+  }
+
+  hc
+}
+
 add_CatNum_features <- function(hc, data, opts, viz) {
 
   if (viz == "treemap") {
@@ -418,4 +432,19 @@ add_DatNumNum_features <- function(hc, data, opts, viz) {
   hc
 }
 
-
+add_CatImgNum_features <- function(hc, data, opts, viz) {
+  if (viz == "bar_icons") {
+    hc <- hc |>
+      hc_add_dependency("modules/pattern-fill.js") |>
+      hc_chart(type = "column") |>
+      hc_axis(
+        axis = "x", categories = data$categories,
+        type = "category", opts = opts
+      ) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_xAxis(gridLineColor = "transparent") |>
+      hc_yAxis(gridLineColor = "transparent") |>
+      hc_legend(enabled = FALSE) |>
+      hc_data_series(data$data)
+  }
+}

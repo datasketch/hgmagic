@@ -152,6 +152,10 @@ hc_add_scatter <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_CatNumNum_features(data, opts, "scatter")
   }
 
+  if (hdtype == "CatNumNumNum") {
+    hc <- hc |> add_CatNumNumNum_features(data, opts, "scatter")
+  }
+
   if (hdtype == "CatCatNum") {
     hc <- hc |> add_CatCatNum_features(data, opts, "scatter")
   }
@@ -411,6 +415,17 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
   }
 
   hc
+}
+
+add_CatNumNumNum_features <- function(hc, data, opts, viz) {
+
+  if (viz == "scatter") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      # hc_add_legend(opts = opts) |>
+      hc_data_series(data)
+  }
 }
 
 add_DatNum_features <- function(hc, data, opts, viz) {

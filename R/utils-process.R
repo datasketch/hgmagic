@@ -19,6 +19,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_CatNumNum(data, viz))
   }
 
+  if (hdtype %in% c("CatNumNumNum")) {
+    return(process_CatNumNumNum(data, viz))
+  }
+
   if (hdtype %in% c("DatNum")) {
     return(process_DatNum(data, viz))
   }
@@ -272,6 +276,44 @@ process_CatNumNum <- function(d, viz) {
   }
 
   data
+}
+
+#' @rdname process_functions
+process_CatNumNumNum <- function(d, viz) {
+  if (viz %in% "scatter") {
+    if ("x" %in% names(d)) d <- d |> rename(x1 = x)
+    if ("y" %in% names(d)) d <- d |> rename(y1 = y)
+
+    d <- d |> rename(cat = 1, x = 2, y = 3, z = 4, color = ..colors)
+    categories <- unique(d$cat) |> sort(na.last = TRUE)
+
+    data <- purrr::map(categories, function(c) {
+      var_cat <- names(d)[1]
+
+      if (is.na(c)) {
+        d0 <- d |> filter(is.na(!!sym(var_cat)))
+      } else {
+        d0 <- d |> filter(!!sym(var_cat) == c)
+      }
+
+      d0 <- d0 |> select(x, y, z, color)
+      name <- if(is.na(c)) "(NA)" else c
+
+      list(
+        name = name,
+        type = "bubble",
+        color = unique(d0$color),
+        data = purrr::pmap(d0, function(x, y, z, color) {
+          list(
+            x = as.numeric(x),
+            y = as.numeric(y),
+            z = as.numeric(z),
+            color = color
+          )
+        })
+      )
+    })
+  }
 }
 
 #' @rdname process_functions

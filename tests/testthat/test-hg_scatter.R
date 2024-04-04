@@ -16,9 +16,9 @@ test_that("hg_scatter_CatNumNum", {
   hg_scatter_CatNumNum(data, scatter_agg = TRUE, agg = "mean")
 })
 
-test_that("hg_scatter_CatCatNum", {
+test_that("hg_dots_CatCatNum", {
   data <- sample_data("Cat-Cat-Num", names = c("cat1", "cat2", "value"))
 
-  hg_scatter_CatCatNum(data)
-  hg_scatter_CatCatNum(data, scatter_agg = TRUE)
+  hg_dots_CatCatNum(data)
+  hg_dots_CatCatNum(data, scatter_agg = TRUE)
 })

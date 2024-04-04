@@ -43,7 +43,7 @@ hg_scatter_CatNumNum <- function(data, dic = NULL, ...) {
 }
 
 #' @export
-hg_scatter_CatCatNum <- function(data, dic = NULL, ...) {
+hg_dots_CatCatNum <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
   hg_scatter(data, dic, var_cat = c(vars[1], vars[2]), var_num = vars[3], ...)
 }

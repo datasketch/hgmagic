@@ -245,14 +245,10 @@ add_NumNum_features <- function(hc, data, opts, viz) {
     colors <- unique(data$..colors)
 
     hc <- hc |>
+      hc_chart(type = "scatter") |>
       hc_axis(axis = "x", opts = opts) |>
       hc_axis(axis = "y", opts = opts) |>
-      hc_add_series(
-        data = data,
-        type = "scatter",
-        color = colors[1],
-        hcaes(x = data[[1]], y = data[[2]])
-      ) |>
+      hc_data_series(data) |>
       hc_legend(enabled = FALSE)
   }
 
@@ -321,21 +317,14 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
   }
 
   if (viz == "scatter") {
-    # TODO: fix this
-    # x axis elements not displaying correctly
     hc <- hc |>
-      # hc_axis(
-      #   axis = "x", type = "category",
-      #   categories = unique(data[[1]]), opts = opts
-      # ) |>
-      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(
+        axis = "x", type = "category",
+        categories = data$categories, opts = opts
+      ) |>
       hc_axis(axis = "y", opts = opts) |>
       # hc_add_legend(opts = opts) |>
-      hc_add_series(
-        data = data,
-        type = "scatter",
-        hcaes(x = data[[1]], y = data[[3]], group = data[[2]])
-      )
+      hc_data_series(data$data)
   }
 
   hc
@@ -414,16 +403,11 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
   }
 
   if (viz == "scatter") {
-    # TODO: fix for aggregated data
     hc <- hc |>
       hc_axis(axis = "x", opts = opts) |>
       hc_axis(axis = "y", opts = opts) |>
       # hc_add_legend(opts = opts) |>
-      hc_add_series(
-        data = data,
-        type = "scatter",
-        hcaes(x = data[[2]], y = data[[3]], group = data[[1]])
-      )
+      hc_data_series(data)
   }
 
   hc

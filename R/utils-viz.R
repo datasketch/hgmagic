@@ -59,7 +59,6 @@ hc_add_donut <- function(hc, data, hdtype, ...) {
 
 }
 
-
 hc_add_line <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "line"),
@@ -91,7 +90,6 @@ hc_add_line <- function(hc, data, hdtype, ...) {
 
 }
 
-
 hc_add_item <- function(hc, data, hdtype, ...) {
 
   hc <- hc |>
@@ -114,7 +112,6 @@ hc_add_item <- function(hc, data, hdtype, ...) {
 
 }
 
-
 hc_add_treemap <- function(hc, data, hdtype, ...) {
 
   opts <- dsopts_merge(..., categories = "treemap")
@@ -130,6 +127,37 @@ hc_add_treemap <- function(hc, data, hdtype, ...) {
 
   if (hdtype == "CatCatNum") {
     hc <- hc |> add_CatCatNum_features(data, opts, "treemap")
+  }
+
+  hc
+
+}
+
+hc_add_scatter <- function(hc, data, hdtype, ...) {
+
+  opts <- c(
+    dsopts_merge(..., categories = "scatter"),
+    dsopts_merge(..., categories = "legend"),
+    dsopts_merge(..., categories = "axis")
+  )
+
+  hc <- hc |>
+    hc_chart(zoomType = "xy")
+
+  if (hdtype == "NumNum") {
+    hc <- hc |> add_NumNum_features(data, opts, "scatter")
+  }
+
+  if (hdtype == "CatNumNum") {
+    hc <- hc |> add_CatNumNum_features(data, opts, "scatter")
+  }
+
+  if (hdtype == "CatNumNumNum") {
+    hc <- hc |> add_CatNumNumNum_features(data, opts, "scatter")
+  }
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "scatter")
   }
 
   hc
@@ -215,6 +243,22 @@ hc_add_bar_grid <- function(hc, data, hdtype, ...) {
 
 }
 
+add_NumNum_features <- function(hc, data, opts, viz) {
+
+  if (viz %in% c("scatter")) {
+    colors <- unique(data$..colors)
+
+    hc <- hc |>
+      hc_chart(type = "scatter") |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_data_series(data) |>
+      hc_legend(enabled = FALSE)
+  }
+
+  hc
+}
+
 add_CatNum_features <- function(hc, data, opts, viz) {
 
   if (viz == "treemap") {
@@ -239,7 +283,6 @@ add_CatNum_features <- function(hc, data, opts, viz) {
     hc_add_legend(opts)
   hc
 }
-
 
 add_CatCatNum_features <- function(hc, data, opts, viz) {
 
@@ -275,6 +318,17 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
         labels = list(style = list(fontSize = "10px"))
       ) |>
       hc_add_dependency("plugins/grouped-categories.js")
+  }
+
+  if (viz == "scatter") {
+    hc <- hc |>
+      hc_axis(
+        axis = "x", type = "category",
+        categories = data$categories, opts = opts
+      ) |>
+      hc_axis(axis = "y", opts = opts) |>
+      # hc_add_legend(opts = opts) |>
+      hc_data_series(data$data)
   }
 
   hc
@@ -330,6 +384,7 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
       hc_tooltip(useHTML = TRUE, shared = TRUE) |>
       hc_data_series(data$data)
   }
+
   if (viz == "bar_line") {
     names <- names(data)
     colors <- unique(data$..colors)
@@ -341,15 +396,37 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
                     type = "spline", yAxis = 1, color = colors[2])
 
   }
-  hc <-  hc |>
-    hc_yAxis_multiples(
-      list(title = list(text = opts$title_axis_y)),
-      list(title = list(text = opts$title_axis_y2),
-           opposite = TRUE)
-    )
+
+  if (viz %in% c("bar", "bar_line")) {
+    hc <-  hc |>
+      hc_yAxis_multiples(
+        list(title = list(text = opts$title_axis_y)),
+        list(title = list(text = opts$title_axis_y2),
+             opposite = TRUE)
+      )
+  }
+
+  if (viz == "scatter") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      # hc_add_legend(opts = opts) |>
+      hc_data_series(data)
+  }
+
   hc
 }
 
+add_CatNumNumNum_features <- function(hc, data, opts, viz) {
+
+  if (viz == "scatter") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      # hc_add_legend(opts = opts) |>
+      hc_data_series(data)
+  }
+}
 
 add_DatNum_features <- function(hc, data, opts, viz) {
 
@@ -366,8 +443,6 @@ add_DatNum_features <- function(hc, data, opts, viz) {
                formatter = JS(paste0("function () {return this.point.label;}")))
   hc
 }
-
-
 
 add_CatDatNum_features <- function(hc, data, opts, viz) {
   hc <- hc |>
@@ -417,5 +492,4 @@ add_DatNumNum_features <- function(hc, data, opts, viz) {
 
   hc
 }
-
 

@@ -8,6 +8,7 @@
 \alias{process_DatNum}
 \alias{process_CatDatNum}
 \alias{process_DatNumNum}
+\alias{process_CatImgNum}
 \title{Data processing for visualization}
 \usage{
 process_CatNum(d, viz)
@@ -23,6 +24,8 @@ process_DatNum(d, viz)
 process_CatDatNum(d, viz)
 
 process_DatNumNum(d, viz)
+
+process_CatImgNum(d, viz)
 }
 \arguments{
 \item{d}{A data frame containing the data to process. The structure of the data frame varies depending on the processing function.}

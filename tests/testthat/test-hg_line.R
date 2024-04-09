@@ -27,3 +27,18 @@ test_that("hg_line_DatNumNum", {
   data <- sample_data('Dat-Num-Num', names = c('date', 'value1', 'value2'), rep = TRUE, n = 50)
   hg_line_DatNumNum(data = data)
 })
+
+test_that("hg_line_Num", {
+  data <- sample_data('Num', names = 'value', rep = TRUE)
+  hg_line_Num(data = data)
+})
+
+test_that("hg_line_NumNum", {
+  data <- sample_data('Num-Num', names = c('value1', 'value2'), rep = TRUE)
+  hg_line_NumNum(data = data)
+})
+
+test_that("hg_line_CatNumNum", {
+  data <- sample_data('Cat-Num-Num', names = c('cat', 'value1', 'value2'), rep = TRUE)
+  hg_line_CatNumNum(data = data)
+})

@@ -86,6 +86,21 @@ hc_add_line <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_DatNumNum_features(data, opts, 'line')
   }
 
+  if (hdtype == "Num") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_Num_features(data, opts, "line")
+  }
+
+  if (hdtype == "NumNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_NumNum_features(data, opts, "line")
+  }
+
+  if (hdtype == "CatNumNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_CatNumNum_features(data, opts, "line")
+  }
+
   hc
 
 }
@@ -257,7 +272,26 @@ hc_add_bar_icons <- function(hc, data, hdtype, ...) {
   hc
 }
 
+add_Num_features <- function(hc, data, opts, viz) {
+  if (viz %in% "line") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_add_legend(opts = opts) |>
+      hc_data_series(data)
+  }
+
+  hc
+}
+
 add_NumNum_features <- function(hc, data, opts, viz) {
+  if (viz %in% "line") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_add_legend(opts = opts) |>
+      hc_data_series(data)
+  }
 
   if (viz %in% c("scatter")) {
     colors <- unique(data$..colors)
@@ -418,6 +452,17 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
         list(title = list(text = opts$title_axis_y2),
              opposite = TRUE)
       )
+  }
+
+  if (viz %in% "line") {
+    hc <- hc |>
+      hc_axis(
+        axis = "x", categories = data$categories,
+        type = "category", opts = opts
+      ) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_add_legend(opts = opts) |>
+      hc_data_series(data$data)
   }
 
   if (viz == "scatter") {

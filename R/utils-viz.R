@@ -3,6 +3,7 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
   opts <- c(dsopts_merge(..., categories = "bar"),
             dsopts_merge(..., categories = "axis")
   )
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   bar_type <- if (opts$bar_orientation == "ver") "column" else "bar"
 
   # Common hc_chart setup
@@ -31,6 +32,9 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_CatNumNum_features(data, opts, bar_type)
   }
 
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
   hc
 
 }
@@ -39,10 +43,13 @@ hc_add_pie <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "pie"),
             dsopts_merge(..., categories = "legend"))
-
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   hc <- hc |>
     hc_chart(type = "pie") |>
     add_CatNum_features(data, opts, "pie")
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
   hc
 
 }
@@ -51,10 +58,13 @@ hc_add_donut <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "donut"),
             dsopts_merge(..., categories = "legend"))
-
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   hc <- hc |>
     hc_chart(type = "pie") |>
     add_CatNum_features(data, opts, "pie")
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
   hc
 
 }
@@ -64,6 +74,7 @@ hc_add_line <- function(hc, data, hdtype, ...) {
   opts <- c(dsopts_merge(..., categories = "line"),
             dsopts_merge(..., categories = "axis")
   )
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   line_type <- if (opts$line_spline) "spline" else "line"
 
   # Common hc_chart setup
@@ -85,13 +96,16 @@ hc_add_line <- function(hc, data, hdtype, ...) {
   if (hdtype == "DatNumNum") {
     hc <- hc |> add_DatNumNum_features(data, opts, 'line')
   }
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
 
   hc
 
 }
 
 hc_add_item <- function(hc, data, hdtype, ...) {
-
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   hc <- hc |>
     hc_chart(type = "item") |>
     hc_add_series(
@@ -115,7 +129,7 @@ hc_add_item <- function(hc, data, hdtype, ...) {
 hc_add_treemap <- function(hc, data, hdtype, ...) {
 
   opts <- dsopts_merge(..., categories = "treemap")
-
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   hc <- hc |>
     hc_chart(type = "treemap")
 
@@ -129,6 +143,9 @@ hc_add_treemap <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_CatCatNum_features(data, opts, "treemap")
   }
 
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
   hc
 
 }
@@ -140,7 +157,7 @@ hc_add_scatter <- function(hc, data, hdtype, ...) {
     dsopts_merge(..., categories = "legend"),
     dsopts_merge(..., categories = "axis")
   )
-
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   hc <- hc |>
     hc_chart(zoomType = "xy")
 
@@ -159,6 +176,8 @@ hc_add_scatter <- function(hc, data, hdtype, ...) {
   if (hdtype == "CatCatNum") {
     hc <- hc |> add_CatCatNum_features(data, opts, "scatter")
   }
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
 
   hc
 
@@ -212,13 +231,15 @@ hc_add_bar_line <- function(hc, data, hdtype, ...) {
             dsopts_merge(..., categories = "line"),
             dsopts_merge(..., categories = "axis")
   )
-
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   if (hdtype == "CatNumNum") {
     hc <- hc |> add_CatNumNum_features(data, opts, "bar_line")
   }
   if (hdtype == "DatNumNum") {
     hc <- hc |> add_DatNumNum_features(data, opts, "bar_line")
   }
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
 
   hc
 
@@ -230,7 +251,7 @@ hc_add_bar_grid <- function(hc, data, hdtype, ...) {
     dsopts_merge(..., categories = "bar"),
     dsopts_merge(..., categories = "axis")
   )
-
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   if (hdtype == "CatCatNum") {
     hc <- hc |> add_CatCatNum_features(data, opts, "bar_grid")
   }
@@ -238,6 +259,8 @@ hc_add_bar_grid <- function(hc, data, hdtype, ...) {
   if (hdtype == "CatCatCatNum") {
     hc <- hc |> add_CatCatCatNum_features(data, opts, "bar_grid")
   }
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
 
   hc
 
@@ -249,10 +272,12 @@ hc_add_bar_icons <- function(hc, data, hdtype, ...) {
     dsopts_merge(..., categories = "bar"),
     dsopts_merge(..., categories = "axis")
   )
-
+  opts_theme <-  dsopts_merge(..., categories = "theme")
   if (hdtype == "CatImgNum") {
     hc <- hc |> add_CatImgNum_features(data, opts, "bar_icons")
   }
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
 
   hc
 }
@@ -389,8 +414,9 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
 }
 
 add_CatNumNum_features <- function(hc, data, opts, viz) {
-
-  if (viz %in% "bar") {
+print(viz)
+  print("hola")
+  if (viz %in% c("bar", "column")) {
     hc <- hc |>
       hc_chart(zoomType = 'xy') |>
       hc_axis("x", categories = data$categories,
@@ -411,7 +437,7 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
 
   }
 
-  if (viz %in% c("bar", "bar_line")) {
+  if (viz %in% c("bar", "bar_line", "column")) {
     hc <-  hc |>
       hc_yAxis_multiples(
         list(title = list(text = opts$title_axis_y)),

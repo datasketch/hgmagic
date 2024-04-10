@@ -5,6 +5,7 @@
 \alias{process_NumNum}
 \alias{process_CatCatNum}
 \alias{process_CatNumNum}
+\alias{process_CatNumNumNum}
 \alias{process_DatNum}
 \alias{process_CatDatNum}
 \alias{process_DatNumNum}
@@ -18,6 +19,8 @@ process_NumNum(d, viz)
 process_CatCatNum(d, viz)
 
 process_CatNumNum(d, viz)
+
+process_CatNumNumNum(d, viz)
 
 process_DatNum(d, viz)
 

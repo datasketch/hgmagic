@@ -1,6 +1,6 @@
 #' @export
 hc_add_legend <- function(hc, opts) {
-print(opts$legend_vertical_align)
+print(opts$legend_show)
   hc |>
     hc_legend(
       accessibility = list(

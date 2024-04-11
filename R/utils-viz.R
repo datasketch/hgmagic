@@ -72,7 +72,8 @@ hc_add_donut <- function(hc, data, hdtype, ...) {
 hc_add_line <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "line"),
-            dsopts_merge(..., categories = "axis")
+            dsopts_merge(..., categories = "axis"),
+            dsopts_merge(..., categories = "legend")
   )
   opts_theme <-  dsopts_merge(..., categories = "theme")
   line_type <- if (opts$line_spline) "spline" else "line"
@@ -480,7 +481,8 @@ add_DatNum_features <- function(hc, data, opts, viz) {
     ) |>
     hc_add_options(viz = viz, opts) |>
     hc_tooltip(useHTML = TRUE,
-               formatter = JS(paste0("function () {return this.point.label;}")))
+               formatter = JS(paste0("function () {return this.point.label;}"))) |>
+    hc_add_legend(opts)
   hc
 }
 

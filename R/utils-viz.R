@@ -85,6 +85,7 @@ hc_add_line <- function(hc, data, hdtype, ...) {
   # Handle different hdtype scenarios with consolidated conditional logic
   if (hdtype == "DatNum") {
     opts$legend_show <- FALSE
+    opts$palette_colors <- data$color
     hc <- hc |> add_DatNum_features(data, opts, 'line')
   }
 
@@ -414,8 +415,7 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
 }
 
 add_CatNumNum_features <- function(hc, data, opts, viz) {
-print(viz)
-  print("hola")
+
   if (viz %in% c("bar", "column")) {
     hc <- hc |>
       hc_chart(zoomType = 'xy') |>

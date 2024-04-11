@@ -39,6 +39,7 @@ default_options <- function(viz, opts) {
       innerSize = donut_inner_size
     ),
     line = list(
+      color = opts$palette_colors,
       marker = list(
         fillColor = "white",
         lineWidth = 2,

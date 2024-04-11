@@ -324,11 +324,11 @@ process_CatNumNumNum <- function(d, viz) {
 process_DatNum <- function(d, viz) {
 
   if (viz %in% c("line")) {
-    dl <- d |> select(y = 2, label = ..labels, color = ..colors)
+    dl <- d |> select(y = 2, label = ..labels)
     data <- list(
       categories = unique(d[[1]]),
-      data =  purrr::transpose(dl)
-                 # color = d$..colors |> unique()
+      data =  purrr::transpose(dl),
+      color = unique(d$..colors)[1]
 
     )
   }

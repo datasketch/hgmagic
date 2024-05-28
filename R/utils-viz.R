@@ -227,6 +227,33 @@ hc_add_solid_gauge <- function(hc, data, hdtype) {
   hc
 }
 
+hc_add_sunburst <- function(hc, data, hdtype, ...){
+
+  opts <- c(dsopts_merge(..., categories = "axis"))
+
+  hc <- hc |>
+    hc_chart(type = "sunburst")
+
+  if (hdtype == "CatCat") {
+    hc <- hc |> add_CatCat_features(data = data, opts = opts, viz = "sunburst")
+  }
+
+  hc
+}
+
+hc_add_parallel_coordinates <- function(hc, data, hdtype, ...){
+  opts <- c(dsopts_merge(..., categories = "axis"))
+
+  hc <- hc |>
+    hc_chart(type = "spline")
+
+  if (hdtype == "CatCatCatCatCatCatCat") {
+    hc <- hc |> add_CatCatCatCatCatCatCat_features(data, opts, "parallel_coordinates")
+  }
+
+  hc
+}
+
 hc_add_bar_line <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "bar"),
@@ -280,6 +307,60 @@ hc_add_bar_icons <- function(hc, data, hdtype, ...) {
   }
   hc <- hc |>
     hc_add_theme(hgch_theme(opts = opts_theme))
+
+  hc
+}
+
+add_CatCat_features <- function(hc, data, opts, viz) {
+  if (viz == "sunburst") {
+    # colors <- unique(data$..colors)
+
+    hc <- hc |>
+      hc_chart(type = "sunburst") |>
+      hc_colors(c("transparent",hcl.colors(12, "Set2"))) |>
+      hc_series(
+        list(
+          type = "sunburst",
+          data = data,
+          name = "Root",
+          allowDrillToNode = TRUE,
+          borderRadius = 3,
+          cursor = "pointer",
+          dataLabels = list(
+            format = "{point.name}",
+            filter = list(
+              property = "innerArcLength",
+              operator = ">",
+              value = 16
+            )
+          ),
+          levels = list(
+            list(
+              level = 1,
+              levelIsConstant = FALSE,
+              dataLabels = list(
+                filter = list(
+                  property = "outerArcLength",
+                  operator = ">",
+                  value = 64
+                )
+              )
+            ),
+            list(
+              level = 2,
+              colorByPoint = TRUE
+            ),
+            list(
+              level = 3,
+              colorVariation = list(
+                key = "brightness",
+                to = 0.5
+              )
+            )
+          )
+        )
+      )
+  }
 
   hc
 }
@@ -410,6 +491,28 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
         labels = list(style = list(fontSize = "10px"))
       ) |>
       hc_add_dependency("plugins/grouped-categories.js")
+  }
+
+  hc
+}
+
+add_CatCatCatCatCatCatCat_features <- function(hc, data, opts, viz) {
+  #TODO hc_yAxis optimization
+  if (viz == "parallel_coordinates") {
+    hc <- hc |>
+      hc_add_dependency("modules/parallel-coordinates.js") |>
+      hc_chart(
+        type = "spline",
+        parallelCoordinates =  TRUE
+      ) |>
+      hc_axis("x", categories = data$xAxis, opts = opts) |>
+      hc_yAxis_multiples(
+        data$yAxis[[1]], data$yAxis[[2]],
+        data$yAxis[[3]], data$yAxis[[4]],
+        data$yAxis[[5]], data$yAxis[[6]],
+        data$yAxis[[7]]
+      ) |>
+      hc_add_series_list(data$data)
   }
 
   hc

@@ -7,6 +7,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_NumNum(data, viz))
   }
 
+  if (hdtype %in% c("CatCat")) {
+    return(process_CatCat(data, viz))
+  }
+
   if (hdtype %in% c("CatNum")) {
     return(process_CatNum(data, viz))
   }
@@ -37,6 +41,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
   if (hdtype %in% c("CatImgNum")) {
     return(process_CatImgNum(data, viz))
+  }
+
+  if (hdtype %in% c("CatCatCatCatCatCatCat")) {
+    return(process_CatCatCatCatCatCatCat(data, viz))
   }
 
 }
@@ -103,6 +111,76 @@ process_CatNum <- function(d, viz) {
 
   data
 
+}
+
+#' @rdname process_functions
+process_CatCat <- function(d, viz) {
+  if (viz == "sunburst") {
+    col1 <- names(d)[1]
+    col2 <- names(d)[2]
+    d[[col2]] <- as.character(d[[col2]])
+    data <- list(list(name = "Todos", id = "0.0", parent = ""))
+    unique_categories <- unique(d[[col1]])
+
+    category_data <- map(unique_categories, function(cat) {
+      cat_id <- paste0("1.", which(unique_categories == cat))
+      colors <- d |>
+        filter(!!sym(col1) == cat) |>
+        group_by(!!sym("..colors"))|>
+        summarise(.groups = 'drop') |>
+        pull()
+
+      list(name = cat, id = cat_id, parent = "0.0", color = colors)
+    })
+
+    data <- append(data, category_data)
+
+    subcategory_counts <- d |>
+      filter(!is.na(.data[[col2]])) |>
+      group_by(!!sym(col1), !!sym(col2), !!sym("..colors")) |>
+      summarise(count = n(), .groups = 'drop') |>
+      mutate(
+        cat_id = paste0("1.",match(.data[[col1]],unique_categories)),
+        subcat_id = pmap_chr(
+          list(
+            .data[[col1]],
+            row_number()
+          ),
+          ~ paste0(
+            "2.",
+            match(..1, unique_categories), ".", ..2)
+        )
+      )
+
+    max_count <- max(subcategory_counts$count)
+    min_count <- min(subcategory_counts$count)
+
+    calculate_opacity <- function(value, min_value, max_value) {
+      0.2 + 0.8 * (value - min_value) / (max_value - min_value)
+    }
+
+    subcategory_counts <- subcategory_counts |>
+      mutate(opacity = calculate_opacity(count, min_count, max_count),
+             colors = mapply(adjustcolor, ..colors, alpha.f = opacity))
+
+    subcategory_data <- subcategory_counts |>
+      pmap(function(...) {
+        args <- list(...)
+        list(
+          name = args[[col2]],
+          id = args[["subcat_id"]],
+          parent = args[["cat_id"]],
+          value = as.double(args[["count"]]),
+          color = args[["colors"]]
+        )
+      }
+      )
+
+    data <- append(data, subcategory_data)
+
+  }
+
+  data
 }
 
 #' @rdname process_functions
@@ -204,6 +282,61 @@ process_CatCatNum <- function(d, viz) {
 
     data <- process_CatNumNum(d, viz)
     data <- list(data = data, categories = categories$name)
+  }
+
+  if (viz == "sunburst") {
+    col1 <- names(d)[1]
+    col2 <- names(d)[2]
+    d[[col2]] <- as.character(d[[col2]])
+
+    data <- list(list(name = "Todos", id = "0.0", parent = ""))
+
+    unique_categories <- unique(d[[col1]])
+
+    category_data <- map(unique_categories, function(cat) {
+      cat_id <- paste0("1.", which(unique_categories == cat))
+      colors <- d |>
+        filter(!!sym(col1) == cat) |>
+        group_by(!!sym("..colors"))|>
+        summarise(.groups = 'drop') |>
+        pull()
+
+      list(name = cat, id = cat_id, parent = "0.0", color = colors)
+    })
+
+    data <- append(data, category_data)
+
+    subcategory_counts <- d |>
+      filter(!is.na(.data[[col2]])) |>
+      group_by(!!sym(col1), !!sym(col2), !!sym("..colors")) |>
+      summarise(count = n(), .groups = 'drop') |>
+      mutate(
+        cat_id = paste0("1.",match(.data[[col1]],unique_categories)),
+        subcat_id = pmap_chr(
+          list(
+            .data[[col1]],
+            row_number()
+          ),
+          ~ paste0(
+            "2.",
+            match(..1, unique_categories), ".", ..2)
+        )
+      )
+
+    subcategory_data <- subcategory_counts |>
+      pmap(function(...) {
+        args <- list(...)
+        list(
+          name = args[[col2]],
+          id = args[["subcat_id"]],
+          parent = args[["cat_id"]],
+          value = as.double(args[["count"]]),
+          color = args[["..colors"]]
+        )
+      }
+      )
+
+    data <- append(data, subcategory_data)
   }
 
   data
@@ -443,3 +576,42 @@ process_CatImgNum <- function(d, viz) {
   data
 }
 
+#' @rdname process_functions
+process_CatCatCatCatCatCatCat <- function(d, viz) {
+
+  if(viz == "parallel_coordinates") {
+    d0 <- d |> select(-c(..colors))
+      # select(-c(..colors, ..labels))
+
+    xAxis <- colnames(d0)
+
+    yAxis <- 1:ncol(d0) |>
+      purrr::map(function(i) {
+        list(
+          categories = unique(d0[[i]])
+        )
+      })
+      # unlist(recursive = FALSE)
+
+    print(yAxis)
+
+    d0 <-d0 |>
+      mutate(across(where(is.character), ~ as.numeric(factor(.x))))
+
+    data <- purrr::map(1:nrow(d0), function(i) {
+      list(
+        name = i,
+        color = d$..colors[i],
+        data = d0[i, ] |> as.numeric()
+      )
+    })
+
+    data <- list(
+      data = data,
+      xAxis = xAxis,
+      yAxis = yAxis
+    )
+  }
+
+  data
+}

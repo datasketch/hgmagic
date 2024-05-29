@@ -3,6 +3,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
   if (is.null(viz) | is.null(hdtype)) return()
 
+  if (hdtype %in% c("Num")) {
+    return(process_Num(data, viz))
+  }
+
   if (hdtype %in% c("NumNum")) {
     return(process_NumNum(data, viz))
   }
@@ -106,7 +110,33 @@ process_CatNum <- function(d, viz) {
 }
 
 #' @rdname process_functions
+process_Num <- function(d, viz) {
+  if (viz %in% "line") {
+    if ("y" %in% names(d)) d <- d |> rename(y1 = y)
+    d0 <- d |> rename(y = 1, color = ..colors)
+
+    data <- list(list(
+      name = names(d)[1],
+      color = unique(d0$color),
+      data = purrr::imap(d0$y, function(y, i) list(
+        x = i - 1,
+        y = as.numeric(y),
+        color = d0$color[i]
+      ))
+    ))
+  }
+
+  data
+}
+
+#' @rdname process_functions
 process_NumNum <- function(d, viz) {
+  if (viz %in% "line") {
+    data <- purrr::map(1:2, function(i) {
+      process_Num(d |> select(i, ..colors), viz)[[1]]
+    })
+  }
+
   if (viz %in% "scatter") {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
@@ -242,6 +272,20 @@ process_CatNumNum <- function(d, viz) {
       title_axis = names(d)[2:3],
       categories = purrr::map(unique(d[[1]]), ~as.character(.x)),
       data = series
+    )
+  }
+
+  if (viz %in% "line") {
+    d <- d |>
+      rename(cat = 1) |>
+      arrange(cat)
+
+    series <- process_NumNum(d |> select(2:3, ..colors), viz)
+    categories <- unique(d$cat)
+
+    data <- list(
+      data = series,
+      categories = categories
     )
   }
 

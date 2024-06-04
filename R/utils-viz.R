@@ -254,6 +254,19 @@ hc_add_parallel_coordinates <- function(hc, data, hdtype, ...){
   hc
 }
 
+hc_add_sankey <- function(hc, data, hdtype, ...){
+  opts <- c(dsopts_merge(..., categories = "axis"))
+
+  hc <- hc |>
+    hc_chart(type = "sankey")
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "sankey")
+  }
+
+  hc
+}
+
 hc_add_bar_line <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "bar"),
@@ -453,6 +466,17 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_data_series(data$data)
   }
 
+  if (viz == "sankey"){
+
+    hc <- hc |>
+      hc_add_series(
+        data = data$data,
+        keys = c('from', 'to', 'weight'),
+        nodes = data$nodes,
+        type = 'sankey'
+      )
+  }
+
   hc
 }
 
@@ -499,6 +523,11 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
 add_CatCatCatCatCatCatCat_features <- function(hc, data, opts, viz) {
   #TODO hc_yAxis optimization
   if (viz == "parallel_coordinates") {
+
+    calculate_opacity <- function(value, min_value, max_value) {
+      0.2 + 0.8 * (value - min_value) / (max_value - min_value)
+    }
+
     hc <- hc |>
       hc_add_dependency("modules/parallel-coordinates.js") |>
       hc_chart(

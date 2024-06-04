@@ -155,10 +155,6 @@ process_CatCat <- function(d, viz) {
     max_count <- max(subcategory_counts$count)
     min_count <- min(subcategory_counts$count)
 
-    calculate_opacity <- function(value, min_value, max_value) {
-      0.2 + 0.8 * (value - min_value) / (max_value - min_value)
-    }
-
     subcategory_counts <- subcategory_counts |>
       mutate(opacity = calculate_opacity(count, min_count, max_count),
              colors = mapply(adjustcolor, ..colors, alpha.f = opacity))
@@ -337,6 +333,41 @@ process_CatCatNum <- function(d, viz) {
       )
 
     data <- append(data, subcategory_data)
+  }
+
+  if (viz == "sankey"){
+
+    if(any(sapply(d, is.numeric))){
+      data <- d |>
+        set_names('from', 'to', 'weight') |>
+        mutate(weight = tidyr::replace_na(weight, 0))
+    } else {
+      data <- d |>
+        set_names('from', 'to') |>
+        group_by(from, to) |>
+        summarize(weight = n())
+    }
+
+    if(all(sort(unique(data[[1]])) == sort(unique(data[[2]])))){
+      data <- data |>
+        mutate_at(vars(1), ~paste0(., "_1")) |>
+        mutate_at(vars(2), ~paste0(., "_2"))
+    }
+
+    var_unions <- lapply(data[, c(1, 2)], function(col) {
+      col <- data.frame(unique(col))
+      col |> set_names("id")
+    })
+
+    nodes <- full_join(var_unions[[1]], var_unions[[2]], by = "id") |>
+      colors_data(color_by = "id")
+
+    nodes <- lapply(1:nrow(nodes), function(i) {
+      as.list(nodes[i, ])
+    })
+
+    data <- list(data = data, nodes = nodes)
+
   }
 
   data
@@ -581,7 +612,6 @@ process_CatCatCatCatCatCatCat <- function(d, viz) {
 
   if(viz == "parallel_coordinates") {
     d0 <- d |> select(-c(..colors))
-      # select(-c(..colors, ..labels))
 
     xAxis <- colnames(d0)
 
@@ -591,9 +621,6 @@ process_CatCatCatCatCatCatCat <- function(d, viz) {
           categories = unique(d0[[i]])
         )
       })
-      # unlist(recursive = FALSE)
-
-    print(yAxis)
 
     d0 <-d0 |>
       mutate(across(where(is.character), ~ as.numeric(factor(.x))))

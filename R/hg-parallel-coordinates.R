@@ -29,8 +29,7 @@ hg_parallel_coordinates_CatCatCatCatCatCatCat <- function(data,
   hg_parallel_coordinates(
     data, dic,
     var_cat = c(
-      vars[1], vars[2], vars[3],vars[4],
-      vars[5], vars[6], vars[7]
+      vars[1:7]
     ),
     ...
   )

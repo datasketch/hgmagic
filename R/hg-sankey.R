@@ -14,12 +14,29 @@ hg_sankey <- function(data,
 
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
+  data_viz <- data_prep(ht$data,
+                        ht$dic,
+                        var_cat,
+                        var_num,
+                        text_wrap = 500,
+                        legend_text_wrap =500,
+                        axis_text_wrap = 500, ...)
 
-  data_viz <- hg_list(ht$data, hdtype, "sankey")
+  data_viz <- hg_list(data_viz, hdtype, "sankey")
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
     hc_add_sankey(data_viz, hdtype, ...)
+}
+
+hg_sankey_CatCat <- function(data,
+                             dic = NULL,
+                             ...) {
+  vars <- data_vars(data)
+  hg_sankey(data,
+            dic,
+            var_cat = c(vars[1], vars[2]),
+            ...)
 }
 
 hg_sankey_CatCatNum <- function(data,
@@ -30,4 +47,24 @@ hg_sankey_CatCatNum <- function(data,
             dic,
             var_cat = c(vars[1], vars[2]),
             var_num = vars[3], ...)
+}
+
+hg_sankey_CatCatCat <- function(data,
+                                dic = NULL,
+                                ...) {
+  vars <- data_vars(data)
+  hg_sankey(data,
+            dic,
+            var_cat = c(vars[1], vars[2], vars[3]),
+            ...)
+}
+
+hg_sankey_CatCatCatNum <- function(data,
+                                   dic = NULL,
+                                   ...) {
+  vars <- data_vars(data)
+  hg_sankey(data,
+            dic,
+            var_cat = c(vars[1], vars[2], vars[3]),
+            var_num = vars[4], ...)
 }

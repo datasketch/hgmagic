@@ -264,6 +264,10 @@ hc_add_sankey <- function(hc, data, hdtype, ...){
     hc <- hc |> add_CatCatNum_features(data, opts, "sankey")
   }
 
+  if (hdtype == "CatCatCatNum") {
+    hc <- hc |> add_CatCatCatNum_features(data, opts, "sankey")
+  }
+
   hc
 }
 
@@ -515,6 +519,17 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
         labels = list(style = list(fontSize = "10px"))
       ) |>
       hc_add_dependency("plugins/grouped-categories.js")
+  }
+
+  if (viz == "sankey"){
+
+    hc <- hc |>
+      hc_add_series(
+        data = data$data,
+        keys = c('from', 'to', 'weight'),
+        nodes = data$nodes,
+        type = 'sankey'
+      )
   }
 
   hc

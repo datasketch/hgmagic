@@ -23,6 +23,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_CatNumNum(data, viz))
   }
 
+  if (hdtype %in% c("CatCatCatNum")) {
+    return(process_CatCatCatNum(data, viz))
+  }
+
   if (hdtype %in% c("CatNumNumNum")) {
     return(process_CatNumNumNum(data, viz))
   }
@@ -340,7 +344,11 @@ process_CatCatNum <- function(d, viz) {
     if(any(sapply(d, is.numeric))){
       data <- d |>
         set_names('from', 'to', 'weight') |>
-        mutate(weight = tidyr::replace_na(weight, 0))
+        group_by(from, to) |>
+        summarise(weight = sum(weight))
+
+      View(data)
+
     } else {
       data <- d |>
         set_names('from', 'to') |>
@@ -482,6 +490,104 @@ process_CatNumNumNum <- function(d, viz) {
       )
     })
   }
+}
+
+#' @rdname process_functions
+process_CatCatCatNum <- function(d, viz) {
+  if (viz == "sankey"){
+
+    if (any(apply(d, 2, function(x) any(duplicated(x))))){
+      unique_values <- lapply(if (ncol(d) == 5) d[, -c(4, 5)] else d[, -4],
+                              function(column) sort(unique(column)))
+
+      View(unique_values)
+
+      equality_matrix <- sapply(unique_values,
+                                function(x) sapply(unique_values,
+                                                   function(y) all(x %in% y)))
+
+      all_equal <- length(unique_values) == 1 ||
+        all(rowSums(equality_matrix) == length(unique_values))
+
+      if (all_equal) {
+        d <- d |>
+          ungroup() |>
+          mutate(
+            across(c(1), ~ paste0(., "_1")),
+            across(c(2), ~ paste0(., "_2")),
+            across(c(3), ~ paste0(., "_3"))
+          )
+      } else if (equality_matrix[1, 2] && equality_matrix[2, 1]) {
+        d <- d |>
+          ungroup() |>
+          mutate(
+            across(c(1), ~ paste0(., "_1")),
+            across(c(2), ~ paste0(., "_2"))
+          )
+      } else if (equality_matrix[1, 3] && equality_matrix[3, 1]) {
+        d <- d |>
+          ungroup() |>
+          mutate(
+            across(c(1), ~ paste0(., "_1")),
+            across(c(3), ~ paste0(., "_3"))
+          )
+      } else if (equality_matrix[2, 3] && equality_matrix[3, 2]) {
+        d <- d |>
+          ungroup() |>
+          mutate(
+            across(c(2), ~ paste0(., "_2")),
+            across(c(3), ~ paste0(., "_3"))
+          )
+      }
+    }
+
+    View(d)
+
+    if(any(sapply(d, is.numeric))){
+      df1 <- d |>
+        select(1, 2, 4) |>
+        setNames(c("from", "to", "weight")) |>
+        group_by(from, to) |>
+        summarise(weight = sum(weight)) |>
+        ungroup()
+
+      df2 <- d |>
+        select(2, 3, 4) |>
+        setNames(c("from", "to", "weight")) |>
+        group_by(from, to) |>
+        summarise(weight = sum(weight))
+
+    } else {
+      df1 <- d |>
+        group_by(from = d[[1]], to = d[[2]]) |>
+        summarise(weight = n()) |>
+        ungroup()
+
+      df2 <- d |>
+        group_by(from = d[[2]], to = d[[3]]) |>
+        summarise(weight = n()) |>
+        ungroup()
+    }
+
+    data <- bind_rows(df1, df2)
+
+    var_unions <- lapply(data[, c(1, 2)], function(col) {
+      col <- data.frame(unique(col))
+      col |> set_names("id")
+    })
+
+    nodes <- full_join(var_unions[[1]], var_unions[[2]], by = "id") |>
+      colors_data(color_by = "id")
+
+    nodes <- lapply(1:nrow(nodes), function(i) {
+      as.list(nodes[i, ])
+    })
+
+    data <- list(data = data, nodes = nodes)
+
+  }
+
+  data
 }
 
 #' @rdname process_functions

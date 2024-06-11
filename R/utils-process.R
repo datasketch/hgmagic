@@ -500,8 +500,6 @@ process_CatCatCatNum <- function(d, viz) {
       unique_values <- lapply(if (ncol(d) == 5) d[, -c(4, 5)] else d[, -4],
                               function(column) sort(unique(column)))
 
-      View(unique_values)
-
       equality_matrix <- sapply(unique_values,
                                 function(x) sapply(unique_values,
                                                    function(y) all(x %in% y)))
@@ -540,8 +538,6 @@ process_CatCatCatNum <- function(d, viz) {
           )
       }
     }
-
-    View(d)
 
     if(any(sapply(d, is.numeric))){
       df1 <- d |>

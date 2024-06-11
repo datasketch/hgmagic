@@ -20,7 +20,8 @@ hg_sankey <- function(data,
                         var_num,
                         text_wrap = 500,
                         legend_text_wrap =500,
-                        axis_text_wrap = 500, ...)
+                        axis_text_wrap = 500,
+                        ...)
 
   data_viz <- hg_list(data_viz, hdtype, "sankey")
 

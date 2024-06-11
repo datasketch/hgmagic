@@ -528,7 +528,11 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
         data = data$data,
         keys = c('from', 'to', 'weight'),
         nodes = data$nodes,
-        type = 'sankey'
+        type = 'sankey',
+        name = "Flujo desde",
+        tooltip = list(
+          pointFormat = "<b>{point.fromNode.name} to {point.toNode.name}</b>: {point.weight}"
+        )
       )
   }
 

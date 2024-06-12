@@ -25,9 +25,23 @@ hg_bar <- function(data,
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
   data_viz <- hg_list(data_viz, hdtype, "bar")
 
-  highchart() |>
-    hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
+  h <- highchart() |>
+    hc_titles(opts = dsopts_merge(..., categories = "titles"))
+
+  if (hdtype == "CatNumNum") {
+    tooltip <- paste0(
+      "this.x + `<br>", names(data)[2],": ` + this.points[0].y + '<br>",
+      names(data)[3],": ' + this.points[1].y"
+    )
+    h <- h |>
+      hc_tooltip(useHTML = TRUE,
+                 formatter = JS(sprintf("function() { return %s; }", tooltip))
+      )
+  }
+
+  h |>
     hc_add_bar(data_viz, hdtype, ...)
+
 }
 
 

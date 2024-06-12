@@ -223,7 +223,7 @@ hgch_theme <- function(opts = NULL) {
         color = opts$tooltip_text_color,
         #cursor = "default",
         fontFamily = opts$tooltip_text_family %||% opts$text_family,
-        fontSize = "12px"#paste0(opts$text_size, 'px')
+        fontSize = paste0(opts$text_size, 'px')
       )
     )
   )

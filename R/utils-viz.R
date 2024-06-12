@@ -271,6 +271,19 @@ hc_add_sankey <- function(hc, data, hdtype, ...){
   hc
 }
 
+hc_add_dumbbell <- function(hc, data, hdtype, ...){
+  opts <- c(dsopts_merge(..., categories = "axis"))
+
+  hc <- hc |>
+    hc_chart(type = "dumbbell", inverted = TRUE)
+
+  if (hdtype == "CatNumNum") {
+    hc <- hc |> add_CatNumNum_features(data, opts, "dumbbell")
+  }
+
+  hc
+}
+
 hc_add_bar_line <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "bar"),
@@ -477,7 +490,11 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
         data = data$data,
         keys = c('from', 'to', 'weight'),
         nodes = data$nodes,
-        type = 'sankey'
+        type = 'sankey',
+        name = "",
+        tooltip = list(
+          pointFormat = "{point.fromNode.name} to {point.toNode.name}: <b>{point.weight}</b>"
+        )
       )
   }
 
@@ -529,9 +546,9 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
         keys = c('from', 'to', 'weight'),
         nodes = data$nodes,
         type = 'sankey',
-        name = "Flujo desde",
+        name = "",
         tooltip = list(
-          pointFormat = "<b>{point.fromNode.name} to {point.toNode.name}</b>: {point.weight}"
+          pointFormat = "{point.fromNode.name} to {point.toNode.name}: <b>{point.weight}</b>"
         )
       )
   }
@@ -604,6 +621,22 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
       hc_axis(axis = "y", opts = opts) |>
       # hc_add_legend(opts = opts) |>
       hc_data_series(data)
+  }
+
+  if (viz == "dumbbell") {
+
+    hc <- hc |>
+      hc_tooltip(useHTML = TRUE,
+                 formatter = JS("function(){ return this.point.label; }"))|>
+      hc_legend(enabled =  FALSE) |>
+      hc_xAxis(type = "category", title = list(text = opts$title_axis_x)) |>
+      hc_yAxis(title = list(text = opts$title_axis_y)) |>
+      hc_add_series(
+        data = data,
+        keys = c("name", "low", "high"),
+        colorByPoint = TRUE,
+        colors = data$colors
+      )
   }
 
   hc

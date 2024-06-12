@@ -451,6 +451,19 @@ process_CatNumNum <- function(d, viz) {
     })
   }
 
+  if (viz %in% "dumbbell") {
+
+    data <- d |>
+      relocate(..labels, .after = 3) |>
+      mutate(
+        temp_col2 = ifelse(d[[2]] > d[[3]], d[[3]], d[[2]]),
+        temp_col3 = ifelse(d[[2]] > d[[3]], d[[2]], d[[3]])
+      ) |>
+      select(-2, -3) |>
+      relocate(temp_col2, temp_col3, .after = 1) |>
+      setNames(c("name", "low", "high", "label", "colors"))
+  }
+
   data
 }
 
@@ -507,34 +520,36 @@ process_CatCatCatNum <- function(d, viz) {
       all_equal <- length(unique_values) == 1 ||
         all(rowSums(equality_matrix) == length(unique_values))
 
+      View(all_equal)
+
       if (all_equal) {
         d <- d |>
           ungroup() |>
           mutate(
-            across(c(1), ~ paste0(., "_1")),
-            across(c(2), ~ paste0(., "_2")),
-            across(c(3), ~ paste0(., "_3"))
+            across(c(1), ~ paste0(., " 1")),
+            across(c(2), ~ paste0(., " 2")),
+            across(c(3), ~ paste0(., " 3"))
           )
       } else if (equality_matrix[1, 2] && equality_matrix[2, 1]) {
         d <- d |>
           ungroup() |>
           mutate(
-            across(c(1), ~ paste0(., "_1")),
-            across(c(2), ~ paste0(., "_2"))
+            across(c(1), ~ paste0(., " 1")),
+            across(c(2), ~ paste0(., " 2"))
           )
       } else if (equality_matrix[1, 3] && equality_matrix[3, 1]) {
         d <- d |>
           ungroup() |>
           mutate(
-            across(c(1), ~ paste0(., "_1")),
-            across(c(3), ~ paste0(., "_3"))
+            across(c(1), ~ paste0(., " 1")),
+            across(c(3), ~ paste0(., " 3"))
           )
       } else if (equality_matrix[2, 3] && equality_matrix[3, 2]) {
         d <- d |>
           ungroup() |>
           mutate(
-            across(c(2), ~ paste0(., "_2")),
-            across(c(3), ~ paste0(., "_3"))
+            across(c(2), ~ paste0(., " 2")),
+            across(c(3), ~ paste0(., " 3"))
           )
       }
     }

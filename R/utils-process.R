@@ -236,6 +236,28 @@ process_CatCatNum <- function(d, viz) {
     data <- list(data = data, categories = categories$name)
   }
 
+  if (viz %in% "bar_negative_stack") {
+    data <- purrr::imap(unique(d[[1]])[1:2], function(cat, i) {
+      d0 <- d |> dplyr::filter(!!sym(names(d)[1]) %in% cat)
+      if (i == 1) {
+        d0 <- d0 |> dplyr::mutate(!!(names(d)[3]) := -1 * !!sym(names(d)[3]))
+      }
+
+      list(
+        name = cat,
+        color = unique(d0$..colors),
+        data = purrr::map(1:nrow(d0), function(i) {
+          list(
+            y = d0[[3]][i],
+            label = d0$..labels[i]
+          )
+        })
+      )
+    })
+
+    data <- list(data = data, categories = unique(d[[2]]))
+  }
+
   data
 }
 

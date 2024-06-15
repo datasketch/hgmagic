@@ -299,6 +299,28 @@ hc_add_bar_icons <- function(hc, data, hdtype, ...) {
   hc
 }
 
+hc_add_bar_negative_stack <- function(hc, data, hdtype, ...) {
+
+  opts <- c(
+    dsopts_merge(..., categories = "bar"),
+    dsopts_merge(..., categories = "axis")
+  )
+  opts_theme <-  dsopts_merge(..., categories = "theme")
+
+  hc <- hc |>
+    hc_chart(type = "bar")
+
+  if (hdtype == "CatCatNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_CatCatNum_features(data, opts, "bar_negative_stack")
+  }
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
+  hc
+}
+
 add_Num_features <- function(hc, data, opts, viz) {
   if (viz %in% "line") {
     hc <- hc |>
@@ -404,6 +426,30 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_axis(axis = "y", opts = opts) |>
       # hc_add_legend(opts = opts) |>
       hc_data_series(data$data)
+  }
+
+  if (viz == "bar_negative_stack") {
+    hc <- hc |>
+      hc_data_series(data$data) |>
+      hc_xAxis_multiples(
+        list(categories = data$categories),
+        list(
+          categories = data$categories,
+          opposite = TRUE,
+          linkedTo = 0
+        )
+      ) |>
+      hc_yAxis(
+        labels = list(
+          formatter = JS("function () {return Math.abs(this.value);}")
+        )
+      ) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
+      hc_plotOptions(series = list(stacking = "normal")) |>
+      hc_add_legend(opts)
   }
 
   hc

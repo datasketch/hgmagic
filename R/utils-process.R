@@ -7,10 +7,6 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_NumNum(data, viz))
   }
 
-  if (hdtype %in% c("CatCat")) {
-    return(process_CatCat(data, viz))
-  }
-
   if (hdtype %in% c("CatNum")) {
     return(process_CatNum(data, viz))
   }
@@ -48,7 +44,7 @@ hg_list <- function(data, hdtype, viz = NULL) {
   }
 
   if (hdtype %in% c("CatCatCatCatCatCatCat")) {
-    return(process_CatCatCatCatCatCatCat(data, viz))
+    return(process_parallel_data_plot(data, viz))
   }
 
 }
@@ -115,72 +111,6 @@ process_CatNum <- function(d, viz) {
 
   data
 
-}
-
-#' @rdname process_functions
-process_CatCat <- function(d, viz) {
-  if (viz == "sunburst") {
-    col1 <- names(d)[1]
-    col2 <- names(d)[2]
-    d[[col2]] <- as.character(d[[col2]])
-    data <- list(list(name = "Todos", id = "0.0", parent = ""))
-    unique_categories <- unique(d[[col1]])
-
-    category_data <- map(unique_categories, function(cat) {
-      cat_id <- paste0("1.", which(unique_categories == cat))
-      colors <- d |>
-        filter(!!sym(col1) == cat) |>
-        group_by(!!sym("..colors"))|>
-        summarise(.groups = 'drop') |>
-        pull()
-
-      list(name = cat, id = cat_id, parent = "0.0", color = colors)
-    })
-
-    data <- append(data, category_data)
-
-    subcategory_counts <- d |>
-      filter(!is.na(.data[[col2]])) |>
-      group_by(!!sym(col1), !!sym(col2), !!sym("..colors")) |>
-      summarise(count = n(), .groups = 'drop') |>
-      mutate(
-        cat_id = paste0("1.",match(.data[[col1]],unique_categories)),
-        subcat_id = pmap_chr(
-          list(
-            .data[[col1]],
-            row_number()
-          ),
-          ~ paste0(
-            "2.",
-            match(..1, unique_categories), ".", ..2)
-        )
-      )
-
-    max_count <- max(subcategory_counts$count)
-    min_count <- min(subcategory_counts$count)
-
-    subcategory_counts <- subcategory_counts |>
-      mutate(opacity = calculate_opacity(count, min_count, max_count),
-             colors = mapply(adjustcolor, ..colors, alpha.f = opacity))
-
-    subcategory_data <- subcategory_counts |>
-      pmap(function(...) {
-        args <- list(...)
-        list(
-          name = args[[col2]],
-          id = args[["subcat_id"]],
-          parent = args[["cat_id"]],
-          value = as.double(args[["count"]]),
-          color = args[["colors"]]
-        )
-      }
-      )
-
-    data <- append(data, subcategory_data)
-
-  }
-
-  data
 }
 
 #' @rdname process_functions
@@ -284,7 +214,8 @@ process_CatCatNum <- function(d, viz) {
     data <- list(data = data, categories = categories$name)
   }
 
-  if (viz == "sunburst") {
+  if (viz %in% "sunburst") {
+    d <- d |> arrange(desc(across(3, identity)))
     col1 <- names(d)[1]
     col2 <- names(d)[2]
     d[[col2]] <- as.character(d[[col2]])
@@ -309,7 +240,6 @@ process_CatCatNum <- function(d, viz) {
     subcategory_counts <- d |>
       filter(!is.na(.data[[col2]])) |>
       group_by(!!sym(col1), !!sym(col2), !!sym("..colors")) |>
-      summarise(count = n(), .groups = 'drop') |>
       mutate(
         cat_id = paste0("1.",match(.data[[col1]],unique_categories)),
         subcat_id = pmap_chr(
@@ -323,6 +253,14 @@ process_CatCatNum <- function(d, viz) {
         )
       )
 
+    col3 <- names(subcategory_counts)[3]
+    max_count <- max(subcategory_counts[[col3]])
+    min_count <- min(subcategory_counts[[col3]])
+
+    subcategory_counts <- subcategory_counts |>
+      mutate(opacity = calculate_opacity(!!sym(col3), min_count, max_count),
+             ..colors = mapply(adjustcolor, ..colors, alpha.f = opacity))
+
     subcategory_data <- subcategory_counts |>
       pmap(function(...) {
         args <- list(...)
@@ -330,31 +268,18 @@ process_CatCatNum <- function(d, viz) {
           name = args[[col2]],
           id = args[["subcat_id"]],
           parent = args[["cat_id"]],
-          value = as.double(args[["count"]]),
-          color = args[["..colors"]]
+          value = as.double(args[[col3]]),
+          color = args[["..colors"]],
+          label = args[["..labels"]]
         )
-      }
-      )
+      })
 
     data <- append(data, subcategory_data)
   }
 
-  if (viz == "sankey"){
-
-    if(any(sapply(d, is.numeric))){
-      data <- d |>
-        set_names('from', 'to', 'weight') |>
-        group_by(from, to) |>
-        summarise(weight = sum(weight))
-
-      View(data)
-
-    } else {
-      data <- d |>
-        set_names('from', 'to') |>
-        group_by(from, to) |>
-        summarize(weight = n())
-    }
+  if (viz %in% "sankey"){
+    data <- d |>
+      set_names("from", "to", "weight", "label")
 
     if(all(sort(unique(data[[1]])) == sort(unique(data[[2]])))){
       data <- data |>
@@ -395,7 +320,12 @@ process_CatNumNum <- function(d, viz) {
           color = color[col-1],
           type = viz,
           yAxis = col - 2,
-          data = d[[col]]
+          data = purrr::imap(d[[col]], function(y, i) {
+            list(
+              label = d$..labels[i],
+              y = y
+            )
+          })
         )
       })
     } else {
@@ -405,7 +335,12 @@ process_CatNumNum <- function(d, viz) {
           color = color[col-1],
           type = viz,
           yAxis = col - 2,
-          data = list(d[[col]])
+          data = purrr::imap(d[[col]], function(y, i) {
+            list(
+              label = d$..labels[i],
+              y = y
+            )
+          })
         )
       })
 
@@ -507,7 +442,7 @@ process_CatNumNumNum <- function(d, viz) {
 
 #' @rdname process_functions
 process_CatCatCatNum <- function(d, viz) {
-  if (viz == "sankey"){
+  if (viz %in% "sankey"){
 
     if (any(apply(d, 2, function(x) any(duplicated(x))))){
       unique_values <- lapply(if (ncol(d) == 5) d[, -c(4, 5)] else d[, -4],
@@ -519,8 +454,6 @@ process_CatCatCatNum <- function(d, viz) {
 
       all_equal <- length(unique_values) == 1 ||
         all(rowSums(equality_matrix) == length(unique_values))
-
-      View(all_equal)
 
       if (all_equal) {
         d <- d |>
@@ -554,31 +487,14 @@ process_CatCatCatNum <- function(d, viz) {
       }
     }
 
-    if(any(sapply(d, is.numeric))){
-      df1 <- d |>
-        select(1, 2, 4) |>
-        setNames(c("from", "to", "weight")) |>
-        group_by(from, to) |>
-        summarise(weight = sum(weight)) |>
-        ungroup()
+    df1 <- d |>
+      select(1, 2, 4, 5) |>
+      setNames(c("from", "to", "weight", "label"))
 
-      df2 <- d |>
-        select(2, 3, 4) |>
-        setNames(c("from", "to", "weight")) |>
-        group_by(from, to) |>
-        summarise(weight = sum(weight))
-
-    } else {
-      df1 <- d |>
-        group_by(from = d[[1]], to = d[[2]]) |>
-        summarise(weight = n()) |>
-        ungroup()
-
-      df2 <- d |>
-        group_by(from = d[[2]], to = d[[3]]) |>
-        summarise(weight = n()) |>
-        ungroup()
-    }
+    df2 <- d |>
+      ungroup() |>
+      select(2, 3, 4, 5) |>
+      setNames(c("from", "to", "weight", "label"))
 
     data <- bind_rows(df1, df2)
 
@@ -725,13 +641,12 @@ process_CatImgNum <- function(d, viz) {
 }
 
 #' @rdname process_functions
-process_CatCatCatCatCatCatCat <- function(d, viz) {
+process_parallel_data_plot <- function(d, viz) {
 
-  if(viz == "parallel_coordinates") {
-    d0 <- d |> select(-c(..colors))
+  if(viz %in% "parallel_coordinates") {
+    d0 <- d |> select(-c(..colors, Conteo,..labels))
 
     xAxis <- colnames(d0)
-
     yAxis <- 1:ncol(d0) |>
       purrr::map(function(i) {
         list(
@@ -739,22 +654,26 @@ process_CatCatCatCatCatCatCat <- function(d, viz) {
         )
       })
 
-    d0 <-d0 |>
-      mutate(across(where(is.character), ~ as.numeric(factor(.x))))
+    d0 <- d0 |>
+      ungroup() |>
+      mutate(across(where(is.character), ~ match(.x, unique(.x)) - 1))
 
     data <- purrr::map(1:nrow(d0), function(i) {
       list(
         name = i,
         color = d$..colors[i],
-        data = d0[i, ] |> as.numeric()
+        data = d0[i, ] |> as.numeric(),
+        label = d$..labels[i]
       )
     })
+
 
     data <- list(
       data = data,
       xAxis = xAxis,
       yAxis = yAxis
     )
+
   }
 
   data

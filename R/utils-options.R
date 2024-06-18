@@ -38,6 +38,10 @@ default_options <- function(viz, opts) {
       showInLegend = opts$legend_show,
       innerSize = donut_inner_size
     ),
+    sunburst = list(
+      showInLegend = opts$legend_show,
+      innerSize = donut_inner_size
+    ),
     line = list(
       color = opts$palette_colors,
       marker = list(

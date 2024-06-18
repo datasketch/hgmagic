@@ -11,10 +11,18 @@ hg_parallel_coordinates <- function(data,
 
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
+  data_viz <- data_prep(ht$data,
+                        ht$dic,
+                        var_cat,
+                        var_num,
+                        text_wrap = 500,
+                        legend_text_wrap =500,
+                        axis_text_wrap = 500,
+                        ...)
 
   color_by <- if (length(var_cat) > 1) var_cat[1] else NULL
 
-  data_viz <- colors_data(ht$data, color_by = color_by, ...)
+  data_viz <- colors_data(data_viz, color_by = color_by, ...)
   data_viz <- hg_list(data_viz, hdtype, "parallel_coordinates")
 
   highchart() |>

@@ -1,10 +1,9 @@
 #' @export
 hg_dumbbell <- function(data,
-                      dic = NULL,
-                      var_cat = NULL,
-                      var_yea = NULL,
-                      var_num = NULL, ...) {
-
+                        dic = NULL,
+                        var_cat = NULL,
+                        var_yea = NULL,
+                        var_num = NULL, ...) {
   if (is.null(data)) stop("You must enter a dataset")
   hdtype <- hdtype_viz(var_cat = var_cat,
                        var_yea = var_yea,
@@ -20,7 +19,6 @@ hg_dumbbell <- function(data,
 
   color_by <- var_cat[1]
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
-
   data_viz <- hg_list(data_viz, hdtype, "dumbbell")
 
   highchart() |>

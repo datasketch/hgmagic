@@ -228,14 +228,16 @@ hc_add_solid_gauge <- function(hc, data, hdtype) {
 }
 
 hc_add_sunburst <- function(hc, data, hdtype, ...){
-
-  opts <- c(dsopts_merge(..., categories = "axis"))
+  opts <- c(dsopts_merge(..., categories = "tooltip"),
+            dsopts_merge(..., categories = "axis"),
+            dsopts_merge(..., categories = "sunburst")
+  )
 
   hc <- hc |>
     hc_chart(type = "sunburst")
 
-  if (hdtype == "CatCat") {
-    hc <- hc |> add_CatCat_features(data = data, opts = opts, viz = "sunburst")
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data = data, opts = opts, viz = "sunburst")
   }
 
   hc
@@ -245,7 +247,15 @@ hc_add_parallel_coordinates <- function(hc, data, hdtype, ...){
   opts <- c(dsopts_merge(..., categories = "axis"))
 
   hc <- hc |>
-    hc_chart(type = "spline")
+    hc_add_dependency("modules/parallel-coordinates.js") |>
+    hc_add_dependency("modules/accesibility.js") |>
+    hc_chart(
+      type = "spline",
+      parallelCoordinates =  TRUE,
+      parallelAxes = list(
+        lineWidth = 3
+      )
+    )
 
   if (hdtype == "CatCatCatCatCatCatCat") {
     hc <- hc |> add_CatCatCatCatCatCatCat_features(data, opts, "parallel_coordinates")
@@ -341,60 +351,6 @@ hc_add_bar_icons <- function(hc, data, hdtype, ...) {
   hc
 }
 
-add_CatCat_features <- function(hc, data, opts, viz) {
-  if (viz == "sunburst") {
-    # colors <- unique(data$..colors)
-
-    hc <- hc |>
-      hc_chart(type = "sunburst") |>
-      hc_colors(c("transparent",hcl.colors(12, "Set2"))) |>
-      hc_series(
-        list(
-          type = "sunburst",
-          data = data,
-          name = "Root",
-          allowDrillToNode = TRUE,
-          borderRadius = 3,
-          cursor = "pointer",
-          dataLabels = list(
-            format = "{point.name}",
-            filter = list(
-              property = "innerArcLength",
-              operator = ">",
-              value = 16
-            )
-          ),
-          levels = list(
-            list(
-              level = 1,
-              levelIsConstant = FALSE,
-              dataLabels = list(
-                filter = list(
-                  property = "outerArcLength",
-                  operator = ">",
-                  value = 64
-                )
-              )
-            ),
-            list(
-              level = 2,
-              colorByPoint = TRUE
-            ),
-            list(
-              level = 3,
-              colorVariation = list(
-                key = "brightness",
-                to = 0.5
-              )
-            )
-          )
-        )
-      )
-  }
-
-  hc
-}
-
 add_NumNum_features <- function(hc, data, opts, viz) {
 
   if (viz %in% c("scatter")) {
@@ -486,14 +442,44 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
   if (viz == "sankey"){
 
     hc <- hc |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS(paste0("function () {return this.point.label;}"))
+      ) |>
       hc_add_series(
         data = data$data,
         keys = c('from', 'to', 'weight'),
         nodes = data$nodes,
         type = 'sankey',
-        name = "",
-        tooltip = list(
-          pointFormat = "{point.fromNode.name} to {point.toNode.name}: <b>{point.weight}</b>"
+        name = ""
+      )
+  }
+
+  if (viz == "sunburst") {
+
+    hc <- hc |>
+      hc_chart(type = "sunburst") |>
+      hc_colors(opts$color_center_sunburst)|>
+      # hc_tooltip(useHTML = TRUE,
+      #            formatter = JS(paste0("function () {return this.point.label;}"))) |>
+      hc_series(
+        list(
+          data = data,
+          cursor = "pointer",
+          dataLabels = list(
+            format = "{point.name}"
+          ),
+          levels = list(
+            list(
+              level = 1
+            ),
+            list(
+              level = 2
+            ),
+            list(
+              level = 3
+            )
+          )
         )
       )
   }
@@ -541,15 +527,16 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
   if (viz == "sankey"){
 
     hc <- hc |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS(paste0("function () {return this.point.label;}"))
+      ) |>
       hc_add_series(
         data = data$data,
         keys = c('from', 'to', 'weight'),
         nodes = data$nodes,
         type = 'sankey',
-        name = "",
-        tooltip = list(
-          pointFormat = "{point.fromNode.name} to {point.toNode.name}: <b>{point.weight}</b>"
-        )
+        name = ""
       )
   }
 
@@ -560,16 +547,7 @@ add_CatCatCatCatCatCatCat_features <- function(hc, data, opts, viz) {
   #TODO hc_yAxis optimization
   if (viz == "parallel_coordinates") {
 
-    calculate_opacity <- function(value, min_value, max_value) {
-      0.2 + 0.8 * (value - min_value) / (max_value - min_value)
-    }
-
     hc <- hc |>
-      hc_add_dependency("modules/parallel-coordinates.js") |>
-      hc_chart(
-        type = "spline",
-        parallelCoordinates =  TRUE
-      ) |>
       hc_axis("x", categories = data$xAxis, opts = opts) |>
       hc_yAxis_multiples(
         data$yAxis[[1]], data$yAxis[[2]],
@@ -577,7 +555,24 @@ add_CatCatCatCatCatCatCat_features <- function(hc, data, opts, viz) {
         data$yAxis[[5]], data$yAxis[[6]],
         data$yAxis[[7]]
       ) |>
-      hc_add_series_list(data$data)
+      hc_data_series(data$data)|>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function() {
+        return this.series.userOptions.label;
+                       }")
+      )|>
+      hc_plotOptions(
+        series = list(
+          accessibility = list(enabled = FALSE),
+          marker = list(
+            enabled = FALSE,
+            states = list(
+              hover = list(enabled = FALSE)
+            )
+          )
+        )
+      )
   }
 
   hc
@@ -590,7 +585,12 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
       hc_chart(zoomType = 'xy') |>
       hc_axis("x", categories = data$categories,
               type = "category", opts = opts) |>
-      hc_tooltip(useHTML = TRUE, shared = TRUE) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        shared = TRUE,
+        formatter = JS("function () {return this.points[0].point.label;}")
+      ) |>
+      # hc_tooltip(useHTML = TRUE, shared = TRUE) |>
       hc_data_series(data$data)
   }
 
@@ -734,4 +734,8 @@ add_CatImgNum_features <- function(hc, data, opts, viz) {
       hc_legend(enabled = FALSE) |>
       hc_data_series(data$data)
   }
+}
+
+calculate_opacity <- function(value, min_value, max_value) {
+  0.2 + 0.8 * (value - min_value) / (max_value - min_value)
 }

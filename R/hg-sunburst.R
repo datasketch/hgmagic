@@ -26,11 +26,13 @@ hg_sunburst <- function(data,
     hc_add_sunburst(data_viz, "CatCatNum", ...)
 }
 
+#' @export
 hg_sunburst_CatCat <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
   hg_sunburst(data, dic, var_cat = c(vars[1], vars[2]), ...)
 }
 
+#' @export
 hg_sunburst_CatCatNum <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
   hg_sunburst(data, dic, var_cat = c(vars[1], vars[2]), var_num = vars[3], ...)

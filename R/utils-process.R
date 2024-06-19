@@ -3,10 +3,6 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
   if (is.null(viz) | is.null(hdtype)) return()
 
-  if (hdtype %in% c("Num")) {
-    return(process_Num(data, viz))
-  }
-
   if (hdtype %in% c("NumNum")) {
     return(process_NumNum(data, viz))
   }
@@ -21,6 +17,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
   if (hdtype %in% c("CatNumNum")) {
     return(process_CatNumNum(data, viz))
+  }
+
+  if (hdtype %in% c("CatCatCatNum")) {
+    return(process_CatCatCatNum(data, viz))
   }
 
   if (hdtype %in% c("CatNumNumNum")) {
@@ -41,6 +41,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
   if (hdtype %in% c("CatImgNum")) {
     return(process_CatImgNum(data, viz))
+  }
+
+  if (hdtype %in% c("CatCatCatCatCatCatCat")) {
+    return(process_parallel_data_plot(data, viz))
   }
 
 }
@@ -110,33 +114,7 @@ process_CatNum <- function(d, viz) {
 }
 
 #' @rdname process_functions
-process_Num <- function(d, viz) {
-  if (viz %in% "line") {
-    if ("y" %in% names(d)) d <- d |> rename(y1 = y)
-    d0 <- d |> rename(y = 1, color = ..colors)
-
-    data <- list(list(
-      name = names(d)[1],
-      color = unique(d0$color),
-      data = purrr::imap(d0$y, function(y, i) list(
-        x = i - 1,
-        y = as.numeric(y),
-        color = d0$color[i]
-      ))
-    ))
-  }
-
-  data
-}
-
-#' @rdname process_functions
 process_NumNum <- function(d, viz) {
-  if (viz %in% "line") {
-    data <- purrr::map(1:2, function(i) {
-      process_Num(d |> select(i, ..colors), viz)[[1]]
-    })
-  }
-
   if (viz %in% "scatter") {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
@@ -236,26 +214,93 @@ process_CatCatNum <- function(d, viz) {
     data <- list(data = data, categories = categories$name)
   }
 
-  if (viz %in% "bar_negative_stack") {
-    data <- purrr::imap(unique(d[[1]])[1:2], function(cat, i) {
-      d0 <- d |> dplyr::filter(!!sym(names(d)[1]) %in% cat)
-      if (i == 1) {
-        d0 <- d0 |> dplyr::mutate(!!(names(d)[3]) := -1 * !!sym(names(d)[3]))
-      }
+  if (viz %in% "sunburst") {
+    d <- d |> arrange(desc(across(3, identity)))
+    col1 <- names(d)[1]
+    col2 <- names(d)[2]
+    d[[col2]] <- as.character(d[[col2]])
 
-      list(
-        name = cat,
-        color = unique(d0$..colors),
-        data = purrr::map(1:nrow(d0), function(i) {
-          list(
-            y = d0[[3]][i],
-            label = d0$..labels[i]
-          )
-        })
-      )
+    data <- list(list(name = "Todos", id = "0.0", parent = ""))
+
+    unique_categories <- unique(d[[col1]])
+
+    category_data <- map(unique_categories, function(cat) {
+      cat_id <- paste0("1.", which(unique_categories == cat))
+      colors <- d |>
+        filter(!!sym(col1) == cat) |>
+        group_by(!!sym("..colors"))|>
+        summarise(.groups = 'drop') |>
+        pull()
+
+      list(name = cat, id = cat_id, parent = "0.0", color = colors)
     })
 
-    data <- list(data = data, categories = unique(d[[2]]))
+    data <- append(data, category_data)
+
+    subcategory_counts <- d |>
+      filter(!is.na(.data[[col2]])) |>
+      group_by(!!sym(col1), !!sym(col2), !!sym("..colors")) |>
+      mutate(
+        cat_id = paste0("1.",match(.data[[col1]],unique_categories)),
+        subcat_id = pmap_chr(
+          list(
+            .data[[col1]],
+            row_number()
+          ),
+          ~ paste0(
+            "2.",
+            match(..1, unique_categories), ".", ..2)
+        )
+      )
+
+    col3 <- names(subcategory_counts)[3]
+    max_count <- max(subcategory_counts[[col3]])
+    min_count <- min(subcategory_counts[[col3]])
+
+    subcategory_counts <- subcategory_counts |>
+      mutate(opacity = calculate_opacity(!!sym(col3), min_count, max_count),
+             ..colors = mapply(adjustcolor, ..colors, alpha.f = opacity))
+
+    subcategory_data <- subcategory_counts |>
+      pmap(function(...) {
+        args <- list(...)
+        list(
+          name = args[[col2]],
+          id = args[["subcat_id"]],
+          parent = args[["cat_id"]],
+          value = as.double(args[[col3]]),
+          color = args[["..colors"]],
+          label = args[["..labels"]]
+        )
+      })
+
+    data <- append(data, subcategory_data)
+  }
+
+  if (viz %in% "sankey"){
+    data <- d |>
+      set_names("from", "to", "weight", "label")
+
+    if(all(sort(unique(data[[1]])) == sort(unique(data[[2]])))){
+      data <- data |>
+        mutate_at(vars(1), ~paste0(., "_1")) |>
+        mutate_at(vars(2), ~paste0(., "_2"))
+    }
+
+    var_unions <- lapply(data[, c(1, 2)], function(col) {
+      col <- data.frame(unique(col))
+      col |> set_names("id")
+    })
+
+    nodes <- full_join(var_unions[[1]], var_unions[[2]], by = "id") |>
+      colors_data(color_by = "id")
+
+    nodes <- lapply(1:nrow(nodes), function(i) {
+      as.list(nodes[i, ])
+    })
+
+    data <- list(data = data, nodes = nodes)
+
   }
 
   data
@@ -275,7 +320,12 @@ process_CatNumNum <- function(d, viz) {
           color = color[col-1],
           type = viz,
           yAxis = col - 2,
-          data = d[[col]]
+          data = purrr::imap(d[[col]], function(y, i) {
+            list(
+              label = d$..labels[i],
+              y = y
+            )
+          })
         )
       })
     } else {
@@ -285,7 +335,12 @@ process_CatNumNum <- function(d, viz) {
           color = color[col-1],
           type = viz,
           yAxis = col - 2,
-          data = list(d[[col]])
+          data = purrr::imap(d[[col]], function(y, i) {
+            list(
+              label = d$..labels[i],
+              y = y
+            )
+          })
         )
       })
 
@@ -294,20 +349,6 @@ process_CatNumNum <- function(d, viz) {
       title_axis = names(d)[2:3],
       categories = purrr::map(unique(d[[1]]), ~as.character(.x)),
       data = series
-    )
-  }
-
-  if (viz %in% "line") {
-    d <- d |>
-      rename(cat = 1) |>
-      arrange(cat)
-
-    series <- process_NumNum(d |> select(2:3, ..colors), viz)
-    categories <- unique(d$cat)
-
-    data <- list(
-      data = series,
-      categories = categories
     )
   }
 
@@ -343,6 +384,19 @@ process_CatNumNum <- function(d, viz) {
         })
       )
     })
+  }
+
+  if (viz %in% "dumbbell") {
+
+    data <- d |>
+      relocate(..labels, .after = 3) |>
+      mutate(
+        temp_col2 = ifelse(d[[2]] > d[[3]], d[[3]], d[[2]]),
+        temp_col3 = ifelse(d[[2]] > d[[3]], d[[2]], d[[3]])
+      ) |>
+      select(-2, -3) |>
+      relocate(temp_col2, temp_col3, .after = 1) |>
+      setNames(c("name", "low", "high", "label", "colors"))
   }
 
   data
@@ -384,6 +438,83 @@ process_CatNumNumNum <- function(d, viz) {
       )
     })
   }
+}
+
+#' @rdname process_functions
+process_CatCatCatNum <- function(d, viz) {
+  if (viz %in% "sankey"){
+
+    if (any(apply(d, 2, function(x) any(duplicated(x))))){
+      unique_values <- lapply(if (ncol(d) == 5) d[, -c(4, 5)] else d[, -4],
+                              function(column) sort(unique(column)))
+
+      equality_matrix <- sapply(unique_values,
+                                function(x) sapply(unique_values,
+                                                   function(y) all(x %in% y)))
+
+      all_equal <- length(unique_values) == 1 ||
+        all(rowSums(equality_matrix) == length(unique_values))
+
+      if (all_equal) {
+        d <- d |>
+          ungroup() |>
+          mutate(
+            across(c(1), ~ paste0(., " 1")),
+            across(c(2), ~ paste0(., " 2")),
+            across(c(3), ~ paste0(., " 3"))
+          )
+      } else if (equality_matrix[1, 2] && equality_matrix[2, 1]) {
+        d <- d |>
+          ungroup() |>
+          mutate(
+            across(c(1), ~ paste0(., " 1")),
+            across(c(2), ~ paste0(., " 2"))
+          )
+      } else if (equality_matrix[1, 3] && equality_matrix[3, 1]) {
+        d <- d |>
+          ungroup() |>
+          mutate(
+            across(c(1), ~ paste0(., " 1")),
+            across(c(3), ~ paste0(., " 3"))
+          )
+      } else if (equality_matrix[2, 3] && equality_matrix[3, 2]) {
+        d <- d |>
+          ungroup() |>
+          mutate(
+            across(c(2), ~ paste0(., " 2")),
+            across(c(3), ~ paste0(., " 3"))
+          )
+      }
+    }
+
+    df1 <- d |>
+      select(1, 2, 4, 5) |>
+      setNames(c("from", "to", "weight", "label"))
+
+    df2 <- d |>
+      ungroup() |>
+      select(2, 3, 4, 5) |>
+      setNames(c("from", "to", "weight", "label"))
+
+    data <- bind_rows(df1, df2)
+
+    var_unions <- lapply(data[, c(1, 2)], function(col) {
+      col <- data.frame(unique(col))
+      col |> set_names("id")
+    })
+
+    nodes <- full_join(var_unions[[1]], var_unions[[2]], by = "id") |>
+      colors_data(color_by = "id")
+
+    nodes <- lapply(1:nrow(nodes), function(i) {
+      as.list(nodes[i, ])
+    })
+
+    data <- list(data = data, nodes = nodes)
+
+  }
+
+  data
 }
 
 #' @rdname process_functions
@@ -509,3 +640,41 @@ process_CatImgNum <- function(d, viz) {
   data
 }
 
+#' @rdname process_functions
+process_parallel_data_plot <- function(d, viz) {
+
+  if(viz %in% "parallel_coordinates") {
+    d0 <- d |> select(-c(..colors, Conteo,..labels))
+
+    xAxis <- colnames(d0)
+    yAxis <- 1:ncol(d0) |>
+      purrr::map(function(i) {
+        list(
+          categories = unique(d0[[i]])
+        )
+      })
+
+    d0 <- d0 |>
+      ungroup() |>
+      mutate(across(where(is.character), ~ match(.x, unique(.x)) - 1))
+
+    data <- purrr::map(1:nrow(d0), function(i) {
+      list(
+        name = i,
+        color = d$..colors[i],
+        data = d0[i, ] |> as.numeric(),
+        label = d$..labels[i]
+      )
+    })
+
+
+    data <- list(
+      data = data,
+      xAxis = xAxis,
+      yAxis = yAxis
+    )
+
+  }
+
+  data
+}

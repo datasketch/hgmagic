@@ -2,20 +2,19 @@
 % Please edit documentation in R/utils-process.R
 \name{process_CatNum}
 \alias{process_CatNum}
-\alias{process_Num}
 \alias{process_NumNum}
 \alias{process_CatCatNum}
 \alias{process_CatNumNum}
 \alias{process_CatNumNumNum}
+\alias{process_CatCatCatNum}
 \alias{process_DatNum}
 \alias{process_CatDatNum}
 \alias{process_DatNumNum}
 \alias{process_CatImgNum}
+\alias{process_parallel_data_plot}
 \title{Data processing for visualization}
 \usage{
 process_CatNum(d, viz)
-
-process_Num(d, viz)
 
 process_NumNum(d, viz)
 
@@ -25,6 +24,8 @@ process_CatNumNum(d, viz)
 
 process_CatNumNumNum(d, viz)
 
+process_CatCatCatNum(d, viz)
+
 process_DatNum(d, viz)
 
 process_CatDatNum(d, viz)
@@ -32,6 +33,8 @@ process_CatDatNum(d, viz)
 process_DatNumNum(d, viz)
 
 process_CatImgNum(d, viz)
+
+process_parallel_data_plot(d, viz)
 }
 \arguments{
 \item{d}{A data frame containing the data to process. The structure of the data frame varies depending on the processing function.}

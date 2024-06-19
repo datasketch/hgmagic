@@ -102,21 +102,6 @@ hc_add_line <- function(hc, data, hdtype, ...) {
     hc_add_theme(hgch_theme(opts = opts_theme))
 
 
-  if (hdtype == "Num") {
-    opts <- c(opts, dsopts_merge(..., categories = "legend"))
-    hc <- hc |> add_Num_features(data, opts, "line")
-  }
-
-  if (hdtype == "NumNum") {
-    opts <- c(opts, dsopts_merge(..., categories = "legend"))
-    hc <- hc |> add_NumNum_features(data, opts, "line")
-  }
-
-  if (hdtype == "CatNumNum") {
-    opts <- c(opts, dsopts_merge(..., categories = "legend"))
-    hc <- hc |> add_CatNumNum_features(data, opts, "line")
-  }
-
   hc
 
 }
@@ -242,6 +227,73 @@ hc_add_solid_gauge <- function(hc, data, hdtype) {
   hc
 }
 
+hc_add_sunburst <- function(hc, data, hdtype, ...){
+  opts <- c(dsopts_merge(..., categories = "tooltip"),
+            dsopts_merge(..., categories = "axis"),
+            dsopts_merge(..., categories = "sunburst")
+  )
+
+  hc <- hc |>
+    hc_chart(type = "sunburst")
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data = data, opts = opts, viz = "sunburst")
+  }
+
+  hc
+}
+
+hc_add_parallel_coordinates <- function(hc, data, hdtype, ...){
+  opts <- c(dsopts_merge(..., categories = "axis"))
+
+  hc <- hc |>
+    hc_add_dependency("modules/parallel-coordinates.js") |>
+    hc_add_dependency("modules/accesibility.js") |>
+    hc_chart(
+      type = "spline",
+      parallelCoordinates =  TRUE,
+      parallelAxes = list(
+        lineWidth = 3
+      )
+    )
+
+  if (hdtype == "CatCatCatCatCatCatCat") {
+    hc <- hc |> add_CatCatCatCatCatCatCat_features(data, opts, "parallel_coordinates")
+  }
+
+  hc
+}
+
+hc_add_sankey <- function(hc, data, hdtype, ...){
+  opts <- c(dsopts_merge(..., categories = "axis"))
+
+  hc <- hc |>
+    hc_chart(type = "sankey")
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "sankey")
+  }
+
+  if (hdtype == "CatCatCatNum") {
+    hc <- hc |> add_CatCatCatNum_features(data, opts, "sankey")
+  }
+
+  hc
+}
+
+hc_add_dumbbell <- function(hc, data, hdtype, ...){
+  opts <- c(dsopts_merge(..., categories = "axis"))
+
+  hc <- hc |>
+    hc_chart(type = "dumbbell", inverted = TRUE)
+
+  if (hdtype == "CatNumNum") {
+    hc <- hc |> add_CatNumNum_features(data, opts, "dumbbell")
+  }
+
+  hc
+}
+
 hc_add_bar_line <- function(hc, data, hdtype, ...) {
 
   opts <- c(dsopts_merge(..., categories = "bar"),
@@ -299,48 +351,7 @@ hc_add_bar_icons <- function(hc, data, hdtype, ...) {
   hc
 }
 
-hc_add_bar_negative_stack <- function(hc, data, hdtype, ...) {
-
-  opts <- c(
-    dsopts_merge(..., categories = "bar"),
-    dsopts_merge(..., categories = "axis")
-  )
-  opts_theme <-  dsopts_merge(..., categories = "theme")
-
-  hc <- hc |>
-    hc_chart(type = "bar")
-
-  if (hdtype == "CatCatNum") {
-    opts <- c(opts, dsopts_merge(..., categories = "legend"))
-    hc <- hc |> add_CatCatNum_features(data, opts, "bar_negative_stack")
-  }
-
-  hc <- hc |>
-    hc_add_theme(hgch_theme(opts = opts_theme))
-
-  hc
-}
-
-add_Num_features <- function(hc, data, opts, viz) {
-  if (viz %in% "line") {
-    hc <- hc |>
-      hc_axis(axis = "x", opts = opts) |>
-      hc_axis(axis = "y", opts = opts) |>
-      hc_add_legend(opts = opts) |>
-      hc_data_series(data)
-  }
-
-  hc
-}
-
 add_NumNum_features <- function(hc, data, opts, viz) {
-  if (viz %in% "line") {
-    hc <- hc |>
-      hc_axis(axis = "x", opts = opts) |>
-      hc_axis(axis = "y", opts = opts) |>
-      hc_add_legend(opts = opts) |>
-      hc_data_series(data)
-  }
 
   if (viz %in% c("scatter")) {
     colors <- unique(data$..colors)
@@ -428,28 +439,49 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_data_series(data$data)
   }
 
-  if (viz == "bar_negative_stack") {
+  if (viz == "sankey"){
+
     hc <- hc |>
-      hc_data_series(data$data) |>
-      hc_xAxis_multiples(
-        list(categories = data$categories),
-        list(
-          categories = data$categories,
-          opposite = TRUE,
-          linkedTo = 0
-        )
-      ) |>
-      hc_yAxis(
-        labels = list(
-          formatter = JS("function () {return Math.abs(this.value);}")
-        )
-      ) |>
       hc_tooltip(
         useHTML = TRUE,
-        formatter = JS("function () {return this.point.label;}")
+        formatter = JS(paste0("function () {return this.point.label;}"))
       ) |>
-      hc_plotOptions(series = list(stacking = "normal")) |>
-      hc_add_legend(opts)
+      hc_add_series(
+        data = data$data,
+        keys = c('from', 'to', 'weight'),
+        nodes = data$nodes,
+        type = 'sankey',
+        name = ""
+      )
+  }
+
+  if (viz == "sunburst") {
+
+    hc <- hc |>
+      hc_chart(type = "sunburst") |>
+      hc_colors(opts$color_center_sunburst)|>
+      # hc_tooltip(useHTML = TRUE,
+      #            formatter = JS(paste0("function () {return this.point.label;}"))) |>
+      hc_series(
+        list(
+          data = data,
+          cursor = "pointer",
+          dataLabels = list(
+            format = "{point.name}"
+          ),
+          levels = list(
+            list(
+              level = 1
+            ),
+            list(
+              level = 2
+            ),
+            list(
+              level = 3
+            )
+          )
+        )
+      )
   }
 
   hc
@@ -492,6 +524,57 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
       hc_add_dependency("plugins/grouped-categories.js")
   }
 
+  if (viz == "sankey"){
+
+    hc <- hc |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS(paste0("function () {return this.point.label;}"))
+      ) |>
+      hc_add_series(
+        data = data$data,
+        keys = c('from', 'to', 'weight'),
+        nodes = data$nodes,
+        type = 'sankey',
+        name = ""
+      )
+  }
+
+  hc
+}
+
+add_CatCatCatCatCatCatCat_features <- function(hc, data, opts, viz) {
+  #TODO hc_yAxis optimization
+  if (viz == "parallel_coordinates") {
+
+    hc <- hc |>
+      hc_axis("x", categories = data$xAxis, opts = opts) |>
+      hc_yAxis_multiples(
+        data$yAxis[[1]], data$yAxis[[2]],
+        data$yAxis[[3]], data$yAxis[[4]],
+        data$yAxis[[5]], data$yAxis[[6]],
+        data$yAxis[[7]]
+      ) |>
+      hc_data_series(data$data)|>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function() {
+        return this.series.userOptions.label;
+                       }")
+      )|>
+      hc_plotOptions(
+        series = list(
+          accessibility = list(enabled = FALSE),
+          marker = list(
+            enabled = FALSE,
+            states = list(
+              hover = list(enabled = FALSE)
+            )
+          )
+        )
+      )
+  }
+
   hc
 }
 
@@ -502,7 +585,12 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
       hc_chart(zoomType = 'xy') |>
       hc_axis("x", categories = data$categories,
               type = "category", opts = opts) |>
-      hc_tooltip(useHTML = TRUE, shared = TRUE) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        shared = TRUE,
+        formatter = JS("function () {return this.points[0].point.label;}")
+      ) |>
+      # hc_tooltip(useHTML = TRUE, shared = TRUE) |>
       hc_data_series(data$data)
   }
 
@@ -527,23 +615,28 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
       )
   }
 
-  if (viz %in% "line") {
-    hc <- hc |>
-      hc_axis(
-        axis = "x", categories = data$categories,
-        type = "category", opts = opts
-      ) |>
-      hc_axis(axis = "y", opts = opts) |>
-      hc_add_legend(opts = opts) |>
-      hc_data_series(data$data)
-  }
-
   if (viz == "scatter") {
     hc <- hc |>
       hc_axis(axis = "x", opts = opts) |>
       hc_axis(axis = "y", opts = opts) |>
       # hc_add_legend(opts = opts) |>
       hc_data_series(data)
+  }
+
+  if (viz == "dumbbell") {
+
+    hc <- hc |>
+      hc_tooltip(useHTML = TRUE,
+                 formatter = JS("function(){ return this.point.label; }"))|>
+      hc_legend(enabled =  FALSE) |>
+      hc_xAxis(type = "category", title = list(text = opts$title_axis_x)) |>
+      hc_yAxis(title = list(text = opts$title_axis_y)) |>
+      hc_add_series(
+        data = data,
+        keys = c("name", "low", "high"),
+        colorByPoint = TRUE,
+        colors = data$colors
+      )
   }
 
   hc
@@ -607,7 +700,7 @@ add_DatNumNum_features <- function(hc, data, opts, viz) {
     colors <- unique(data$..colors)
     hc <- hc |>
       hc_xAxis(categories = unique(data[[1]]),
-              type = "datetime") |>
+               type = "datetime") |>
       hc_add_series(name = names[2], data = data[[2]],
                     type = "column", color = colors[1]) |>
       hc_add_series(name = names[3], data = data[[3]],
@@ -641,4 +734,8 @@ add_CatImgNum_features <- function(hc, data, opts, viz) {
       hc_legend(enabled = FALSE) |>
       hc_data_series(data$data)
   }
+}
+
+calculate_opacity <- function(value, min_value, max_value) {
+  0.2 + 0.8 * (value - min_value) / (max_value - min_value)
 }

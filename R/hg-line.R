@@ -28,10 +28,8 @@ hg_line <- function(data,
   }
 
   if (length(var_num) > 1) color_by <- var_cat[1]
-  print(data_viz)
+
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
-  print("con colores")
-  print(data_viz)
   data_viz <- hg_list(data_viz, hdtype, "line")
 
   highchart() |>

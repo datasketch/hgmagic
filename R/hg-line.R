@@ -16,8 +16,7 @@ hg_line <- function(data,
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea, var_dat)
 
-  if (length(var_cat) == 0) data_viz <- data
-  else data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
 
   if (!is.null(var_dat)) data_viz <- data_viz[!is.na(data_viz[[var_dat]]), ]
 
@@ -29,7 +28,10 @@ hg_line <- function(data,
   }
 
   if (length(var_num) > 1) color_by <- var_cat[1]
+  print(data_viz)
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
+  print("con colores")
+  print(data_viz)
   data_viz <- hg_list(data_viz, hdtype, "line")
 
   highchart() |>

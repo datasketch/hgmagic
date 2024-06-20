@@ -67,7 +67,7 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
 #' @rdname process_functions
 process_CatNum <- function(d, viz) {
-  print("Process CatNum")
+
   if (viz %in% c("bar", "column","pie", "donut")) {
     data <- purrr::pmap(.l = list(d[[1]], d[[2]], d[[3]], d[[4]]),
                         .f = function(name, y, label, color) {

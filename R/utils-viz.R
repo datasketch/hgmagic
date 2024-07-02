@@ -233,12 +233,17 @@ hc_add_sunburst <- function(hc, data, hdtype, ...){
             dsopts_merge(..., categories = "sunburst")
   )
 
+  opts_theme <- dsopts_merge(..., categories = "theme")
+
   hc <- hc |>
     hc_chart(type = "sunburst")
 
   if (hdtype == "CatCatNum") {
     hc <- hc |> add_CatCatNum_features(data = data, opts = opts, viz = "sunburst")
   }
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
 
   hc
 }
@@ -265,8 +270,8 @@ hc_add_parallel_coordinates <- function(hc, data, hdtype, ...){
 }
 
 hc_add_sankey <- function(hc, data, hdtype, ...){
-  opts <- c(dsopts_merge(..., categories = "axis"))
-
+  opts <- dsopts_merge(..., categories = "axis")
+  opts_theme <- dsopts_merge(..., categories = "theme")
   hc <- hc |>
     hc_chart(type = "sankey")
 
@@ -277,7 +282,8 @@ hc_add_sankey <- function(hc, data, hdtype, ...){
   if (hdtype == "CatCatCatNum") {
     hc <- hc |> add_CatCatCatNum_features(data, opts, "sankey")
   }
-
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
   hc
 }
 

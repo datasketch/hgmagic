@@ -287,17 +287,8 @@ process_CatCatNum <- function(d, viz) {
         mutate_at(vars(2), ~paste0(., "_2"))
     }
 
-    var_unions <- lapply(data[, c(1, 2)], function(col) {
-      col <- data.frame(unique(col))
-      col |> set_names("id")
-    })
-
-    nodes <- full_join(var_unions[[1]], var_unions[[2]], by = "id") |>
-      colors_data(color_by = "id")
-
-    nodes <- lapply(1:nrow(nodes), function(i) {
-      as.list(nodes[i, ])
-    })
+    var_unions <- c(unique(data[[1]]), unique(data[[2]]))
+    nodes <- data.frame(id = var_unions)
 
     data <- list(data = data, nodes = nodes)
 
@@ -503,12 +494,7 @@ process_CatCatCatNum <- function(d, viz) {
       col |> set_names("id")
     })
 
-    nodes <- full_join(var_unions[[1]], var_unions[[2]], by = "id") |>
-      colors_data(color_by = "id")
-
-    nodes <- lapply(1:nrow(nodes), function(i) {
-      as.list(nodes[i, ])
-    })
+    nodes <- full_join(var_unions[[1]], var_unions[[2]], by = "id")
 
     data <- list(data = data, nodes = nodes)
 

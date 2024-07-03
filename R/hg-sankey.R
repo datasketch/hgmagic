@@ -17,11 +17,22 @@ hg_sankey <- function(data,
                         var_cat,
                         var_num,
                         text_wrap = 500,
-                        legend_text_wrap =500,
+                        legend_text_wrap = 500,
                         axis_text_wrap = 500,
                         ...)
 
   data_viz <- hg_list(data_viz, hdtype, "sankey")
+
+  data_viz$nodes <- colors_data(data_viz$nodes, color_by = "id", ...) |>
+    rename(color = ..colors)
+
+  data_viz$nodes <- data_viz$nodes |>
+    purrr::pmap(function(id, color) {
+      list(
+        id = id,
+        color = color
+      )
+    })
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>

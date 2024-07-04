@@ -282,8 +282,8 @@ process_CatCatNum <- function(d, viz) {
       set_names("from", "to", "weight", "label")
 
     nodes <- data |>
-      distinct(from, to) |>
-      rename(id = to, name = from)
+      distinct(from, to)
+    nodes <- tibble(id = c(nodes$from, nodes$to), name = c(nodes$from, nodes$to))
     data <- list(data = data, nodes = nodes)
 
   }
@@ -488,11 +488,9 @@ process_CatCatCatNum <- function(d, viz) {
       col |> set_names("id")
     })
 
+    var_unions <- c(unique(data[[1]]), unique(data[[2]]))
+    nodes <- data.frame(id = var_unions, name = var_unions)
 
-
-    nodes <- data |>
-      distinct(from, to) |>
-      rename(id = to, name = from)
 
     data <- list(data = data, nodes = nodes)
 

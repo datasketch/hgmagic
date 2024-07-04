@@ -26,13 +26,8 @@ hg_sankey <- function(data,
   data_viz$nodes <- colors_data(data_viz$nodes, color_by = "id", ...) |>
     rename(color = ..colors)
 
-  data_viz$nodes <- data_viz$nodes |>
-    purrr::pmap(function(id, color) {
-      list(
-        id = id,
-        color = color
-      )
-    })
+  data_viz$nodes <- list_parse(data_viz$nodes)
+
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>

@@ -270,7 +270,9 @@ hc_add_parallel_coordinates <- function(hc, data, hdtype, ...){
 }
 
 hc_add_sankey <- function(hc, data, hdtype, ...){
-  opts <- dsopts_merge(..., categories = "axis")
+  opts <- c(dsopts_merge(..., categories = "axis"),
+            dsopts_merge(..., categories = "sankey"))
+
   opts_theme <- dsopts_merge(..., categories = "theme")
   hc <- hc |>
     hc_chart(type = "sankey")
@@ -446,17 +448,18 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
   }
 
   if (viz == "sankey"){
-
     hc <- hc |>
       hc_tooltip(
         useHTML = TRUE,
         formatter = JS(paste0("function () {return this.point.label;}"))
       ) |>
       hc_add_series(
+        type = "sankey",
         data = data$data,
-        keys = c('from', 'to', 'weight'),
+        hcaes(from = from, to = to, weight = weight),
         nodes = data$nodes,
-        opacity = 0.8
+        linkOpacity = opts$sankey_link_opacity,
+        opacity = opts$sankey_node_opacity
       )
   }
 

@@ -281,15 +281,9 @@ process_CatCatNum <- function(d, viz) {
     data <- d |>
       set_names("from", "to", "weight", "label")
 
-    if(all(sort(unique(data[[1]])) == sort(unique(data[[2]])))){
-      data <- data |>
-        mutate_at(vars(1), ~paste0(., "_1")) |>
-        mutate_at(vars(2), ~paste0(., "_2"))
-    }
-
-    var_unions <- c(unique(data[[1]]), unique(data[[2]]))
-    nodes <- data.frame(id = var_unions)
-
+    nodes <- data |>
+      distinct(from, to) |>
+      rename(id = to, name = from)
     data <- list(data = data, nodes = nodes)
 
   }
@@ -494,7 +488,11 @@ process_CatCatCatNum <- function(d, viz) {
       col |> set_names("id")
     })
 
-    nodes <- full_join(var_unions[[1]], var_unions[[2]], by = "id")
+
+
+    nodes <- data |>
+      distinct(from, to) |>
+      rename(id = to, name = from)
 
     data <- list(data = data, nodes = nodes)
 

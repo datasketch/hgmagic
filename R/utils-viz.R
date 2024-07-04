@@ -456,8 +456,7 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
         data = data$data,
         keys = c('from', 'to', 'weight'),
         nodes = data$nodes,
-        type = 'sankey',
-        name = ""
+        opacity = 0.8
       )
   }
 
@@ -541,11 +540,9 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
         data = data$data,
         keys = c('from', 'to', 'weight'),
         nodes = data$nodes,
-        type = 'sankey',
-        name = ""
+        opacity = 0.8
       )
   }
-
   hc
 }
 

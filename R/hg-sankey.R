@@ -25,6 +25,9 @@ hg_sankey <- function(data,
 
   data_viz$nodes <- colors_data(data_viz$nodes, color_by = "id", ...) |>
     rename(color = ..colors)
+  data_viz$data <- colors_data(data_viz$data, color_by = "to", ...) |>
+    rename(color = ..colors)
+  data_viz$data$color <- sub("FF$", "80", data_viz$data$color)
 
   data_viz$nodes <- list_parse(data_viz$nodes)
 

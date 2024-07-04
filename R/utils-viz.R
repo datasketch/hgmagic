@@ -454,9 +454,8 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
         formatter = JS(paste0("function () {return this.point.label;}"))
       ) |>
       hc_add_series(
-        type = "sankey",
         data = data$data,
-        hcaes(from = from, to = to, weight = weight),
+        keys = c('from', 'to', 'weight'),
         nodes = data$nodes,
         linkOpacity = opts$sankey_link_opacity,
         opacity = opts$sankey_node_opacity

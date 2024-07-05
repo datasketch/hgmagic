@@ -8,7 +8,7 @@ hc_axis <- function(hc, axis = "x", categories = NULL, type = NULL, opts) {
   axis_title <- if (axis == "x") opts$title_axis_x else opts$title_axis_y
   axis_labels <- NULL
   if (axis == "y") {
-    axis_labels <-  paste0(opts$prefix, "{value}", opts$suffix)
+    axis_labels <-  paste0(opts$axis_y_prefix, "{text}", opts$axis_y_suffix)
   }
 
   hc |>

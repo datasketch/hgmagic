@@ -119,13 +119,14 @@ process_NumNum <- function(d, viz) {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
 
-    d <- d |> rename(x = 1, y = 2, color = ..colors)
+    d <- d |> rename(x = 1, y = 2, color = ..colors, label = ..labels)
 
-    data <- purrr::pmap(d, function(x, y, color) {
+    data <- purrr::pmap(d, function(x, y, color, label) {
       list(
         x = as.numeric(x),
         y = as.numeric(y),
-        color = color
+        color = color,
+        label = label
       )
     })
   }
@@ -195,9 +196,7 @@ process_CatCatNum <- function(d, viz) {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
 
-    d <- d |>
-      rename(cat = 2, x = 1, y = 3) |>
-      arrange(x)
+    d <- d |> rename(cat = 2, x = 1, y = 3)
 
     categories <- d$x |> unique()
     categories <- tibble(
@@ -341,8 +340,8 @@ process_CatNumNum <- function(d, viz) {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
 
-    d <- d |> rename(cat = 1, x = 2, y = 3, color = ..colors)
-    categories <- unique(d$cat) |> sort(na.last = TRUE)
+    d <- d |> rename(cat = 1, x = 2, y = 3, color = ..colors, label = ..labels)
+    categories <- unique(d$cat)
 
     data <- purrr::map(categories, function(z) {
       var_cat <- names(d)[1]
@@ -353,18 +352,19 @@ process_CatNumNum <- function(d, viz) {
         d0 <- d |> filter(!!sym(var_cat) == z)
       }
 
-      d0 <- d0 |> select(x, y, color)
+      d0 <- d0 |> select(x, y, color, label)
       name <- if(is.na(z)) "(NA)" else z
 
       list(
         name = name,
         type = viz,
         color = unique(d0$color),
-        data = purrr::pmap(d0, function(x, y, color) {
+        data = purrr::pmap(d0, function(x, y, color, label) {
           list(
             x = as.numeric(x),
             y = as.numeric(y),
-            color = color
+            color = color,
+            label = label
           )
         })
       )
@@ -393,8 +393,8 @@ process_CatNumNumNum <- function(d, viz) {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
 
-    d <- d |> rename(cat = 1, x = 2, y = 3, z = 4, color = ..colors)
-    categories <- unique(d$cat) |> sort(na.last = TRUE)
+    d <- d |> rename(cat = 1, x = 2, y = 3, z = 4, color = ..colors, label = ..labels)
+    categories <- unique(d$cat)
 
     data <- purrr::map(categories, function(c) {
       var_cat <- names(d)[1]
@@ -405,19 +405,20 @@ process_CatNumNumNum <- function(d, viz) {
         d0 <- d |> filter(!!sym(var_cat) == c)
       }
 
-      d0 <- d0 |> select(x, y, z, color)
+      d0 <- d0 |> select(x, y, z, color, label)
       name <- if(is.na(c)) "(NA)" else c
 
       list(
         name = name,
         type = "bubble",
         color = unique(d0$color),
-        data = purrr::pmap(d0, function(x, y, z, color) {
+        data = purrr::pmap(d0, function(x, y, z, color, label) {
           list(
             x = as.numeric(x),
             y = as.numeric(y),
             z = as.numeric(z),
-            color = color
+            color = color,
+            label = label
           )
         })
       )

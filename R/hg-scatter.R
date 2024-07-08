@@ -14,14 +14,18 @@ hg_scatter <- function(data,
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
   opts <- dsopts_merge(..., categories = "scatter")
+  data_viz <- ht$data
 
-  if (length(var_cat) == 0 || !opts$scatter_agg) data_viz <- data
-  else data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  if (length(var_cat) > 1) {
+    data_viz <- completevalues(data_viz, var_find = var_cat[1],
+                               var_expand = var_cat[2], var_num = var_num)
+  }
 
   if (length(var_cat) == 1) color_by <- var_cat[1]
   else if (length(var_cat) == 2) color_by <- var_cat[2]
   else color_by <- NULL
 
+  data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
   data_viz <- hg_list(data_viz, hdtype, "scatter")
 

@@ -369,6 +369,10 @@ add_NumNum_features <- function(hc, data, opts, viz) {
       hc_axis(axis = "x", opts = opts) |>
       hc_axis(axis = "y", opts = opts) |>
       hc_data_series(data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
       hc_legend(enabled = FALSE)
   }
 
@@ -443,8 +447,12 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
         categories = data$categories, opts = opts
       ) |>
       hc_axis(axis = "y", opts = opts) |>
-      # hc_add_legend(opts = opts) |>
-      hc_data_series(data$data)
+      hc_data_series(data$data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
+      hc_add_legend(opts = opts)
   }
 
   if (viz == "sankey"){
@@ -624,8 +632,12 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
     hc <- hc |>
       hc_axis(axis = "x", opts = opts) |>
       hc_axis(axis = "y", opts = opts) |>
-      # hc_add_legend(opts = opts) |>
-      hc_data_series(data)
+      hc_data_series(data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
+      hc_add_legend(opts = opts)
   }
 
   if (viz == "dumbbell") {
@@ -653,8 +665,12 @@ add_CatNumNumNum_features <- function(hc, data, opts, viz) {
     hc <- hc |>
       hc_axis(axis = "x", opts = opts) |>
       hc_axis(axis = "y", opts = opts) |>
-      # hc_add_legend(opts = opts) |>
-      hc_data_series(data)
+      hc_data_series(data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
+      hc_add_legend(opts = opts)
   }
 }
 

@@ -11,9 +11,9 @@ test_that("hg_scatter_NumNum", {
 test_that("hg_scatter_CatNumNum", {
   data <- sample_data("Cat-Num-Num", names = c("cat", "value1", "value2"))
 
-  hg_scatter_CatNumNum(data)
-  hg_scatter_CatNumNum(data, scatter_agg = TRUE, agg = "sum")
-  hg_scatter_CatNumNum(data, scatter_agg = TRUE, agg = "mean")
+  hg_scatter_CatNumNum(data, agg = NULL)
+  hg_scatter_CatNumNum(data, agg = "sum")
+  hg_scatter_CatNumNum(data, agg = "mean")
 })
 
 test_that("hg_scatter_CatNumNumNum", {
@@ -25,14 +25,15 @@ test_that("hg_scatter_CatNumNumNum", {
   )
   data$value3 <- runif(20, 5, 15)
 
-  hg_scatter_CatNumNumNum(data)
-  hg_scatter_CatNumNumNum(data, scatter_agg = TRUE, agg = "sum")
-  hg_scatter_CatNumNumNum(data, scatter_agg = TRUE, agg = "mean")
+  hg_scatter_CatNumNumNum(data, agg = NULL)
+  hg_scatter_CatNumNumNum(data, agg = "sum")
+  hg_scatter_CatNumNumNum(data, agg = "mean")
 })
 
 test_that("hg_dots_CatCatNum", {
   data <- sample_data("Cat-Cat-Num", names = c("cat1", "cat2", "value"))
 
-  hg_dots_CatCatNum(data)
-  hg_dots_CatCatNum(data, scatter_agg = TRUE)
+  hg_dots_CatCatNum(data, agg = NULL)
+  hg_dots_CatCatNum(data, agg = "sum")
+  hg_dots_CatCatNum(data, agg = "mean")
 })

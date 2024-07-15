@@ -68,7 +68,7 @@ hg_list <- function(data, hdtype, viz = NULL) {
 #' @rdname process_functions
 process_CatNum <- function(d, viz) {
 
-  if (viz %in% c("bar", "column","pie", "donut")) {
+  if (viz %in% c("bar", "column", "radial_bar", "pie", "donut")) {
     data <- purrr::pmap(.l = list(d[[1]], d[[2]], d[[3]], d[[4]]),
                         .f = function(name, y, label, color) {
                           list("name" = as.character(name),
@@ -137,7 +137,7 @@ process_NumNum <- function(d, viz) {
 #' @rdname process_functions
 process_CatCatNum <- function(d, viz) {
 
-  if (viz %in% c("bar", "column")) {
+  if (viz %in% c("bar", "column", "radial_bar")) {
     d$..labels <- as.character(d$..labels)
     axis_cat <- unique(d[[2]])
     if (all(grepl("^[0-9]+$", d[[2]]))) {

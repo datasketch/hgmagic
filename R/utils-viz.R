@@ -269,6 +269,38 @@ hc_add_parallel_coordinates <- function(hc, data, hdtype, ...){
   hc
 }
 
+hc_add_radial_bar <- function(hc, data, hdtype, ...) {
+
+  opts <- c(
+    dsopts_merge(..., categories = "bar"),
+    dsopts_merge(..., categories = "axis")
+  )
+  opts_theme <-  dsopts_merge(..., categories = "theme")
+
+  hc <- hc |>
+    hc_chart(
+      type = "column",
+      inverted = TRUE,
+      polar = TRUE
+    )
+
+  if (hdtype == "CatNum") {
+    opts$legend_show <- FALSE
+    hc <- hc |> add_CatNum_features(data, opts, "column")
+  }
+
+  if (hdtype == "CatCatNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_CatCatNum_features(data, opts, "column")
+  }
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
+  hc
+
+}
+
 hc_add_sankey <- function(hc, data, hdtype, ...){
   opts <- c(dsopts_merge(..., categories = "axis"),
             dsopts_merge(..., categories = "sankey"))
@@ -398,9 +430,12 @@ add_CatNum_features <- function(hc, data, opts, viz) {
 
   hc <- hc |>
     hc_add_options(viz = viz, opts) |>
-    hc_tooltip(useHTML = TRUE,
-               formatter = JS(paste0("function () {return this.point.label;}"))) |>
+    hc_tooltip(
+      useHTML = TRUE,
+      formatter = JS("function () {return this.point.label;}")
+    ) |>
     hc_add_legend(opts)
+
   hc
 }
 

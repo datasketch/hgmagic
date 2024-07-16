@@ -57,6 +57,10 @@ hgch_theme <- function(opts = NULL) {
         color = opts$caption_color
       )
     ),
+    pane = list(
+      startAngle = opts$pane_start_angle %||% 0,
+      endAngle = opts$pane_end_angle %||% 360
+    ),
     xAxis = list(
       visible = opts$grid_x_show %||% TRUE,
       gridLineWidth = opts$grid_x_width,
@@ -68,6 +72,7 @@ hgch_theme <- function(opts = NULL) {
       lineWidth = opts$axis_line_x_size %||% opts$axis_line_size,
       labels = list(
         #rotation = opts$axis_x_rotation,
+        enabled = opts$axis_x_datalabel_show %||% TRUE,
         style = list(
           color = opts$axis_title_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
           fontFamily = opts$text_family,
@@ -106,6 +111,7 @@ hgch_theme <- function(opts = NULL) {
       #TODO: AGREGAR max = opts$y_max,
       #TODO: AGREGAR min = opts$y_min,
       labels = list(
+        enabled = opts$axis_y_datalabel_show %||% TRUE,
         #rotation = opts$axis_y_rotation,
         style = list(
           color = opts$axis_title_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas

@@ -35,7 +35,8 @@ hg_sankey <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_sankey(data_viz, hdtype, ...)
+    hc_add_sankey(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 #' @export

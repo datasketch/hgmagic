@@ -6,7 +6,7 @@ test_that("multiplication works", {
   crecimiento <- c(NA, 25, 20, 11, 5, -5, 15, -4, -5, 9, 4, 4)
   df <- tibble(meses, ventas, crecimiento)
   hg_bar_line(df, var_cat = "meses", var_num = c("ventas", "crecimiento"))
-  hg_bar_line_CatNumNum(df)
+  hg_bar_line_CatNumNum(df, export = TRUE)
 
   data <- lubridate::lakers
   data$date <- lubridate::ymd(data$date)

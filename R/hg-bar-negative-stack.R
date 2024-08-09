@@ -25,7 +25,8 @@ hg_bar_negative_stack <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_bar_negative_stack(data_viz, hdtype, ...)
+    hc_add_bar_negative_stack(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 #' @export

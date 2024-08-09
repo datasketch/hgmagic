@@ -23,7 +23,8 @@ hg_dumbbell <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_dumbbell(data_viz, hdtype, ...)
+    hc_add_dumbbell(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 #' @export

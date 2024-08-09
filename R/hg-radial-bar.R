@@ -25,7 +25,8 @@ hg_radial_bar <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_radial_bar(data_viz, hdtype, ...)
+    hc_add_radial_bar(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 #' @export

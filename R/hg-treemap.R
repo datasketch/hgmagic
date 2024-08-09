@@ -22,7 +22,8 @@ hg_treemap <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_treemap(data_viz, hdtype, ...)
+    hc_add_treemap(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 

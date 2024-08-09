@@ -34,7 +34,8 @@ hg_line <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_line(data_viz, hdtype, ...)
+    hc_add_line(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 #' @export

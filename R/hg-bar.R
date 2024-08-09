@@ -41,8 +41,10 @@ hg_bar <- function(data,
       )
   }
 
-  h |>
-    hc_add_bar(data_viz, hdtype, ...)
+   h |>
+    hc_add_bar(data_viz, hdtype, ...) |>
+     hc_add_exporting(...)
+
 
 }
 

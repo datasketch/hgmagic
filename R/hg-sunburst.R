@@ -23,7 +23,8 @@ hg_sunburst <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_sunburst(data_viz, "CatCatNum", ...)
+    hc_add_sunburst(data_viz, "CatCatNum", ...) |>
+    hc_add_exporting(...)
 }
 
 #' @export

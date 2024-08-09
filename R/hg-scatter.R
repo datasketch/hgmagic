@@ -31,7 +31,8 @@ hg_scatter <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_scatter(data_viz, hdtype, ...)
+    hc_add_scatter(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 #' @export

@@ -27,7 +27,8 @@ hg_parallel_coordinates <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_parallel_coordinates(data_viz, hdtype, ...)
+    hc_add_parallel_coordinates(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 hg_parallel_coordinates_CatCatCatCatCatCatCat <- function(data,

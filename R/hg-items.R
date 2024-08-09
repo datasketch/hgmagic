@@ -27,7 +27,8 @@ hg_item <- function(data,
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>
-    hc_add_item(data_viz, hdtype, ...)
+    hc_add_item(data_viz, hdtype, ...) |>
+    hc_add_exporting(...)
 }
 
 #' @export

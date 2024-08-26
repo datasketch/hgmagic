@@ -391,6 +391,32 @@ hc_add_bar_icons <- function(hc, data, hdtype, ...) {
   hc
 }
 
+
+hc_add_bar_negative_stack <- function(hc, data, hdtype, ...) {
+
+  opts <- c(
+    dsopts_merge(..., categories = "bar"),
+    dsopts_merge(..., categories = "axis")
+  )
+  opts_theme <-  dsopts_merge(..., categories = "theme")
+
+  hc <- hc |>
+    hc_chart(type = "bar")
+
+  if (hdtype == "CatCatNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_CatCatNum_features(data, opts, "bar_negative_stack")
+  }
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
+  hc
+}
+
+
+
+
 add_NumNum_features <- function(hc, data, opts, viz) {
 
   if (viz %in% c("scatter")) {

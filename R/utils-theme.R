@@ -15,12 +15,12 @@ hgch_theme <- function(opts = NULL) {
       marginRight = opts$plot_margin_right,
       marginTop = opts$plot_margin_top,
 
-      plotBackgroundColor = opts$plot_background_color,
+      plotBackgroundColor = opts$plot_background_color %||% opts$background_color,
       borderColor = opts$plot_border_color,
       borderWidth = opts$plot_border_width,
       style = list (
         #fontFamily = opts$text_family,
-        fontSize = "15px"#paste0(opts$text_size, 'px')
+        fontSize = paste0(opts$text_size, 'px')
       )),
     title = list(
       useHTML = TRUE,

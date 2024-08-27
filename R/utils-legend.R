@@ -62,7 +62,7 @@ print(opts$legend_show)
         # itemHoverStyle = list("color" =  "#000000"),
         # itemMarginBottom = 2,
         # itemMarginTop = 2,
-        itemStyle = list("color" = opts$legend_color_text),
+        #itemStyle = list("color" = opts$legend_color_text),
         #                  "cursor" =  "pointer",
         #                  "fontSize" =  "0.75em",
         #                  "fontWeight" =  "bold",

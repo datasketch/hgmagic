@@ -560,6 +560,30 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       )
   }
 
+  if (viz == "bar_negative_stack") {
+    hc <- hc |>
+      hc_data_series(data$data) |>
+      hc_xAxis_multiples(
+        list(categories = data$categories),
+        list(
+          categories = data$categories,
+          opposite = TRUE,
+          linkedTo = 0
+        )
+      ) |>
+      hc_yAxis(
+        labels = list(
+          formatter = JS("function () {return Math.abs(this.value);}")
+        )
+      ) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
+      hc_plotOptions(series = list(stacking = "normal")) |>
+      hc_add_legend(opts)
+  }
+
   hc
 }
 

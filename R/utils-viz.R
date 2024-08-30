@@ -128,6 +128,32 @@ hc_add_item <- function(hc, data, hdtype, ...) {
 
 }
 
+hc_add_bubbles <- function(hc, data, hdtype, ...) {
+
+  opts <- c(dsopts_merge(..., categories = "bubble"),
+            dsopts_merge(..., categories = "legend"))
+  opts_theme <-  dsopts_merge(..., categories = "theme")
+
+  if (hdtype == "CatNum") {
+    opts$legend_show <- FALSE
+    hc <- hc |>
+      hc_chart(type = "packedbubble") |>
+      add_CatNum_features(data, opts, "bubble")
+  }
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |>
+      hc_chart(type = "packedbubble") |>
+      add_CatCatNum_features(data, opts, "bubble")
+  }
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
+  hc
+
+}
+
 hc_add_treemap <- function(hc, data, hdtype, ...) {
 
   opts <- dsopts_merge(..., categories = "treemap")
@@ -439,7 +465,7 @@ add_NumNum_features <- function(hc, data, opts, viz) {
 
 add_CatNum_features <- function(hc, data, opts, viz) {
 
-  if (viz == "treemap") {
+  if (viz %in% c("treemap", "bubble")) {
     hc <- hc |>
       hc_data_series(data)
   } else {
@@ -453,7 +479,7 @@ add_CatNum_features <- function(hc, data, opts, viz) {
               type = "category", opts = opts) |>
       hc_axis(axis = "y", opts = opts)
   }
-
+  if (viz == "bubble") viz <- "packedbubble"
   hc <- hc |>
     hc_add_options(viz = viz, opts) |>
     hc_tooltip(

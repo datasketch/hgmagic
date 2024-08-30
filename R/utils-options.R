@@ -50,6 +50,17 @@ default_options <- function(viz, opts) {
         lineColor = NULL
       )
     ),
+    packedbubble = list(
+      minSize= opts$bubble_min %||% '30%',
+      maxSize = opts$bubble_max %||% '150%',
+      zMin = 0,
+      zMax = 1000,
+      layoutAlgorithm = list(
+        splitSeries = FALSE,
+        gravitationalConstant= 0.02
+      ),
+      marker= list(
+        fillOpacity = opts$bubble_opacity)),
     treemap = list(
       layoutAlgorithm  = 'sliceAndDice',
       allowDrillToNode = TRUE,

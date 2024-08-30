@@ -1,3 +1,4 @@
+#' @export
 hg_bubbles <- function(data,
                        dic = NULL,
                        var_cat = NULL,

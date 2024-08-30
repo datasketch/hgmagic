@@ -100,9 +100,12 @@ default_options <- function(viz, opts) {
 
 
 common_options <- function(opts) {
+
   list(
     enableMouseTracking = TRUE,
-    dataLabels = list(enabled = opts$datalabel_show)
+    dataLabels = list(enabled = opts$datalabel_show,
+                      format = opts$datalabel_template
+    )
   )
 }
 

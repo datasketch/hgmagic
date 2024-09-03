@@ -11,6 +11,7 @@
 \alias{process_CatDatNum}
 \alias{process_DatNumNum}
 \alias{process_CatImgNum}
+\alias{process_network_graph}
 \alias{process_parallel_data_plot}
 \title{Data processing for visualization}
 \usage{
@@ -33,6 +34,8 @@ process_CatDatNum(d, viz)
 process_DatNumNum(d, viz)
 
 process_CatImgNum(d, viz)
+
+process_network_graph(d, viz)
 
 process_parallel_data_plot(d, viz)
 }

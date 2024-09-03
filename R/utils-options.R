@@ -56,7 +56,7 @@ default_options <- function(viz, opts) {
       zMin = 0,
       zMax = 1000,
       layoutAlgorithm = list(
-        splitSeries = FALSE,
+        splitSeries = opts$bubble_cluster,
         gravitationalConstant= 0.02
       ),
       marker= list(
@@ -92,6 +92,11 @@ default_options <- function(viz, opts) {
           )
         )
       )
+    ),
+    networkgraph = list(
+      dataLabels = list(linkFormat = ""),
+      layoutAlgorithm = list(enableSimulation = TRUE),
+      marker = list(radius = 10)
     )
   )
 

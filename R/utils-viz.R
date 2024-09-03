@@ -417,6 +417,21 @@ hc_add_bar_icons <- function(hc, data, hdtype, ...) {
   hc
 }
 
+hc_add_network_graph <- function(hc, data, hdtype, ...){
+  opts <- dsopts_merge(..., categories = "axis")
+  opts_theme <- dsopts_merge(..., categories = "theme")
+  opts$datalabel_show <- TRUE
+
+  hc <- hc |>
+    hc_chart(type = "networkgraph") |>
+    hc_add_options(viz = "networkgraph", opts) |>
+    hc_add_series(data = data$data, nodes = data$nodes) |>
+    hc_add_theme(hgch_theme(opts = opts_theme)) |>
+    hc_add_dependency("modules/networkgraph.js")
+
+  hc
+}
+
 
 hc_add_bar_negative_stack <- function(hc, data, hdtype, ...) {
 
@@ -479,7 +494,12 @@ add_CatNum_features <- function(hc, data, opts, viz) {
               type = "category", opts = opts) |>
       hc_axis(axis = "y", opts = opts)
   }
-  if (viz == "bubble") viz <- "packedbubble"
+
+  if (viz == "bubble") {
+    viz <- "packedbubble"
+    opts$bubble_cluster <- FALSE
+  }
+
   hc <- hc |>
     hc_add_options(viz = viz, opts) |>
     hc_tooltip(
@@ -607,6 +627,19 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
         formatter = JS("function () {return this.point.label;}")
       ) |>
       hc_plotOptions(series = list(stacking = "normal")) |>
+      hc_add_legend(opts)
+  }
+
+  if (viz == "bubble") {
+    viz <- "packedbubble"
+
+    hc <- hc |>
+      hc_data_series(data$data) |>
+      hc_add_options(viz = viz, opts) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
       hc_add_legend(opts)
   }
 

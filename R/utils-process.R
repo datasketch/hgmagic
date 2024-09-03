@@ -3,6 +3,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
 
   if (is.null(viz) | is.null(hdtype)) return()
 
+  if (viz == "network_graph") {
+    return(process_network_graph(data, viz))
+  }
+
   if (hdtype %in% c("NumNum")) {
     return(process_NumNum(data, viz))
   }
@@ -200,6 +204,30 @@ process_CatCatNum <- function(d, viz) {
       )
     })
     data <- list(data = c(list_id, list_cats))
+  }
+
+  if (viz %in% "bubble") {
+    var_cat <- names(d)[1]
+
+    data <- purrr::map(unique(d[[1]]), function(z){
+      d0 <- d |> filter(!!sym(var_cat) %in% z)
+      color <- substr(unique(d0$..colors)[1], 1, 7)
+
+      list(
+        name = z,
+        color = paste0(color, "80"),
+        data = purrr::map(1:nrow(d0), function(i){
+          list(
+            name = d0[[2]][i],
+            value = d0[[3]][i],
+            label = d0$..labels[i],
+            color = d0$..colors[i]
+          )
+        })
+      )
+    })
+
+    data <- list(data = data)
   }
 
   if (viz %in% "scatter") {
@@ -653,6 +681,55 @@ process_CatImgNum <- function(d, viz) {
   }
 
   data
+}
+
+#' @rdname process_functions
+process_network_graph <- function(d, viz) {
+
+  search_parent_color <- function(leaf, nodes, links) {
+    parent <- links |> filter(to == leaf) |> pull(from) |> unique()
+
+    if (parent[1] %in% nodes$id) {
+      return(nodes$..colors[nodes$id == parent[1]])
+    } else {
+      search_parent_color(parent, nodes, links)
+    }
+  }
+
+  d <- d |> ungroup()
+  d0 <- d |> select(-c(ncol(d) - 1, ncol(d)))
+
+  data <- purrr::map(1:(ncol(d0) - 1), function(i) {
+    d |> select(from = i, to = i + 1, label = ..labels)
+  })
+
+  links <- data |>
+    bind_rows() |>
+    distinct()
+
+  roots <- links |> filter(!from %in% to) |> pull(from) |> unique()
+  parents <- links |> filter(from %in% roots) |> pull(to) |> unique()
+  leaves <- links |> filter(!to %in% parents) |> pull(to) |> unique()
+
+  nodes <- data.frame(id = c(roots, parents)) |>
+    colors_data(color_by = "id")
+
+  leaves <- purrr::map(leaves, function(leaf) {
+    color <- search_parent_color(leaf, nodes, links)
+    data.frame(id = leaf, ..colors = color)
+  })
+
+  links <- purrr::pmap(links, function(from, to, label) {
+    list(from = from, to = to, label = label)
+  })
+
+  nodes <- nodes |>
+    bind_rows(leaves) |>
+    purrr::pmap(function(id, ..colors) {
+      list(id = id, color = ..colors)
+    })
+
+  data <- list(data = links, nodes = nodes)
 }
 
 #' @rdname process_functions

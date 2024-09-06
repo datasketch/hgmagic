@@ -288,9 +288,8 @@ hc_add_parallel_coordinates <- function(hc, data, hdtype, ...){
       )
     )
 
-  if (hdtype == "CatCatCatCatCatCatCat") {
-    hc <- hc |> add_CatCatCatCatCatCatCat_features(data, opts, "parallel_coordinates")
-  }
+    hc <- hc |> add_parallel_features(data, opts, "parallel_coordinates")
+
 
   hc
 }
@@ -700,7 +699,7 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
   hc
 }
 
-add_CatCatCatCatCatCatCat_features <- function(hc, data, opts, viz) {
+add_parallel_features <- function(hc, data, opts, viz) {
 
   if (viz == "parallel_coordinates") {
     yAxis_categories <- lapply(data$yAxis[seq_along(data$yAxis)],

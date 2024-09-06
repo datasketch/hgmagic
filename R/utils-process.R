@@ -47,7 +47,7 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_CatImgNum(data, viz))
   }
 
-  if (hdtype %in% c("CatCatCatCatCatCatCat")) {
+  if (viz %in% c("parallel_coordinates")) {
     return(process_parallel_data_plot(data, viz))
   }
 

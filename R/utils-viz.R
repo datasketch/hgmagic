@@ -701,17 +701,13 @@ add_CatCatCatNum_features <- function(hc, data, opts, viz) {
 }
 
 add_CatCatCatCatCatCatCat_features <- function(hc, data, opts, viz) {
-  #TODO hc_yAxis optimization
-  if (viz == "parallel_coordinates") {
 
+  if (viz == "parallel_coordinates") {
+    yAxis_categories <- lapply(data$yAxis[seq_along(data$yAxis)],
+                               function(axis) list(categories = axis$categories))
+    hc <- hc_axis(hc, "x", categories = data$xAxis, opts = opts)
+    hc <- do.call(hc_yAxis_multiples, c(list(hc), yAxis_categories))
     hc <- hc |>
-      hc_axis("x", categories = data$xAxis, opts = opts) |>
-      hc_yAxis_multiples(
-        data$yAxis[[1]], data$yAxis[[2]],
-        data$yAxis[[3]], data$yAxis[[4]],
-        data$yAxis[[5]], data$yAxis[[6]],
-        data$yAxis[[7]]
-      ) |>
       hc_data_series(data$data)|>
       hc_tooltip(
         useHTML = TRUE,

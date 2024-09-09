@@ -27,7 +27,9 @@ hg_scatter <- function(data,
 
   data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
-  data_viz <- hg_list(data_viz, hdtype, "scatter")
+  data_viz <- data_viz |>
+    select(c(var_cat, var_num, ends_with("labels"), ends_with("colors"))) |>
+    hg_list(hdtype, "scatter")
 
   highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles")) |>

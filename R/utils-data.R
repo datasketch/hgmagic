@@ -4,6 +4,7 @@ data_prep <- function(data,
                       var_num = NULL,
                       ...) {
 
+  opts <- list(...)
 
   dic <- dic %||% hdtable(data)$dic
   var_group <- var_group %||% default_var_group(dic)
@@ -12,6 +13,8 @@ data_prep <- function(data,
                          dic = dic,
                          group_vars = var_group,
                          var_num_to_agg = var_num, ...)
+
+  if (is.null(var_num)) var_num <- opts$agg_text %||% "Conteo"
 
   data <- wrap_sort_data(data = data,
                          var_cat_order = var_group,

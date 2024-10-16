@@ -98,6 +98,12 @@ hc_add_line <- function(hc, data, hdtype, ...) {
   if (hdtype == "DatNumNum") {
     hc <- hc |> add_DatNumNum_features(data, opts, 'line')
   }
+
+  if (hdtype == "Num") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_Num_features(data, opts, "line")
+  }
+
   hc <- hc |>
     hc_add_theme(hgch_theme(opts = opts_theme))
 
@@ -456,6 +462,22 @@ hc_add_bar_negative_stack <- function(hc, data, hdtype, ...) {
 
 
 
+
+add_Num_features <- function(hc, data, opts, viz) {
+  if (viz %in% "line") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_add_legend(opts = opts) |>
+      hc_data_series(data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      )
+  }
+
+  hc
+}
 
 add_NumNum_features <- function(hc, data, opts, viz) {
 

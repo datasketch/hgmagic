@@ -7,6 +7,10 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_network_graph(data, viz))
   }
 
+  if (hdtype %in% c("Num")) {
+    return(process_Num(data, viz))
+  }
+
   if (hdtype %in% c("NumNum")) {
     return(process_NumNum(data, viz))
   }
@@ -125,6 +129,27 @@ process_CatNum <- function(d, viz) {
 
   data
 
+}
+
+#' @rdname process_functions
+process_Num <- function(d, viz) {
+  if (viz %in% "line") {
+    if ("y" %in% names(d)) d <- d |> rename(y1 = y)
+    d0 <- d |> rename(y = 1, color = ..colors)
+
+    data <- list(list(
+      name = names(d)[1],
+      color = unique(d0$color),
+      data = purrr::imap(d0$y, function(y, i) list(
+        x = i - 1,
+        y = as.numeric(y),
+        color = d0$color[i],
+        label = d0$..labels[i]
+      ))
+    ))
+  }
+
+  data
 }
 
 #' @rdname process_functions

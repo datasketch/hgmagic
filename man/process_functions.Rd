@@ -2,6 +2,7 @@
 % Please edit documentation in R/utils-process.R
 \name{process_CatNum}
 \alias{process_CatNum}
+\alias{process_Num}
 \alias{process_NumNum}
 \alias{process_CatCatNum}
 \alias{process_CatNumNum}
@@ -16,6 +17,8 @@
 \title{Data processing for visualization}
 \usage{
 process_CatNum(d, viz)
+
+process_Num(d, viz)
 
 process_NumNum(d, viz)
 

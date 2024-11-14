@@ -231,6 +231,26 @@ process_CatCatNum <- function(d, viz) {
     data <- list(data = c(list_id, list_cats))
   }
 
+  if (viz %in% "heatmap") {
+    x_categories <- unique(d[[1]])
+    y_categories <- unique(d[[2]])
+
+    x_matches <- purrr::set_names(0:(length(x_categories) - 1), x_categories)
+    y_matches <- purrr::set_names(0:(length(y_categories) - 1), y_categories)
+
+    data <- list(
+      categories = list(x = unique(d[[1]]), y = unique(d[[2]])),
+      data = purrr::map(seq_len(nrow(d)), function(i) {
+        list(
+          x = x_matches[[d[[1]][i]]],
+          y = y_matches[[d[[2]][i]]],
+          value = d[[3]][i],
+          label = d$..labels[i]
+        )
+      })
+    )
+  }
+
   if (viz %in% "bubble") {
     var_cat <- names(d)[1]
 

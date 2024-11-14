@@ -184,6 +184,26 @@ hc_add_treemap <- function(hc, data, hdtype, ...) {
 
 }
 
+hc_add_heatmap <- function(hc, data, hdtype, ...) {
+
+  opts <- dsopts_merge(..., categories = "legend")
+  opts_theme <-  dsopts_merge(..., categories = "theme")
+  opts$title_axis_y <- opts$title_axis_y %||% ""
+
+  hc <- hc |>
+    hc_chart(type = "heatmap")
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "heatmap")
+  }
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
+  hc
+
+}
+
 hc_add_scatter <- function(hc, data, hdtype, ...) {
 
   opts <- c(
@@ -543,6 +563,25 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_tooltip(useHTML = TRUE,
                  formatter = JS(paste0("function () {return this.point.label;}"))) |>
       hc_add_options(viz = viz, opts) |>
+      hc_add_legend(opts)
+  }
+
+  if (viz == "heatmap") {
+    hc <- hc |>
+      hc_data_series(data$data) |>
+      hc_axis(
+        axis = "x", type = "category",
+        categories = data$categories$x, opts = opts
+      ) |>
+      hc_axis(
+        axis = "y", type = "category",
+        categories = data$categories$y, opts = opts
+      ) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
+      hc_colorAxis(minColor = data$color[1], maxColor = data$color[2]) |>
       hc_add_legend(opts)
   }
 

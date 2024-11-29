@@ -15,7 +15,8 @@ hc_axis <- function(hc, axis = "x", categories = NULL, type = NULL, opts) {
     axis_function(
       categories = categories,
       crossing = NULL,
-      endOnTick = TRUE,
+      endOnTick = FALSE,
+      startOnTick = TRUE,
       labels = list(
         format = axis_labels
       ),

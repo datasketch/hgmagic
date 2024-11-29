@@ -359,7 +359,7 @@ process_CatCatNum <- function(d, viz) {
     data <- append(data, subcategory_data)
   }
 
-  if (viz %in% "sankey"){
+  if (viz %in% c("sankey", "dependency_wheel")){
     data <- d |>
       set_names("from", "to", "weight", "label")
 

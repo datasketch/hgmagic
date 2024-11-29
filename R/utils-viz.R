@@ -372,6 +372,41 @@ hc_add_sankey <- function(hc, data, hdtype, ...){
   hc
 }
 
+hc_add_dependency_wheel <- function(hc, data, hdtype, ...) {
+  opts <- c(dsopts_merge(..., categories = "axis"),
+            dsopts_merge(..., categories = "sankey"))
+
+  opts_theme <- dsopts_merge(..., categories = "theme")
+  hc <- hc |>
+    hc_chart(type = "dependencywheel")
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "dependencywheel")
+  }
+
+  # TODO: revisar para crear las opciones en dsopts
+  hc <- hc |>
+    hc_plotOptions(
+      dependencywheel = list(
+        dataLabels = list(
+          color = "#333",
+          distance = 10,
+          textPath = list(
+            enabled = TRUE,
+            attributes = list(
+              dy = 5
+            )
+          )
+        ),
+        size = "95%"
+      )
+    )
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+  hc
+}
+
 hc_add_dumbbell <- function(hc, data, hdtype, ...){
   opts <- c(dsopts_merge(..., categories = "axis"))
 
@@ -622,7 +657,7 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_add_legend(opts = opts)
   }
 
-  if (viz == "sankey"){
+  if (viz %in% c("sankey", "dependencywheel")){
     hc <- hc |>
       hc_tooltip(
         useHTML = TRUE,

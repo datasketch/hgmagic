@@ -1,6 +1,5 @@
 #' @keywords internal
 hgch_theme <- function(opts = NULL) {
-  message("in theme")
 
   highcharter::hc_theme(
     useHTML = TRUE,

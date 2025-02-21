@@ -16,7 +16,7 @@ hg_pie <- function(data,
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
 
   color_by <- var_cat[1]
-  data_viz <- colors_data(data_viz, color_by = color_by, ...)
+  data_viz <- colors_data(data_viz, ..., color_by = color_by)
 
   data_viz <- hg_list(data_viz, hdtype, "pie")
 

@@ -18,7 +18,7 @@ hg_heatmap <- function(data,
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
   data_viz <- hg_list(data_viz, hdtype, "heatmap")
 
-  palette <- opts_color$color_palette_sequential
+  palette <- opts_color$color_palette_sequential %||% c("#BFFFFF", "#C200F8")
   data_viz$color <- c(palette[1], palette[length(palette)])
 
   highchart() |>

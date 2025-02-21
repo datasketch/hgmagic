@@ -17,7 +17,7 @@ hg_treemap <- function(data,
 
   color_by <- var_cat[1]
 
-  data_viz <- colors_data(data_viz, color_by = color_by, ...)
+  data_viz <- colors_data(data_viz, ..., color_by = color_by)
   data_viz <- hg_list(data_viz, hdtype, "treemap")
 
   highchart() |>

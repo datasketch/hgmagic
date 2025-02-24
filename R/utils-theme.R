@@ -39,6 +39,7 @@ hgch_theme <- function(opts = NULL) {
         fontSize = paste0(opts$subtitle_size, 'px'),
         color = opts$subtitle_color %||% opts$text_color,
         fontWeight = opts$subtitle_weight
+
       )
     ),
     credits = list(
@@ -73,7 +74,7 @@ hgch_theme <- function(opts = NULL) {
         #rotation = opts$axis_x_rotation,
         enabled = opts$axis_x_datalabel_show %||% TRUE,
         style = list(
-          color = opts$axis_title_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
+          color = opts$title_axis_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
           fontFamily = opts$text_family,
           fontSize = paste0(opts$text_size, 'px')
         )),
@@ -113,7 +114,7 @@ hgch_theme <- function(opts = NULL) {
         enabled = opts$axis_y_datalabel_show %||% TRUE,
         #rotation = opts$axis_y_rotation,
         style = list(
-          color = opts$axis_title_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
+          color = opts$title_axis_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
           fontFamily = opts$text_family,
           fontSize = paste0(opts$text_size, 'px')
         )),

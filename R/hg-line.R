@@ -13,6 +13,7 @@ hg_line <- function(data,
                        var_dat = var_dat,
                        var_num = var_num %||% 'count')
 
+  opts <- dsopts_merge(..., categories = "line")
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea, var_dat)
   data_viz <- ht$data
@@ -24,6 +25,20 @@ hg_line <- function(data,
     color_by <- var_cat[1]
     data_viz <- completevalues(data_viz, var_find = var_cat[1],
                                var_expand = var_cat[2], var_num = var_num)
+  }
+
+  if (!is.null(var_dat) && length(var_dat) == 1
+      && inherits(data_viz[[var_dat]], "Date")) {
+    if (opts$line_connect_na) {
+      data_viz <- data_viz %>%
+        tidyr::complete(
+          date = seq(
+            min(data_viz[[var_dat]]),
+            max(data_viz[[var_dat]]),
+            by = "day"
+          )
+        )
+    }
   }
 
   if (length(var_num) > 1) color_by <- var_cat[1]

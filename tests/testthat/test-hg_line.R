@@ -44,3 +44,32 @@ test_that("hg_line_CatNumNum", {
   data <- sample_data('Cat-Num-Num', names = c('cat', 'value1', 'value2'), rep = TRUE)
   hg_line_CatNumNum(data = data)
 })
+
+test_that("hg_line completes dates", {
+  df <- tibble(
+    date = as.Date(c("2024-12-15", "2024-12-20", "2024-12-25", "2025-01-10")),
+    value = c(10, 15, 20, 25)
+  )
+
+  hg_line_DatNum(df, format_sample_dat = "%m-%d-%Y")
+  hg_line_DatNum(df, line_connect_na = TRUE, format_sample_dat = "%m-%d-%Y")
+})
+
+test_that("hg_line formats dates", {
+  df <- tibble(
+    date = as.Date(c("2024-12-15", "2024-12-20", "2024-12-25", "2025-01-10")),
+    value = c(10, 15, 20, 25)
+  )
+
+  hg_line_DatNum(df, format_sample_dat = "%m-%d-%Y")
+  hg_line_DatNum(df, line_connect_na = TRUE, format_sample_dat = "%m-%d-%Y")
+  hg_line_DatNum(df, format_sample_dat = "%b %d, %y", axis_text_wrap = 20)
+  hg_line_DatNum(
+    df, line_connect_na = TRUE,
+    format_sample_dat = "%b %d, %y", axis_text_wrap = 20
+  )
+  hg_line_DatNum(
+    df, line_connect_na = TRUE,
+    format_sample_dat = "%B %d, %y", axis_text_wrap = 20
+  )
+})

@@ -21,15 +21,15 @@ hg_line <- function(data,
   if (!is.null(var_dat)) data_viz <- data_viz[!is.na(data_viz[[var_dat]]), ]
 
   color_by <- NULL
+  if (length(var_num) > 1) color_by <- var_cat[1]
+
+  data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)
   if (length(var_cat) > 1) {
     color_by <- var_cat[1]
     data_viz <- completevalues(data_viz, var_find = var_cat[1],
                                var_expand = var_cat[2], var_num = var_num)
   }
 
-  if (length(var_num) > 1) color_by <- var_cat[1]
-
-  data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
   data_viz <- hg_list(data_viz, hdtype, "line")
 

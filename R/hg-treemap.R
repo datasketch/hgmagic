@@ -16,6 +16,7 @@ hg_treemap <- function(data,
   data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
 
   color_by <- var_cat[1]
+  if (length(var_cat) > 1) color_by <- var_cat[2]
 
   data_viz <- colors_data(data_viz, ..., color_by = color_by)
   data_viz <- hg_list(data_viz, hdtype, "treemap")
@@ -49,7 +50,7 @@ hg_treemap_CatCat <- function(data, dic = NULL, ...) {
 #' @export
 hg_treemap_CatCatNum <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
-  hg_treemap(data, dic, var_cat = c(vars[1], vars[2]), var_num = vars[3], ...)
+  hg_treemap(data, dic, var_cat = c(vars[2], vars[1]), var_num = vars[3], ...)
 }
 
 

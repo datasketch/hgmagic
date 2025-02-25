@@ -3,8 +3,10 @@ hc_titles <- function(hc, ...) {
   opts <- dsopts_merge(..., categories = "titles")
   if (opts$org == "elconfidencial") {
     if (!is.null(opts$title)) {
-      opts$title <- paste0(opts$title,
-                                 "<hr style='width: 72px;height: 2px;border: none;background-color: #000000;position: absolute;margin-bottom:15px;'><hr style='color: transparent !important;'>")
+      if (opts$title != "") {
+        opts$title <- paste0(opts$title,
+                             "<hr style='width: 72px;height: 2px;border: none;background-color: #000000;position: absolute;margin-bottom:15px;'><hr style='border-top: 0px !important;color: transparent !important;'>")
+      }
     }
   }
   hc |>

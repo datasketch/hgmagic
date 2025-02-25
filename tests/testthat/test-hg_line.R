@@ -47,29 +47,40 @@ test_that("hg_line_CatNumNum", {
 
 test_that("hg_line completes dates", {
   df <- tibble(
-    date = as.Date(c("2024-12-15", "2024-12-20", "2024-12-25", "2025-01-10")),
+    date = c("2024-12-15", "2024-12-20", "2024-12-25", "2025-01-10"),
     value = c(10, 15, 20, 25)
   )
 
   hg_line_DatNum(df, format_sample_dat = "%m-%d-%Y")
-  hg_line_DatNum(df, line_connect_na = TRUE, format_sample_dat = "%m-%d-%Y")
+  hg_line_DatNum(df, line_fix_missing = TRUE, format_sample_dat = "%m-%d-%Y")
+  hg_line_DatNum(df, line_fix_missing = TRUE, line_connect_na = TRUE)
+
+  df <- tibble(
+    cat = c('red', 'red','blue', 'blue'),
+    date = as.Date(c("2024-12-15", "2024-12-20", "2024-12-25", "2025-01-10")),
+    value = c(10, 15, 20, 25)
+  )
+
+  hg_line_CatDatNum(df, format_sample_dat = "%m-%d-%Y")
+  hg_line_CatDatNum(df, line_fix_missing = TRUE, format_sample_dat = "%m-%d-%Y")
+  hg_line_CatDatNum(df, line_fix_missing = TRUE, line_connect_na = TRUE)
 })
 
 test_that("hg_line formats dates", {
   df <- tibble(
-    date = as.Date(c("2024-12-15", "2024-12-20", "2024-12-25", "2025-01-10")),
-    value = c(10, 15, 20, 25)
+    ddsate = as.Date(c("2024-12-15", "2024-12-20", "2024-12-25", "2024-12-25", "2025-01-10", "2025-02-10", "2025-02-10")),
+    value = c(10, 15, NA, 20, 25, NA, NA)
   )
 
   hg_line_DatNum(df, format_sample_dat = "%m-%d-%Y")
-  hg_line_DatNum(df, line_connect_na = TRUE, format_sample_dat = "%m-%d-%Y")
+  hg_line_DatNum(df, line_fix_missing = TRUE, format_sample_dat = "%m-%d-%Y")
   hg_line_DatNum(df, format_sample_dat = "%b %d, %y", axis_text_wrap = 20)
   hg_line_DatNum(
-    df, line_connect_na = TRUE,
+    df, line_connect_na = TRUE, line_fix_missing = TRUE,
     format_sample_dat = "%b %d, %y", axis_text_wrap = 20
   )
   hg_line_DatNum(
-    df, line_connect_na = TRUE,
+    df, line_connect_na = TRUE, line_fix_missing = TRUE,
     format_sample_dat = "%B %d, %y", axis_text_wrap = 20
   )
 })

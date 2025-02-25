@@ -27,20 +27,6 @@ hg_line <- function(data,
                                var_expand = var_cat[2], var_num = var_num)
   }
 
-  if (!is.null(var_dat) && length(var_dat) == 1
-      && inherits(data_viz[[var_dat]], "Date")) {
-    if (opts$line_connect_na) {
-      data_viz <- data_viz %>%
-        tidyr::complete(
-          date = seq(
-            min(data_viz[[var_dat]]),
-            max(data_viz[[var_dat]]),
-            by = "day"
-          )
-        )
-    }
-  }
-
   if (length(var_num) > 1) color_by <- var_cat[1]
 
   data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)

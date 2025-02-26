@@ -154,6 +154,25 @@ process_Num <- function(d, viz) {
 
 #' @rdname process_functions
 process_NumNum <- function(d, viz) {
+  if (viz %in% "line") {
+    data <- purrr::map(1:2, function(i) {
+      col <- names(d)[i]
+
+      list(
+        name = col,
+        yAxis = i - 1,
+        color = unique(d[[paste0(col, "_color")]])[1],
+        data = purrr::imap(d[[i]], function(y, j) {
+          list(
+            x = j - 1,
+            y = as.numeric(y),
+            label = d$..labels[j]
+          )
+        })
+      )
+    })
+  }
+
   if (viz %in% "scatter") {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
@@ -438,6 +457,16 @@ process_CatNumNum <- function(d, viz) {
       title_axis = names(d)[2:3],
       categories = purrr::map(unique(d[[1]]), ~as.character(.x)),
       data = series
+    )
+  }
+
+  if (viz %in% "line") {
+    series <- process_NumNum(d |> select(-1), viz)
+    categories <- unique(d[[1]])
+
+    data <- list(
+      data = series,
+      categories = categories
     )
   }
 

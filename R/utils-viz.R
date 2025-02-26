@@ -104,6 +104,16 @@ hc_add_line <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_Num_features(data, opts, "line")
   }
 
+  if (hdtype == "NumNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_NumNum_features(data, opts, "line")
+  }
+
+  if (hdtype == "CatNumNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_CatNumNum_features(data, opts, "line")
+  }
+
   hc <- hc |>
     hc_add_theme(hgch_theme(opts = opts_theme))
 
@@ -535,6 +545,25 @@ add_Num_features <- function(hc, data, opts, viz) {
 }
 
 add_NumNum_features <- function(hc, data, opts, viz) {
+  if (viz %in% "line") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_yAxis_multiples(
+        list(
+          title = list(text = opts$title_axis_y)
+        ),
+        list(
+          title = list(text = opts$title_axis_y2),
+          opposite = TRUE
+        )
+      ) |>
+      hc_add_legend(opts = opts) |>
+      hc_data_series(data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      )
+  }
 
   if (viz %in% c("scatter")) {
     colors <- unique(data$..colors)
@@ -860,6 +889,29 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
         list(title = list(text = opts$title_axis_y)),
         list(title = list(text = opts$title_axis_y2),
              opposite = TRUE)
+      )
+  }
+
+  if (viz %in% "line") {
+    hc <- hc |>
+      hc_axis(
+        axis = "x", categories = data$categories,
+        type = "category", opts = opts
+      ) |>
+      hc_yAxis_multiples(
+        list(
+          title = list(text = opts$title_axis_y)
+        ),
+        list(
+          title = list(text = opts$title_axis_y2),
+          opposite = TRUE
+        )
+      ) |>
+      hc_add_legend(opts = opts) |>
+      hc_data_series(data$data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
       )
   }
 

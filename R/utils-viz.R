@@ -172,18 +172,43 @@ hc_add_bubbles <- function(hc, data, hdtype, ...) {
 
 hc_add_treemap <- function(hc, data, hdtype, ...) {
 
-  opts <- dsopts_merge(..., categories = "treemap")
+  opts <- c(
+    dsopts_merge(..., categories = "treemap"),
+    dsopts_merge(..., categories = "legend")
+  )
+
   opts_theme <-  dsopts_merge(..., categories = "theme")
+  opts_color <- dsopts_merge(..., categories = "colorprep")
+
   hc <- hc |>
     hc_chart(type = "treemap")
 
+  palette_type <- opts_color$color_palette_type
+
+  if (!is.null(palette_type) && palette_type == "sequential") {
+    palette <- opts_color$color_palette_sequential
+
+    hc <- hc |>
+      hc_colorAxis(
+        minColor = palette[1],
+        maxColor = palette[length(palette)]
+      )
+  }
 
   # Handle different hdtype scenarios with consolidated conditional logic
   if (hdtype == "CatNum") {
+    if (!is.null(palette_type) && palette_type == "sequential") {
+      data <- purrr::map(data, ~ .x[setdiff(names(.x), "color")])
+    }
+
     hc <- hc |> add_CatNum_features(data, opts, "treemap")
   }
 
   if (hdtype == "CatCatNum") {
+    if (!is.null(palette_type) && palette_type == "sequential") {
+      data$data <- purrr::map(data$data, ~ .x[setdiff(names(.x), "color")])
+    }
+
     hc <- hc |> add_CatCatNum_features(data, opts, "treemap")
   }
 

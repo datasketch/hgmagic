@@ -108,7 +108,8 @@ process_CatNum <- function(d, viz) {
           "name" = name,
           "value" = value,
           "label" = label,
-          "color" = as.character(color)
+          "color" = as.character(color),
+          "colorValue" = value
         )
       }
     )
@@ -243,8 +244,8 @@ process_CatCatNum <- function(d, viz) {
         name = nm,
         parent = d[[1]][z],
         value = d[[3]][z],
-        label = d$..labels[z]#,
-        #colorValue = d[[3]][z]
+        label = d$..labels[z],
+        colorValue = d[[3]][z]
       )
     })
     data <- list(data = c(list_id, list_cats))

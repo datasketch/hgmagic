@@ -4,6 +4,10 @@ hc_axis <- function(hc, axis = "x", categories = NULL, type = NULL, opts) {
     stop("axis must be 'x' or 'y'")
   }
 
+  if (!is.null(opts$percentage) && opts$percentage && opts$percentage_axis) {
+    opts$axis_y_suffix <- opts$axis_y_suffix %||% "%"
+  }
+
   axis_function <- if (axis == "x") hc_xAxis else hc_yAxis
   axis_title <- if (axis == "x") opts$title_axis_x else opts$title_axis_y
   axis_labels <- NULL

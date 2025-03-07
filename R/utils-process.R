@@ -77,14 +77,18 @@ hg_list <- function(data, hdtype, viz = NULL) {
 process_CatNum <- function(d, viz) {
 
   if (viz %in% c("bar", "column", "radial_bar", "pie", "donut")) {
-    data <- purrr::pmap(.l = list(d[[1]], d[[2]], d[[3]], d[[4]]),
-                        .f = function(name, y, label, color) {
-                          list("name" = as.character(name),
-                               "y" = as.numeric(y),
-                               "label" = label,
-                               "color" = color
-                          )
-                        })
+    data <- purrr::pmap(
+      list(d[[1]], d[[2]], d$..labels, d$..colors),
+      function(name, y, label, color) {
+        list(
+          "name" = as.character(name),
+          "y" = as.numeric(y),
+          "label" = label,
+          "color" = color
+        )
+      }
+    )
+
     data <- list(
       data = data,
       categories = purrr::map(as.character(unique(d[[1]])), function(z) z)

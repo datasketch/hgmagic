@@ -1,15 +1,15 @@
 hc_add_bar <- function(hc, data, hdtype, ...) {
-
-  opts <- c(dsopts_merge(..., categories = "bar"),
-            dsopts_merge(..., categories = "axis")
+  opts <- c(
+    dsopts_merge(..., categories = "bar"),
+    dsopts_merge(..., categories = "axis")
   )
+
   opts_theme <-  dsopts_merge(..., categories = "theme")
   bar_type <- if (opts$bar_orientation == "ver") "column" else "bar"
 
   # Common hc_chart setup
   hc <- hc |>
     hc_chart(type = bar_type)
-
 
   if (opts$bar_orientation == "hor") {
     title_axis_x <- opts$title_axis_y
@@ -36,7 +36,6 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
     hc_add_theme(hgch_theme(opts = opts_theme))
 
   hc
-
 }
 
 hc_add_pie <- function(hc, data, hdtype, ...) {
@@ -620,8 +619,10 @@ add_CatNum_features <- function(hc, data, opts, viz) {
 
   if (viz %in% c("bar", "column")) {
     hc <- hc |>
-      hc_axis("x", categories = data$categories,
-              type = "category", opts = opts) |>
+      hc_axis(
+        axis = "x", categories = data$categories,
+        type = "category", opts = opts
+      ) |>
       hc_axis(axis = "y", opts = opts)
   }
 
@@ -631,11 +632,11 @@ add_CatNum_features <- function(hc, data, opts, viz) {
   }
 
   hc <- hc |>
-    hc_add_options(viz = viz, opts) |>
     hc_tooltip(
       useHTML = TRUE,
       formatter = JS("function () {return this.point.label;}")
     ) |>
+    hc_add_options(viz = viz, opts) |>
     hc_add_legend(opts)
 
   hc

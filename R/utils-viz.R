@@ -21,6 +21,7 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
   # Handle different hdtype scenarios with consolidated conditional logic
   if (hdtype == "CatNum") {
     opts$legend_show <- FALSE
+    opts$bar_graph_type <- "grouped"
     hc <- hc |> add_CatNum_features(data, opts, bar_type)
   }
 

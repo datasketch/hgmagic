@@ -1,22 +1,19 @@
 #' @export
 hc_add_options <- function(hc, viz, opts = NULL) {
-  default_options <- default_options(viz, opts)
   common_options <- common_options(opts)
-  final_options <- modifyList(default_options, common_options)
+  default_options <- default_options(viz, opts)
+  final_options <- modifyList(common_options, default_options)
+
   args_list <- list(hc)
   args_list[[viz]] <- final_options
-  hc <- do.call("hc_plotOptions", args_list)
-  hc
+
+  do.call("hc_plotOptions", args_list)
 }
 
-
-
 default_options <- function(viz, opts) {
-
   stacking <- NULL
   if (viz %in% c("bar", "column")) {
     if (opts$bar_graph_type == "stacked") {
-      stacking <- "normal"
       stacking <- if (opts$percentage) "percent" else "normal"
     }
   }
@@ -25,7 +22,6 @@ default_options <- function(viz, opts) {
   if (!is.null(opts$donut_inner_size)) {
     donut_inner_size <- paste0(opts$donut_inner_size, "%")
   }
-
 
   options <- list(
     bar = list(
@@ -36,7 +32,11 @@ default_options <- function(viz, opts) {
     ),
     pie = list(
       showInLegend = opts$legend_show,
-      innerSize = donut_inner_size
+      innerSize = donut_inner_size,
+      dataLabels = list(
+        distance = "-40%",
+        format = opts$datalabel_template %||% "{point.percentage:.1f}%"
+      )
     ),
     sunburst = list(
       showInLegend = opts$legend_show,
@@ -103,14 +103,12 @@ default_options <- function(viz, opts) {
   options[[viz]]
 }
 
-
 common_options <- function(opts) {
-
   list(
     enableMouseTracking = TRUE,
-    dataLabels = list(enabled = opts$datalabel_show,
-                      format = opts$datalabel_template
+    dataLabels = list(
+      enabled = opts$datalabel_show,
+      format = opts$datalabel_template
     )
   )
 }
-

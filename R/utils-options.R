@@ -12,6 +12,7 @@ hc_add_options <- function(hc, viz, opts = NULL) {
 
 default_options <- function(viz, opts) {
   stacking <- NULL
+
   if (viz %in% c("bar", "column")) {
     if (opts$bar_graph_type == "stacked") {
       stacking <- if (opts$percentage) "percent" else "normal"
@@ -62,25 +63,25 @@ default_options <- function(viz, opts) {
       marker= list(
         fillOpacity = opts$bubble_opacity)),
     treemap = list(
-      layoutAlgorithm  = 'sliceAndDice',
-      allowDrillToNode = TRUE,
-      animationLimit = 1000,
-      alternateStartingDirection  = TRUE,
-      borderColor  = '#fff',
+      layoutAlgorithm  = opts$treemap_layout,
+      #allowDrillToNode = TRUE,
+      # animationLimit = 1000,
+      # alternateStartingDirection  = TRUE,
+      # borderColor  = '#fff',
       borderRadius  = 6,
       borderWidth  = 2,
       accessibility = list(
         exposeAsGroupOnly = TRUE
       ),
-      dataLabels  = list(
-        style  = list(
-          textOutline  = 'none'
-        )
-      ),
+      # dataLabels  = list(
+      #   style  = list(
+      #     textOutline  = 'none'
+      #   )
+      # ),
       levels  = list(
         list(
           level  = 1,
-          layoutAlgorithm  = 'sliceAndDice',
+          layoutAlgorithm = opts$treemap_layout,
           dataLabels  = list(
             enabled  = TRUE,
             align  = 'left',

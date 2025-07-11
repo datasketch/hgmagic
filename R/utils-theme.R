@@ -140,6 +140,16 @@ hgch_theme <- function(opts = NULL) {
       #   #   ))
     ),
     plotOptions = list (
+      pie = list(
+        innerSize = opts$pie_inner_size,
+        borderRadius = 8,
+        # animation = list(
+        #   duration = opts$animation_duration
+        # ),
+        #dataLabels = list(distance = ifelse(opts$inner_dataLabels,-100, 30)),
+        showInLegend = opts$legend_show
+
+      ),
       # #   packedbubble = list(
       # #     minSize = opts$bubble_min,
       # #     maxSize = opts$bubble_max,
@@ -189,14 +199,7 @@ hgch_theme <- function(opts = NULL) {
         )
       )
     ),
-    # #   pie = list(
-    # #     animation = list(
-    # #       duration = opts$animation_duration
-    # #     ),
-    # #     dataLabels = list(distance = ifelse(opts$inner_dataLabels,-100, 30)),
-    # #     showInLegend = opts$legend_show
-    # #   )
-    # # ),
+
     legend = list(
       backgroundColor = opts$legend_background,
       borderColor = opts$legend_border_color,

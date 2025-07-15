@@ -153,7 +153,8 @@ hgch_theme <- function(opts = NULL) {
       sankey = list(
         nodeWidth = opts$sankey_node_width,
         nodePadding = 15,
-        nodeOpacity = opts$sankey_node_opacity,      ),
+        nodeOpacity = opts$sankey_node_opacity
+        ),
       # #   packedbubble = list(
       # #     minSize = opts$bubble_min,
       # #     maxSize = opts$bubble_max,

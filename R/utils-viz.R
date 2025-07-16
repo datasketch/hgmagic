@@ -84,7 +84,7 @@ hc_add_line <- function(hc, data, hdtype, ...) {
 
 
   # Handle different hdtype scenarios with consolidated conditional logic
-  if (hdtype == "DatNum") {
+  if (hdtype == "DatNum" | hdtype == "CatNum") {
     opts$legend_show <- FALSE
     opts$palette_colors <- data$color
     hc <- hc |> add_DatNum_features(data, opts, 'line')

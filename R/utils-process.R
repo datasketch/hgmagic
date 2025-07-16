@@ -15,8 +15,12 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_NumNum(data, viz))
   }
 
-  if (hdtype %in% c("CatNum")) {
-    return(process_CatNum(data, viz))
+  if (viz == "line") {
+    return(process_DatNum(data, viz))
+  } else {
+    if (hdtype %in% c("CatNum")) {
+      return(process_CatNum(data, viz))
+    }
   }
 
   if (hdtype %in% c("CatCatNum")) {

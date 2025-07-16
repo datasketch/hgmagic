@@ -24,6 +24,7 @@ hg_line <- function(data,
   if (length(var_num) > 1) color_by <- var_cat[1]
 
   data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)
+
   if (length(var_cat) > 1) {
     color_by <- var_cat[1]
     data_viz <- completevalues(data_viz, var_find = var_cat[1],

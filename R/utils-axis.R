@@ -16,7 +16,7 @@ hc_axis <- function(hc, axis = "x", categories = NULL, type = NULL, opts) {
     axis_labels <-  paste0(opts$axis_y_prefix, "{text}", opts$axis_y_suffix)
     if (!is.null(opts$axis_y_format_sample_num)) {
     axis_format <- makeup::makeup_format_js(opts$axis_y_format_sample_num, opts$locale,
-                                    opts$axis_y_prefix, opts$axis_y_suffix,
+                                    opts$axis_y_suffix, opts$axis_y_prefix,
                                     opts$use_si_prefixes)
     }
   }

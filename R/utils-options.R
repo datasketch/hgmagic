@@ -6,7 +6,6 @@ hc_add_options <- function(hc, viz, opts = NULL) {
 
   args_list <- list(hc)
   args_list[[viz]] <- final_options
-
   do.call("hc_plotOptions", args_list)
 }
 
@@ -63,16 +62,16 @@ default_options <- function(viz, opts) {
       marker= list(
         fillOpacity = opts$bubble_opacity)),
     treemap = list(
-      layoutAlgorithm  = opts$treemap_layout,
-      #allowDrillToNode = TRUE,
-      # animationLimit = 1000,
-      # alternateStartingDirection  = TRUE,
-      # borderColor  = '#fff',
+      # layoutAlgorithm  = opts$treemap_layout,
+      # #allowDrillToNode = TRUE,
+      # # animationLimit = 1000,
+      # # alternateStartingDirection  = TRUE,
+      borderColor  = '#fff',
       borderRadius  = 6,
       borderWidth  = 2,
-      accessibility = list(
-        exposeAsGroupOnly = TRUE
-      ),
+      # accessibility = list(
+      #   exposeAsGroupOnly = TRUE
+      # ),
       # dataLabels  = list(
       #   style  = list(
       #     textOutline  = 'none'
@@ -81,7 +80,7 @@ default_options <- function(viz, opts) {
       levels  = list(
         list(
           level  = 1,
-          layoutAlgorithm = opts$treemap_layout,
+          #layoutAlgorithm = opts$treemap_layout,
           dataLabels  = list(
             enabled  = TRUE,
             align  = 'left',

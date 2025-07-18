@@ -183,10 +183,17 @@ hc_add_treemap <- function(hc, data, hdtype, ...) {
   hc <- hc |>
     hc_chart(type = "treemap")
 
-  palette_type <- opts_color$color_palette_type
+
+  palette_type <- opts_color$color_palette_type %||% "categorical"
+  colors <- opts_color$color_palette
+
+  if (is.null(colors)) {
+    colors <- opts_color[[paste0("color_palette_", palette_type)]] %||% c("#385573", "#ffa92a", "#f06142", "#99e8b3", "#32a8ce", "#996295", "#e59fd7")
+  }
+  opts_theme[[paste0("color_palette_", palette_type)]] <- colors
 
   if (!is.null(palette_type) && palette_type == "sequential") {
-    palette <- opts_color$color_palette_sequential
+    palette <- colors#opts_color$color_palette_sequential
 
     hc <- hc |>
       hc_colorAxis(
@@ -645,7 +652,16 @@ add_CatNum_features <- function(hc, data, opts, viz) {
 
 add_CatCatNum_features <- function(hc, data, opts, viz) {
 
-  if (viz %in% c("bar", "column", "treemap")) {
+  if (viz %in% c( "treemap")) {
+    hc <- hc |>
+      hc_data_series(data$data) |>
+      hc_tooltip(useHTML = TRUE,
+                 formatter = JS(paste0("function () {return this.point.label;}"))) |>
+      hc_add_options(viz = viz, opts) |>
+      hc_add_legend(opts)
+  }
+
+  if (viz %in% c("bar", "column")) {
     hc <- hc |>
       hc_data_series(data$data) |>
       hc_axis("x", categories = data$categories,

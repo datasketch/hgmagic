@@ -2,6 +2,7 @@ data_prep <- function(data,
                       dic = NULL,
                       var_group = NULL,
                       var_num = NULL,
+                      viz = NULL,
                       ...) {
 
   opts <- list(...)

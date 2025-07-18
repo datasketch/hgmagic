@@ -90,6 +90,12 @@ hc_add_line <- function(hc, data, hdtype, ...) {
     hc <- hc |> add_DatNum_features(data, opts, 'line')
   }
 
+  if (hdtype == "CatYeaNum" | hdtype == "CatCatNum") {
+
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_CatCatNum_features(data, opts, 'line')
+  }
+
   if (hdtype == "CatDatNum") {
     opts <- c(opts, dsopts_merge(..., categories = "legend"))
     hc <- hc |> add_CatDatNum_features(data, opts, 'line')
@@ -661,7 +667,7 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_add_legend(opts)
   }
 
-  if (viz %in% c("bar", "column")) {
+  if (viz %in% c("bar", "column", "line")) {
     hc <- hc |>
       hc_data_series(data$data) |>
       hc_axis("x", categories = data$categories,
@@ -714,7 +720,8 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_add_dependency("plugins/grouped-categories.js")
   }
 
-  if (viz == "scatter") {
+
+  if (viz %in% c("scatter")) {
     hc <- hc |>
       hc_axis(
         axis = "x", type = "category",
@@ -1020,6 +1027,8 @@ add_DatNum_features <- function(hc, data, opts, viz) {
     hc_add_legend(opts)
   hc
 }
+
+
 
 add_CatDatNum_features <- function(hc, data, opts, viz) {
   hc <- hc |>

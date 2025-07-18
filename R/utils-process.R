@@ -16,7 +16,9 @@ hg_list <- function(data, hdtype, viz = NULL) {
   }
 
   if (viz == "line") {
+    if (hdtype %in% c("DatNum", "CatNum")) {
     return(process_DatNum(data, viz))
+    }
   } else {
     if (hdtype %in% c("CatNum")) {
       return(process_CatNum(data, viz))
@@ -204,8 +206,13 @@ process_NumNum <- function(d, viz) {
 #' @rdname process_functions
 process_CatCatNum <- function(d, viz) {
 
-  if (viz %in% c("bar", "column", "radial_bar")) {
+  if (viz %in% c("bar", "column", "radial_bar", "line")) {
     d$..labels <- as.character(d$..labels)
+
+
+    if (viz == "line") {
+      d <- d |> tidyr::drop_na(!!sym(names(d)[1]),!!sym(names(d)[2]))
+    }
     axis_cat <- unique(d[[2]])
     if (all(grepl("^[0-9]+$", d[[2]]))) {
       axis_cat <- sort(unique(d[[2]]))
@@ -279,7 +286,7 @@ process_CatCatNum <- function(d, viz) {
     )
   }
 
-  if (viz %in% "bubble") {
+  if (viz %in% c("bubble")) {
     var_cat <- names(d)[1]
 
     data <- purrr::map(unique(d[[1]]), function(z){
@@ -419,6 +426,8 @@ process_CatCatNum <- function(d, viz) {
 
     data <- list(data = data, categories = unique(d[[2]]))
   }
+
+
 
   data
 }

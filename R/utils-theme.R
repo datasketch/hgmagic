@@ -143,14 +143,17 @@ hgch_theme <- function(opts = NULL) {
       pie = list(
         innerSize = opts$pie_inner_size,
         borderRadius = 8,
-        # animation = list(
-        #   duration = opts$animation_duration
-        # ),
+        animation = list(
+          duration = opts$animation_duration
+        ),
         #dataLabels = list(distance = ifelse(opts$inner_dataLabels,-100, 30)),
         showInLegend = opts$legend_show
 
       ),
       sankey = list(
+        animation = list(
+          duration = opts$animation_duration
+        ),
         nodeWidth = opts$sankey_node_width,
         nodePadding = 15,
         nodeOpacity = opts$sankey_node_opacity
@@ -174,9 +177,9 @@ hgch_theme <- function(opts = NULL) {
       series = list(
         connectNulls = opts$line_connect_na,
         # colorByPoint = opts$color_by_point,
-        # animation = list(
-        #   duration = opts$animation_duration
-        # ),
+        animation = list(
+          duration = opts$animation_duration
+        ),
         dataLabels = list (
           enabled = opts$datalabel_show,
           className = "custom-data-label",

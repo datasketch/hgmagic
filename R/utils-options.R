@@ -62,7 +62,7 @@ default_options <- function(viz, opts) {
       marker= list(
         fillOpacity = opts$bubble_opacity)),
     treemap = list(
-      # layoutAlgorithm  = opts$treemap_layout,
+     layoutAlgorithm  = opts$treemap_layout,
       # #allowDrillToNode = TRUE,
       # # animationLimit = 1000,
       # # alternateStartingDirection  = TRUE,

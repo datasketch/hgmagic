@@ -19,7 +19,7 @@ data_prep <- function(data,
 
   data <- wrap_sort_data(data = data,
                          var_cat_order = var_group,
-                         var_num_sort = var_num, ...)
+                         var_num_sort = var_num, viz = viz, ...)
 
   data
 

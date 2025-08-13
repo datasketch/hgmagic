@@ -203,8 +203,8 @@ hc_add_treemap <- function(hc, data, hdtype, ...) {
 
     hc <- hc |>
       hc_colorAxis(
-        minColor = palette[1],
-        maxColor = palette[length(palette)]
+        minColor = palette[length(palette)],
+        maxColor = palette[1]
       )
   }
 

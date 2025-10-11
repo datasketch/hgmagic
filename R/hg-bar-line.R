@@ -15,7 +15,7 @@ hg_bar_line <- function(data,
 
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea, var_dat)
-  data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_processing(ht$data, ht$dic, var_cat, var_num, ...)
 
   color_by <- NULL
   if (length(var_cat) > 1) {

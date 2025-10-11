@@ -15,7 +15,7 @@ hg_heatmap <- function(data,
 
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
-  data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_processing(ht$data, ht$dic, var_cat, var_num, ...)
   data_viz <- hg_list(data_viz, hdtype, "heatmap")
 
   palette <- opts_color$color_palette_sequential %||% c("#BFFFFF", "#C200F8")

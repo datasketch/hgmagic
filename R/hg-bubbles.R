@@ -16,7 +16,7 @@ hg_bubbles <- function(data,
   data_viz <- ht$data
 
   color_by <- if (length(var_cat) > 1) var_cat[1] else opts$color_by
-  data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_processing(ht$data, ht$dic, var_cat, var_num, ...)
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
 
   data_viz <- hg_list(data_viz, hdtype, "bubble")

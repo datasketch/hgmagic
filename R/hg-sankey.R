@@ -12,7 +12,7 @@ hg_sankey <- function(data,
 
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
-  data_viz <- data_prep(na.omit(ht$data),
+  data_viz <- data_processing(na.omit(ht$data),
                         ht$dic,
                         var_cat,
                         var_num,

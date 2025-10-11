@@ -13,7 +13,7 @@ hg_item <- function(data,
 
   ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
-  data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_processing(ht$data, ht$dic, var_cat, var_num, ...)
 
   if ("..colors" %in% names(data)) {
     data_colors <- data |> distinct_(var_cat, "..colors")

@@ -22,7 +22,7 @@ hg_bar <- function(data,
                                var_expand = var_cat[2], var_num = var_num)
   }
 
-  data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, viz = "bar", ...)
+  data_viz <- data_processing(data_viz, ht$dic, var_cat, var_num, viz = "bar", ...)
   data_viz <- colors_data(data_viz, ..., color_by = color_by)
 
   data_viz <- hg_list(data_viz, hdtype, "bar")

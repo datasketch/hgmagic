@@ -25,7 +25,7 @@ hg_scatter <- function(data,
   else if (length(var_cat) == 2) color_by <- var_cat[2]
   else color_by <- NULL
 
-  data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_processing(data_viz, ht$dic, var_cat, var_num, ...)
   data_viz <- colors_data(data_viz, color_by = color_by, ...)
   data_viz <- data_viz |>
     select(c(var_cat, var_num, ends_with("labels"), ends_with("colors"))) |>

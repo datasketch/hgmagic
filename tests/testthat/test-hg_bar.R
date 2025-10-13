@@ -1,6 +1,7 @@
 test_that("hg_bar", {
-  hg_bar(data = iris, var_num = "sepal_length", var_cat = "species")
-  hg_bar(data = iris, var_cat = "species")
+  hg_bar(data = iris, var_num = "sepal_length",
+         var_cat = "species", sort = NULL,)
+  hg_bar(data = iris, var_cat = "species", color_by = "species")
 
   # add titles
   hg_bar(data = iris, var_num = "sepal_length", var_cat = "species",
@@ -9,8 +10,10 @@ test_that("hg_bar", {
          title_axis_x = "x axis",
          title_axis_y = "y axis")
 
+
   hg_bar(data = starwars, var_cat = c("sex", "hair_color"))
-  hg_bar(data = starwars, var_cat = c("sex", "hair_color"), bar_graph_type = "stacked")
+  hg_bar(data = starwars, var_cat = c("sex", "hair_color"),
+         bar_graph_type = "stacked")
   hg_bar(data = starwars, var_cat = c("sex"), var_num = c("height", "mass"))
 })
 
@@ -26,10 +29,11 @@ test_that("hg_bar_Cat", {
 
 
 test_that("hg_bar_CatCatNum", {
-  data <- starwars |> select(sex, hair_color, height)
+  data <- starwars |> select(hair_color, sex, height)
   hg_bar_CatCatNum(data, legend_align = "right",
                    legend_orientation = "vertical",
-                   legend_vertical_align = "middle")
+                   agg = "mean",
+                   legend_vertical_align = "middle", sort = "desc")
 })
 
 test_that("hg_bar_CatCat", {

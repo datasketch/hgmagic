@@ -9,13 +9,13 @@ data_processing <- function(data,
                          dic = dic,
                          group_vars = var_group,
                          var_num_to_agg = var_num, ...)
-
+  data <- wrap_sort_data(data = data,
+                         var_cat_order = var_group,
+                         var_num_sort = var_num, viz = viz, ...)
   data
 }
 
-# data <- wrap_sort_data(data = data,
-#                        var_cat_order = var_group,
-#                        var_num_sort = var_num, viz = viz, ...)
+
 #
 # data
 
@@ -36,28 +36,7 @@ default_var_group <- function(dic = NULL) {
   var_group
 }
 
-#' @keywords internal
-completevalues <- function(data, var_find = NULL, var_expand = NULL ,var_num = NULL) {
-  if (ncol(data) < 2) {
-    stop("data must have at least two columns.")
-  }
-  var_num <-  var_num %||% names(data)[3]
-  var_find <- var_find %||% names(data)[1]
-  var_expand <- var_expand %||% names(data)[2]
 
-  all_vars <- c(var_find, var_expand, var_num)
-  if (!all(all_vars %in% names(data))) {
-    stop("One or more specified variables do not exist in the data frame.")
-  }
-
-  data <- data |>
-    as_tibble() |>
-    tidyr::complete(!!!syms(var_find),
-                    !!sym(var_expand),
-                    fill = setNames(list(NA), var_num))
-
-  data
-}
 
 
 

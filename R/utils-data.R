@@ -4,7 +4,10 @@ data_processing <- function(data,
                       var_num = NULL,
                       viz = NULL,
                       ...) {
-
+  print("var group")
+ print(var_group)
+ print("var_nums")
+  print(var_num)
   data <- aggregate_data(data = data,
                          dic = dic,
                          group_vars = var_group,
@@ -12,6 +15,7 @@ data_processing <- function(data,
   data <- wrap_sort_data(data = data,
                          var_cat_order = var_group,
                          var_num_sort = var_num, viz = viz, ...)
+  print(data)
   data
 }
 

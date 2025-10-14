@@ -16,7 +16,6 @@ hg_bar <- function(data,
   data_viz <- complete_values(data_viz, var_find = var_cat[1], var_expand = var_cat[2], var_num = var_num)
   data_viz <- colors_data(data_viz, var_cat, ...)
   data_viz <- hg_list(data_viz, hdtype, "bar")
-  print(data_viz)
   h <- highchart() |>
     hc_titles(opts = dsopts_merge(..., categories = "titles"))
 

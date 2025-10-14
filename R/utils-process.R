@@ -97,7 +97,7 @@ process_CatNum <- function(d, viz) {
 
     data <- list(
       data = data,
-      categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
+      categories = purrr::map(as.character(d[[1]][!duplicated(d[[1]])]), function(z) z)
     )
   }
 
@@ -206,25 +206,52 @@ process_NumNum <- function(d, viz) {
 #' @rdname process_functions
 process_CatCatNum <- function(d, viz) {
 
-  if (viz %in% c("bar", "column", "radial_bar", "line")) {
+  if (viz %in% c("bar", "column", "radial_bar")) {
     d$..labels <- as.character(d$..labels)
 
+    axis_cat <- unique(d[[1]])
 
-    if (viz == "line") {
+    data_groups <- list(d[[2]][!duplicated(d[[2]])],
+                        split(d[complete.cases(
+                          d[,c(setdiff(names(d), names(d)[2]))]),], d[[2]]))
+
+    data <- list(
+      categories = purrr::map(as.character(axis_cat), function(z) z),
+      data = purrr::map(d[[2]][!duplicated(d[[2]])], function(i) {
+        d0 <- d |>
+          dplyr::filter(!!sym(names(d)[2]) %in% i) #|>
+        #dplyr::arrange(..index)
+        label_info <- d0 %>% .$..labels %>% unlist()
+        l0 <- list("name" = i,
+                   "color" = unique(d0$..colors),
+                   #"legendIndex" = unique(d0$..legendIndex),
+                   "data" = purrr::map(seq_along(d0[[3]]), function(i){
+                     list("label" =  label_info[i],
+                          "y" = d0[[3]][i]
+                     )
+                   })
+        )
+      })
+    )
+  }
+
+  if (viz %in% c("line")) {
+    d$..labels <- as.character(d$..labels)
+
       d <- d |> tidyr::drop_na(!!sym(names(d)[1]),!!sym(names(d)[2]))
-    }
+
     axis_cat <- unique(d[[2]])
     if (all(grepl("^[0-9]+$", d[[2]]))) {
       axis_cat <- sort(unique(d[[2]]))
     }
 
-    data_groups <- list(unique(d[[1]]),
+    data_groups <- list(d[[1]][!duplicated(d[[1]])],
                         split(d[complete.cases(
                           d[,c(setdiff(names(d), names(d)[1]))]),], d[[1]]))
 
     data <- list(
       categories = purrr::map(as.character(axis_cat), function(z) z),
-      data = purrr::map(unique(d[[1]]), function(i) {
+      data = purrr::map(d[[1]][!duplicated(d[[1]])], function(i) {
         d0 <- d |>
           dplyr::filter(!!sym(names(d)[1]) %in% i) #|>
         #dplyr::arrange(..index)

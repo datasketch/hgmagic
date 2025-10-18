@@ -7,48 +7,14 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
   opts_theme <-  dsopts_merge(..., categories = "theme")
   bar_type <- if (opts$bar_orientation == "ver") "column" else "bar"
 
-  # Función JS para ordenar las variables por el orden de entrada de los datos
-  js_translate <- JS("
-function translateGraph() {
-  var series = this.series;
-
-  for (let i = 0; i < this.series[0].points.length; i++) {
-    let pointsPos = [];
-    let pointsGroup = [];
-
-    series.forEach(function(series, j) {
-      let point = series.points[i]
-      if (series.visible) {
-        let args = point.shapeArgs
-        pointsGroup.push(series.points[i])
-        pointsPos.push({
-          transX: args.x
-        })
-      }
-    })
-
-    pointsGroup.sort(function(a, b) {
-      return a.y - b.y
-    }).forEach(function(point, i) {
-      ///// MOVE DATALABELS
-      point.dataLabel.attr({
-        x: pointsPos[i].transX
-      })
-      /////
-      point.graphic.attr({
-        x: pointsPos[i].transX
-      })
-    })
-  }
-}
-")
   # Common hc_chart setup
   hc <- hc |>
-    hc_chart(type = bar_type,
-             events = list(
-      load = js_translate,
-      redraw = js_translate
-    ))
+    hc_chart(type = bar_type#,
+    #          events = list(
+    #   load = js_translate,
+    #   redraw = js_translate
+    # )
+    )
 
   if (opts$bar_orientation == "hor") {
     title_axis_x <- opts$title_axis_y
@@ -58,6 +24,12 @@ function translateGraph() {
   }
 
   # Handle different hdtype scenarios with consolidated conditional logic
+
+  if (hdtype == "Num") {
+    opts$legend_show <- FALSE
+    hc <- hc |> add_Num_features(data, opts, "bar")
+  }
+
   if (hdtype == "CatNum") {
     opts$legend_show <- FALSE
     opts$bar_graph_type <- "grouped"
@@ -607,6 +579,14 @@ hc_add_bar_negative_stack <- function(hc, data, hdtype, ...) {
 
 
 add_Num_features <- function(hc, data, opts, viz) {
+
+  if (viz %in% "bar") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_add_legend(opts = opts)
+  }
+
   if (viz %in% "line") {
     hc <- hc |>
       hc_axis(axis = "x", opts = opts) |>

@@ -10,17 +10,8 @@ hg_sankey <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% 'count')
 
-  ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
-  data_viz <- data_processing(na.omit(ht$data),
-                        ht$dic,
-                        var_cat,
-                        var_num,
-                        text_wrap = 500,
-                        legend_text_wrap = 500,
-                        axis_text_wrap = 500,
-                        ...)
-
+  data_viz <- na.omit(data_processing(data, dic, var_cat, var_num, viz = "sankey", ...))
   data_viz <- hg_list(data_viz, hdtype, "sankey")
 
   data_viz$nodes <- colors_data(data_viz$nodes, color_by = "id", ...) |>

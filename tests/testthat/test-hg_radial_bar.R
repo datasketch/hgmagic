@@ -1,6 +1,6 @@
 test_that("hg_radial_bar", {
   hg_radial_bar(data = iris, var_num = "sepal_length", var_cat = "species")
-  hg_radial_bar(data = iris, var_cat = "species")
+  hg_radial_bar(data = iris, var_cat = "species", color_by = "species")
 
   # add titles and colors
   hg_radial_bar(
@@ -37,7 +37,6 @@ test_that("hg_radial_bar_CatCatNum", {
   hg_radial_bar_CatCatNum(
     data,
     drop_na = TRUE,
-    color_by = "hair_color",
     bar_graph_type = "stacked",
     legend_align = "right",
     legend_orientation = "vertical",
@@ -48,7 +47,6 @@ test_that("hg_radial_bar_CatCatNum", {
 
   hg_radial_bar_CatCatNum(
     data,
-    color_by = "cat1",
     drop_na = TRUE,
     sort = "desc",
     sort_intra_cat = FALSE,

@@ -7,9 +7,48 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
   opts_theme <-  dsopts_merge(..., categories = "theme")
   bar_type <- if (opts$bar_orientation == "ver") "column" else "bar"
 
+  # Función JS para ordenar las variables por el orden de entrada de los datos
+  js_translate <- JS("
+function translateGraph() {
+  var series = this.series;
+
+  for (let i = 0; i < this.series[0].points.length; i++) {
+    let pointsPos = [];
+    let pointsGroup = [];
+
+    series.forEach(function(series, j) {
+      let point = series.points[i]
+      if (series.visible) {
+        let args = point.shapeArgs
+        pointsGroup.push(series.points[i])
+        pointsPos.push({
+          transX: args.x
+        })
+      }
+    })
+
+    pointsGroup.sort(function(a, b) {
+      return a.y - b.y
+    }).forEach(function(point, i) {
+      ///// MOVE DATALABELS
+      point.dataLabel.attr({
+        x: pointsPos[i].transX
+      })
+      /////
+      point.graphic.attr({
+        x: pointsPos[i].transX
+      })
+    })
+  }
+}
+")
   # Common hc_chart setup
   hc <- hc |>
-    hc_chart(type = bar_type)
+    hc_chart(type = bar_type,
+             events = list(
+      load = js_translate,
+      redraw = js_translate
+    ))
 
   if (opts$bar_orientation == "hor") {
     title_axis_x <- opts$title_axis_y
@@ -130,14 +169,15 @@ hc_add_line <- function(hc, data, hdtype, ...) {
 
 hc_add_item <- function(hc, data, hdtype, ...) {
   opts_theme <-  dsopts_merge(..., categories = "theme")
+  print(data)
   hc <- hc |>
     hc_chart(type = "item") |>
     hc_add_series(
       layout= 'horizontal',
       data = data
     ) |>
-    # hc_tooltip(useHTML = TRUE,
-    #            formatter = JS(paste0("function () {return this.point.label;}")))|>
+    hc_tooltip(useHTML = TRUE,
+               formatter = JS(paste0("function () {return this.point.label;}")))|>
     hc_plotOptions(
       series = list(
         states = list(
@@ -203,8 +243,8 @@ hc_add_treemap <- function(hc, data, hdtype, ...) {
 
     hc <- hc |>
       hc_colorAxis(
-        minColor = palette[length(palette)],
-        maxColor = palette[1]
+        minColor = palette[1],
+        maxColor = palette[length(palette)]
       )
   }
 
@@ -583,6 +623,7 @@ add_Num_features <- function(hc, data, opts, viz) {
 }
 
 add_NumNum_features <- function(hc, data, opts, viz) {
+
   if (viz %in% "line") {
     hc <- hc |>
       hc_axis(axis = "x", opts = opts) |>
@@ -604,13 +645,15 @@ add_NumNum_features <- function(hc, data, opts, viz) {
   }
 
   if (viz %in% c("scatter")) {
-    colors <- unique(data$..colors)
 
     hc <- hc |>
       hc_chart(type = "scatter") |>
       hc_axis(axis = "x", opts = opts) |>
       hc_axis(axis = "y", opts = opts) |>
-      hc_data_series(data) |>
+      hc_add_series(
+        data = data,
+        type = "scatter"
+      ) |>
       hc_tooltip(
         useHTML = TRUE,
         formatter = JS("function () {return this.point.label;}")
@@ -908,10 +951,12 @@ add_parallel_features <- function(hc, data, opts, viz) {
 add_CatNumNum_features <- function(hc, data, opts, viz) {
 
   if (viz %in% c("bar", "column")) {
+    print("ACAA")
     hc <- hc |>
       hc_chart(zoomType = 'xy') |>
       hc_axis("x", categories = data$categories,
-              type = "category", opts = opts) |>
+              type = "category", opts = opts, double_axis = TRUE) |>
+      hc_axis("y", opts = opts, double_axis = TRUE) |>
       hc_tooltip(
         useHTML = TRUE,
         shared = TRUE,
@@ -933,14 +978,14 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
 
   }
 
-  if (viz %in% c("bar", "bar_line", "column")) {
-    hc <-  hc |>
-      hc_yAxis_multiples(
-        list(title = list(text = opts$title_axis_y)),
-        list(title = list(text = opts$title_axis_y2),
-             opposite = TRUE)
-      )
-  }
+  # if (viz %in% c("bar", "bar_line", "column")) {
+  #   hc <-  hc |>
+  #     hc_yAxis_multiples(
+  #       list(title = list(text = opts$title_axis_y)),
+  #       list(title = list(text = opts$title_axis_y2),
+  #            opposite = TRUE)
+  #     )
+  # }
 
   if (viz %in% "line") {
     hc <- hc |>

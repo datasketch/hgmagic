@@ -132,6 +132,7 @@ process_CatNum <- function(d, viz) {
       list("name" = z,
            "y" = as.numeric(d0[[2]]),
            "color" = d0$..colors,
+           "label" = d0$..labels,
            marker = list(
              symbol= 'point'
            ))
@@ -188,7 +189,8 @@ process_NumNum <- function(d, viz) {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
 
-    d <- d |> rename(x = 1, y = 2, color = ..colors, label = ..labels)
+    d <- d |> tidyr::drop_na() |>
+      rename(x = 1, y = 2, color = ..colors, label = ..labels)
 
     data <- purrr::pmap(d, function(x, y, color, label) {
       list(
@@ -208,31 +210,41 @@ process_CatCatNum <- function(d, viz) {
 
   if (viz %in% c("bar", "column", "radial_bar")) {
     d$..labels <- as.character(d$..labels)
+    # Obtener categorías del eje X preservando el orden original de la tabla
+    # Usar el orden de aparición en la tabla original, no el orden de la variable
+    axis_cat <- d[[1]][!duplicated(d[[1]])]
 
-    axis_cat <- unique(d[[1]])
+    # Crear las series de manera simplificada preservando el orden original
+    # Obtener el orden original de la segunda variable
+    series_order <- d[[2]][!duplicated(d[[2]])]
 
-    data_groups <- list(d[[2]][!duplicated(d[[2]])],
-                        split(d[complete.cases(
-                          d[,c(setdiff(names(d), names(d)[2]))]),], d[[2]]))
+    # Crear las series manualmente para preservar el orden exacto
+    series_data <- purrr::map(series_order, function(series_name) {
+      # Filtrar datos para esta serie específica
+      series_rows <- d[d[[2]] == series_name, ]
+
+      # Ordenar por el orden original de la tabla (no por categorías)
+      # Usar el índice original de las filas para mantener el orden
+      original_indices <- which(d[[2]] == series_name)
+      series_rows <- series_rows[order(original_indices), ]
+
+      # Crear la lista de datos para esta serie
+      series_data_list <- purrr::map2(series_rows[[3]], series_rows$..labels,
+                                    function(y, label) list(y = y, label = label))
+
+      # Retornar la estructura de la serie
+      list(
+        name = series_name,
+        data = series_data_list,
+        color = unique(series_rows$..colors)
+      )
+    })
 
     data <- list(
       categories = purrr::map(as.character(axis_cat), function(z) z),
-      data = purrr::map(d[[2]][!duplicated(d[[2]])], function(i) {
-        d0 <- d |>
-          dplyr::filter(!!sym(names(d)[2]) %in% i) #|>
-        #dplyr::arrange(..index)
-        label_info <- d0 %>% .$..labels %>% unlist()
-        l0 <- list("name" = i,
-                   "color" = unique(d0$..colors),
-                   #"legendIndex" = unique(d0$..legendIndex),
-                   "data" = purrr::map(seq_along(d0[[3]]), function(i){
-                     list("label" =  label_info[i],
-                          "y" = d0[[3]][i]
-                     )
-                   })
-        )
-      })
+      data = series_data
     )
+    print(data)
   }
 
   if (viz %in% c("line")) {
@@ -461,6 +473,8 @@ process_CatCatNum <- function(d, viz) {
 
 #' @rdname process_functions
 process_CatNumNum <- function(d, viz) {
+  print("CatNumNum")
+  print(d)
   if (viz %in% c("bar", "column")) {
     color <- unique(d$..colors)
     if (length(color) != 2) {
@@ -472,7 +486,7 @@ process_CatNumNum <- function(d, viz) {
           name = names(d)[col],
           color = color[col-1],
           type = viz,
-          yAxis = col - 2,
+           yAxis = col - 2,
           data = purrr::imap(d[[col]], function(y, i) {
             list(
               label = d$..labels[i],
@@ -855,7 +869,7 @@ process_network_graph <- function(d, viz) {
 process_parallel_data_plot <- function(d, viz) {
 
   if(viz %in% "parallel_coordinates") {
-    d0 <- d |> select(-c(..colors, Conteo,..labels))
+    d0 <- d |> select(-c(..colors, count,..labels))
 
     xAxis <- colnames(d0)
     yAxis <- 1:ncol(d0) |>

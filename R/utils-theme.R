@@ -157,7 +157,7 @@ hgch_theme <- function(opts = NULL) {
         nodeWidth = opts$sankey_node_width,
         nodePadding = 15,
         nodeOpacity = opts$sankey_node_opacity
-        ),
+        )#,
       # #   packedbubble = list(
       # #     minSize = opts$bubble_min,
       # #     maxSize = opts$bubble_max,
@@ -174,38 +174,61 @@ hgch_theme <- function(opts = NULL) {
       # #       fillOpacity = opts$bubble_opacity)
       # #   ),
       # #
-      series = list(
-        connectNulls = opts$line_connect_na,
-        # colorByPoint = opts$color_by_point,
-        animation = list(
-          duration = opts$animation_duration
-        ),
-        dataLabels = list (
-          enabled = opts$datalabel_show,
-          className = "custom-data-label",
-          format = opts$datalabel_template,#'{y} %',
-          #format = paste0("",opts$format_sample_num)
-          style = list(
-            useHTML = TRUE,
-            color = opts$datalabel_color %||% opts$text_color,
-            fontFamily = opts$text_family,
-            fontSize = paste0(opts$datalabel_size %||% 11, "px"),
-            textOutline = ifelse(opts$datalabel_text_outline_show, "1px contrast", "none")
-          ),
-          inside = opts$datalabel_inside#,
-          #format = opts$templatedataLabels %||% paste0(opts$cats, opts$format_dataLabels),
-          #verticalAlign = opts$data_labels_align#'middle'
-        ),
-        cursor =  opts$cursor,
-        events = list(
-          click = JS(opts$click_function)
-        ),
-        marker = list(
-          enabled = opts$line_marker_show,
-          symbol = "circle",
-          radius = opts$line_marker_size
-        )
-      )
+    #   series = list(
+    #     connectNulls = opts$line_connect_na,
+    #     # colorByPoint = opts$color_by_point,
+    #     animation = list(
+    #       duration = opts$animation_duration
+    #     ),
+    #     dataLabels = list (
+    #       enabled = opts$datalabel_show,
+    #       className = "custom-data-label",
+    #       format = opts$datalabel_template,#'{y} %',
+    #       #format = paste0("",opts$format_sample_num)
+    #       style = list(
+    #         useHTML = TRUE,
+    #         color = opts$datalabel_color %||% opts$text_color,
+    #         fontFamily = opts$text_family,
+    #         fontSize = paste0(opts$datalabel_size %||% 11, "px"),
+    #         textOutline = ifelse(opts$datalabel_text_outline_show, "1px contrast", "none")
+    #       ),
+    #       inside = opts$datalabel_inside#,
+    #       #format = opts$templatedataLabels %||% paste0(opts$cats, opts$format_dataLabels),
+    #       #verticalAlign = opts$data_labels_align#'middle'
+    #     ),
+    #     cursor =  opts$cursor,
+    #     events = list(
+    #       click = JS(opts$click_function)
+    #     ),
+    #     marker = list(
+    #       enabled = opts$line_marker_show,
+    #       symbol = "circle",
+    #       radius = opts$line_marker_size
+    #     )
+    #   ),
+    #   scatter = list(
+    #     marker = list(
+    #       color = "red",
+    #       radius = 2.5,
+    #       symbol = 'circle',
+    #       states = list(
+    #         hover = list(
+    #           enabled = TRUE,
+    #           lineColor = 'rgb(100,100,100)'
+    #         )
+    #       )
+    #     ),
+    #     states = list(
+    #       hover = list(
+    #         marker = list(
+    #           enabled = TRUE
+    #         )
+    #       )
+    #     ),
+    #     jitter = list(
+    #       x= 0.005
+    #     )
+    #   )
     ),
 
     legend = list(

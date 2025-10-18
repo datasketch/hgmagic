@@ -11,18 +11,12 @@ hg_item <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% 'count')
 
-  ht <- hdtable(data, dic)
+
   var_cat <- c(var_cat, var_yea)
-  data_viz <- data_processing(ht$data, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_processing(data, dic, var_cat, var_num, viz = "bar", ...)
 
-  if ("..colors" %in% names(data)) {
-    data_colors <- data |> distinct_(var_cat, "..colors")
-    data_viz <- data_viz |> left_join(data_colors, by = var_cat)
-  } else {
-    color_by <- var_cat[1]
-    data_viz <- colors_data(data_viz, color_by = color_by, ...)
-  }
-
+  color_by <- var_cat[1]
+  data_viz <- colors_data(data_viz, ..., color_by = color_by)
   data_viz <- hg_list(data_viz, hdtype, "item")
 
   highchart() |>

@@ -1,21 +1,20 @@
 data_processing <- function(data,
-                      dic = NULL,
-                      var_group = NULL,
-                      var_num = NULL,
-                      viz = NULL,
-                      ...) {
-  print("var group")
- print(var_group)
- print("var_nums")
-  print(var_num)
-  data <- aggregate_data(data = data,
-                         dic = dic,
-                         group_vars = var_group,
-                         var_num_to_agg = var_num, ...)
-  data <- wrap_sort_data(data = data,
+                            dic = NULL,
+                            var_group = NULL,
+                            var_num = NULL,
+                            viz = NULL,
+                            ...) {
+
+  data_agg <- aggregate_data(data = data,
+                             dic = dic,
+                             group_vars = var_group,
+                             var_num_to_agg = var_num, ...)
+  data <- wrap_sort_data(data = data_agg$data, dic = data_agg$dic,
                          var_cat_order = var_group,
                          var_num_sort = var_num, viz = viz, ...)
-  print(data)
+
+  data <- add_labels_column(data = data, dic = data_agg$dic, var_num = var_num, ...)
+
   data
 }
 

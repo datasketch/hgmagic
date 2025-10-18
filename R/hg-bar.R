@@ -37,6 +37,11 @@ hg_bar <- function(data,
 
 }
 
+#' @export
+hg_bar_Num <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_num = vars[1], ...)
+}
 
 #' @export
 hg_bar_Cat <- function(data, dic = NULL, ...) {

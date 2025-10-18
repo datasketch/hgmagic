@@ -1,5 +1,6 @@
 test_that("hg_bar", {
   hg_bar(data = iris, var_num = "sepal_length")
+  hg_bar_Num(data = iris)
   hg_bar(data = iris, var_num = "sepal_length",
          var_cat = "species", sort = "asc", format_sample_cat = "UPPER")
   hg_bar(data = iris, var_num = "sepal_length",

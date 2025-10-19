@@ -712,6 +712,7 @@ process_DatNum <- function(d, viz) {
 #' @rdname process_functions
 process_CatDatNum <- function(d, viz) {
   if (viz %in% c("line")) {
+    categories <- unique(d[[2]])
     var_cat <- names(d)[1]
     data_groups <- purrr::map(unique(d[[1]]), ~
                                 d |> filter(!!sym(var_cat) %in% .x))
@@ -728,7 +729,7 @@ process_CatDatNum <- function(d, viz) {
       )
     })
     data <- list(
-      categories = unique(d[[2]]),
+      categories = categories,
       data = series
     )
   }

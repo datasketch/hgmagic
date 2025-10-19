@@ -1056,6 +1056,7 @@ add_DatNum_features <- function(hc, data, opts, viz) {
 
 
 add_CatDatNum_features <- function(hc, data, opts, viz) {
+
   hc <- hc |>
     hc_axis("x",
             categories = data$categories,

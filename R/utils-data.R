@@ -2,6 +2,7 @@ data_processing <- function(data,
                             dic = NULL,
                             var_group = NULL,
                             var_num = NULL,
+                            var_dat = NULL,
                             viz = NULL,
                             ...) {
 
@@ -9,9 +10,16 @@ data_processing <- function(data,
                              dic = dic,
                              group_vars = var_group,
                              var_num_to_agg = var_num, ...)
+
   data <- wrap_sort_data(data = data_agg$data, dic = data_agg$dic,
                          var_cat_order = var_group,
                          var_num_sort = var_num, viz = viz, ...)
+
+  if (viz == "line") {
+    if (!is.null(var_dat)) {
+      data <- convert_dates(data, var_dat = var_dat)
+    }
+  }
 
   data <- add_labels_column(data = data, dic = data_agg$dic, var_num = var_num, ...)
 

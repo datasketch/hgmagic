@@ -1,10 +1,10 @@
 #' @export
 hg_line <- function(data,
-                   dic = NULL,
-                   var_cat = NULL,
-                   var_yea = NULL,
-                   var_dat = NULL,
-                   var_num = NULL, ...) {
+                    dic = NULL,
+                    var_cat = NULL,
+                    var_yea = NULL,
+                    var_dat = NULL,
+                    var_num = NULL, ...) {
 
 
   if (is.null(data)) stop("You must enter a dataset")
@@ -14,14 +14,23 @@ hg_line <- function(data,
                        var_num = var_num %||% 'count')
 
   opts <- dsopts_merge(..., categories = "line")
-  ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea, var_dat)
 
-  data_viz <- data_processing(data, dic, var_cat, var_num, viz = "bar", ...)
+  data_viz <- data_processing(data, dic, var_cat, var_num, var_dat, viz = "line", ...)
+  if (!is.null(var_dat)) {
   data_viz <- data_viz |> tidyr::drop_na(!!sym(var_dat))
-  print(data_viz)
-  data_viz <- complete_values(data_viz, var_find = var_cat[2], var_expand = var_cat[1], var_num = var_num)
-  data_viz <- colors_data(data_viz, ...)
+  }
+
+  color_by <- NULL
+
+  if (!is.null(var_cat)) {
+    if (length(var_cat) > 1) {
+      color_by <- var_cat[1]
+      data_viz <- complete_values(data_viz, var_find = var_cat[2], var_expand = var_cat[1], var_num = var_num)
+    }
+  }
+
+  data_viz <- colors_data(data_viz, ..., color_by = color_by)
 
   data_viz <- hg_list(data_viz, hdtype, "line")
 

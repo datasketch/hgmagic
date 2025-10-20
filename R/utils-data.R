@@ -14,10 +14,11 @@ data_processing <- function(data,
   data <- wrap_sort_data(data = data_agg$data, dic = data_agg$dic,
                          var_cat_order = var_group,
                          var_num_sort = var_num, viz = viz, ...)
-
-  if (viz == "line") {
-    if (!is.null(var_dat)) {
-      data <- convert_dates(data, var_dat = var_dat)
+  if (!is.null(viz)) {
+    if (viz == "line") {
+      if (!is.null(var_dat)) {
+        data <- convert_dates(data, var_dat = var_dat)
+      }
     }
   }
 

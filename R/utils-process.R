@@ -244,7 +244,7 @@ process_CatCatNum <- function(d, viz) {
       categories = purrr::map(as.character(axis_cat), function(z) z),
       data = series_data
     )
-    print(data)
+
   }
 
   if (viz %in% c("line")) {
@@ -473,8 +473,7 @@ process_CatCatNum <- function(d, viz) {
 
 #' @rdname process_functions
 process_CatNumNum <- function(d, viz) {
-  print("CatNumNum")
-  print(d)
+
   if (viz %in% c("bar", "column")) {
     color <- unique(d$..colors)
     if (length(color) != 2) {

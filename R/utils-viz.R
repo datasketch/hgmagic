@@ -141,7 +141,6 @@ hc_add_line <- function(hc, data, hdtype, ...) {
 
 hc_add_item <- function(hc, data, hdtype, ...) {
   opts_theme <-  dsopts_merge(..., categories = "theme")
-  print(data)
   hc <- hc |>
     hc_chart(type = "item") |>
     hc_add_series(
@@ -931,7 +930,6 @@ add_parallel_features <- function(hc, data, opts, viz) {
 add_CatNumNum_features <- function(hc, data, opts, viz) {
 
   if (viz %in% c("bar", "column")) {
-    print("ACAA")
     hc <- hc |>
       hc_chart(zoomType = 'xy') |>
       hc_axis("x", categories = data$categories,

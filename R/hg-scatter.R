@@ -11,7 +11,6 @@ hg_scatter <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% "count")
 
-  ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
   opts <- dsopts_merge(..., categories = "scatter")
   data_viz <- data_processing(data, dic, var_cat, var_num, viz = "scatter", ...)

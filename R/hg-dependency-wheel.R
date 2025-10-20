@@ -10,10 +10,9 @@ hg_dependency_wheel <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% 'count')
 
-  ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
-  data_viz <- data_processing(na.omit(ht$data),
-                        ht$dic,
+  data_viz <- data_processing(na.omit(data),
+                        dic,
                         var_cat,
                         var_num,
                         text_wrap = 500,

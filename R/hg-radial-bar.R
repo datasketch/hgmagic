@@ -10,17 +10,11 @@ hg_radial_bar <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% "count")
 
-  ht <- hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
-  data_viz <- ht$data
+  data_viz <- data_processing(data, dic, var_cat, var_num, viz = "bar", ...)
+  data_viz <- complete_values(data_viz, var_find = var_cat[1], var_expand = var_cat[2], var_num = var_num)
 
-  if (length(var_cat) > 1) {
-    data_viz <- completevalues(data_viz, var_find = var_cat[1],
-                               var_expand = var_cat[2], var_num = var_num)
-  }
-
-  data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)
-  data_viz <- colors_data(data_viz,  ...)
+  data_viz <- colors_data(data_viz, var_cat = var_cat, var_num = var_num, ...)
   data_viz <- hg_list(data_viz, hdtype, "radial_bar")
 
   highchart() |>

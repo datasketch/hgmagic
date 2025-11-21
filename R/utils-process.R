@@ -15,8 +15,14 @@ hg_list <- function(data, hdtype, viz = NULL) {
     return(process_NumNum(data, viz))
   }
 
-  if (hdtype %in% c("CatNum")) {
-    return(process_CatNum(data, viz))
+  if (viz == "line") {
+    if (hdtype %in% c("DatNum", "CatNum")) {
+    return(process_DatNum(data, viz))
+    }
+  } else {
+    if (hdtype %in% c("CatNum")) {
+      return(process_CatNum(data, viz))
+    }
   }
 
   if (hdtype %in% c("CatCatNum")) {
@@ -77,17 +83,21 @@ hg_list <- function(data, hdtype, viz = NULL) {
 process_CatNum <- function(d, viz) {
 
   if (viz %in% c("bar", "column", "radial_bar", "pie", "donut")) {
-    data <- purrr::pmap(.l = list(d[[1]], d[[2]], d[[3]], d[[4]]),
-                        .f = function(name, y, label, color) {
-                          list("name" = as.character(name),
-                               "y" = as.numeric(y),
-                               "label" = label,
-                               "color" = color
-                          )
-                        })
+    data <- purrr::pmap(
+      list(d[[1]], d[[2]], d$..labels, d$..colors),
+      function(name, y, label, color) {
+        list(
+          "name" = as.character(name),
+          "y" = as.numeric(y),
+          "label" = label,
+          "color" = color
+        )
+      }
+    )
+
     data <- list(
       data = data,
-      categories = purrr::map(as.character(unique(d[[1]])), function(z) z)
+      categories = purrr::map(as.character(d[[1]][!duplicated(d[[1]])]), function(z) z)
     )
   }
 
@@ -108,7 +118,8 @@ process_CatNum <- function(d, viz) {
           "name" = name,
           "value" = value,
           "label" = label,
-          "color" = as.character(color)
+          "color" = as.character(color),
+          "colorValue" = value
         )
       }
     )
@@ -121,6 +132,7 @@ process_CatNum <- function(d, viz) {
       list("name" = z,
            "y" = as.numeric(d0[[2]]),
            "color" = d0$..colors,
+           "label" = d0$..labels,
            marker = list(
              symbol= 'point'
            ))
@@ -154,11 +166,31 @@ process_Num <- function(d, viz) {
 
 #' @rdname process_functions
 process_NumNum <- function(d, viz) {
+  if (viz %in% "line") {
+    data <- purrr::map(1:2, function(i) {
+      col <- names(d)[i]
+
+      list(
+        name = col,
+        yAxis = i - 1,
+        color = unique(d[[paste0(col, "_color")]])[1],
+        data = purrr::imap(d[[i]], function(y, j) {
+          list(
+            x = j - 1,
+            y = as.numeric(y),
+            label = d$..labels[j]
+          )
+        })
+      )
+    })
+  }
+
   if (viz %in% "scatter") {
     if ("x" %in% names(d)) d <- d |> rename(x1 = x)
     if ("y" %in% names(d)) d <- d |> rename(y1 = y)
 
-    d <- d |> rename(x = 1, y = 2, color = ..colors, label = ..labels)
+    d <- d |> tidyr::drop_na() |>
+      rename(x = 1, y = 2, color = ..colors, label = ..labels)
 
     data <- purrr::pmap(d, function(x, y, color, label) {
       list(
@@ -178,18 +210,60 @@ process_CatCatNum <- function(d, viz) {
 
   if (viz %in% c("bar", "column", "radial_bar")) {
     d$..labels <- as.character(d$..labels)
+    # Obtener categorías del eje X preservando el orden original de la tabla
+    # Usar el orden de aparición en la tabla original, no el orden de la variable
+    axis_cat <- d[[1]][!duplicated(d[[1]])]
+
+    # Crear las series de manera simplificada preservando el orden original
+    # Obtener el orden original de la segunda variable
+    series_order <- d[[2]][!duplicated(d[[2]])]
+
+    # Crear las series manualmente para preservar el orden exacto
+    series_data <- purrr::map(series_order, function(series_name) {
+      # Filtrar datos para esta serie específica
+      series_rows <- d[d[[2]] == series_name, ]
+
+      # Ordenar por el orden original de la tabla (no por categorías)
+      # Usar el índice original de las filas para mantener el orden
+      original_indices <- which(d[[2]] == series_name)
+      series_rows <- series_rows[order(original_indices), ]
+
+      # Crear la lista de datos para esta serie
+      series_data_list <- purrr::map2(series_rows[[3]], series_rows$..labels,
+                                    function(y, label) list(y = y, label = label))
+
+      # Retornar la estructura de la serie
+      list(
+        name = series_name,
+        data = series_data_list,
+        color = unique(series_rows$..colors)
+      )
+    })
+
+    data <- list(
+      categories = purrr::map(as.character(axis_cat), function(z) z),
+      data = series_data
+    )
+
+  }
+
+  if (viz %in% c("line")) {
+    d$..labels <- as.character(d$..labels)
+
+      d <- d |> tidyr::drop_na(!!sym(names(d)[1]),!!sym(names(d)[2]))
+
     axis_cat <- unique(d[[2]])
     if (all(grepl("^[0-9]+$", d[[2]]))) {
       axis_cat <- sort(unique(d[[2]]))
     }
 
-    data_groups <- list(unique(d[[1]]),
+    data_groups <- list(d[[1]][!duplicated(d[[1]])],
                         split(d[complete.cases(
                           d[,c(setdiff(names(d), names(d)[1]))]),], d[[1]]))
 
     data <- list(
       categories = purrr::map(as.character(axis_cat), function(z) z),
-      data = purrr::map(unique(d[[1]]), function(i) {
+      data = purrr::map(d[[1]][!duplicated(d[[1]])], function(i) {
         d0 <- d |>
           dplyr::filter(!!sym(names(d)[1]) %in% i) #|>
         #dplyr::arrange(..index)
@@ -224,14 +298,34 @@ process_CatCatNum <- function(d, viz) {
         name = nm,
         parent = d[[1]][z],
         value = d[[3]][z],
-        label = d$..labels[z]#,
-        #colorValue = d[[3]][z]
+        label = d$..labels[z],
+        colorValue = d[[3]][z]
       )
     })
     data <- list(data = c(list_id, list_cats))
   }
 
-  if (viz %in% "bubble") {
+  if (viz %in% "heatmap") {
+    x_categories <- unique(d[[1]])
+    y_categories <- unique(d[[2]])
+
+    x_matches <- purrr::set_names(0:(length(x_categories) - 1), x_categories)
+    y_matches <- purrr::set_names(0:(length(y_categories) - 1), y_categories)
+
+    data <- list(
+      categories = list(x = unique(d[[1]]), y = unique(d[[2]])),
+      data = purrr::map(seq_len(nrow(d)), function(i) {
+        list(
+          x = x_matches[[d[[1]][i]]],
+          y = y_matches[[d[[2]][i]]],
+          value = d[[3]][i],
+          label = d$..labels[i]
+        )
+      })
+    )
+  }
+
+  if (viz %in% c("bubble")) {
     var_cat <- names(d)[1]
 
     data <- purrr::map(unique(d[[1]]), function(z){
@@ -339,7 +433,7 @@ process_CatCatNum <- function(d, viz) {
     data <- append(data, subcategory_data)
   }
 
-  if (viz %in% "sankey"){
+  if (viz %in% c("sankey", "dependency_wheel")){
     data <- d |>
       set_names("from", "to", "weight", "label")
 
@@ -372,11 +466,14 @@ process_CatCatNum <- function(d, viz) {
     data <- list(data = data, categories = unique(d[[2]]))
   }
 
+
+
   data
 }
 
 #' @rdname process_functions
 process_CatNumNum <- function(d, viz) {
+
   if (viz %in% c("bar", "column")) {
     color <- unique(d$..colors)
     if (length(color) != 2) {
@@ -388,7 +485,7 @@ process_CatNumNum <- function(d, viz) {
           name = names(d)[col],
           color = color[col-1],
           type = viz,
-          yAxis = col - 2,
+           yAxis = col - 2,
           data = purrr::imap(d[[col]], function(y, i) {
             list(
               label = d$..labels[i],
@@ -418,6 +515,16 @@ process_CatNumNum <- function(d, viz) {
       title_axis = names(d)[2:3],
       categories = purrr::map(unique(d[[1]]), ~as.character(.x)),
       data = series
+    )
+  }
+
+  if (viz %in% "line") {
+    series <- process_NumNum(d |> select(-1), viz)
+    categories <- unique(d[[1]])
+
+    data <- list(
+      data = series,
+      categories = categories
     )
   }
 
@@ -604,6 +711,7 @@ process_DatNum <- function(d, viz) {
 #' @rdname process_functions
 process_CatDatNum <- function(d, viz) {
   if (viz %in% c("line")) {
+    categories <- unique(d[[2]])
     var_cat <- names(d)[1]
     data_groups <- purrr::map(unique(d[[1]]), ~
                                 d |> filter(!!sym(var_cat) %in% .x))
@@ -620,7 +728,7 @@ process_CatDatNum <- function(d, viz) {
       )
     })
     data <- list(
-      categories = unique(d[[2]]),
+      categories = categories,
       data = series
     )
   }
@@ -761,7 +869,7 @@ process_network_graph <- function(d, viz) {
 process_parallel_data_plot <- function(d, viz) {
 
   if(viz %in% "parallel_coordinates") {
-    d0 <- d |> select(-c(..colors, Conteo,..labels))
+    d0 <- d |> select(-c(..colors, count,..labels))
 
     xAxis <- colnames(d0)
     yAxis <- 1:ncol(d0) |>

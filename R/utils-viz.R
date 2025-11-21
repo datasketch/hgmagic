@@ -1,15 +1,20 @@
 hc_add_bar <- function(hc, data, hdtype, ...) {
-
-  opts <- c(dsopts_merge(..., categories = "bar"),
-            dsopts_merge(..., categories = "axis")
+  opts <- c(
+    dsopts_merge(..., categories = "bar"),
+    dsopts_merge(..., categories = "axis")
   )
+
   opts_theme <-  dsopts_merge(..., categories = "theme")
   bar_type <- if (opts$bar_orientation == "ver") "column" else "bar"
 
   # Common hc_chart setup
   hc <- hc |>
-    hc_chart(type = bar_type)
-
+    hc_chart(type = bar_type#,
+    #          events = list(
+    #   load = js_translate,
+    #   redraw = js_translate
+    # )
+    )
 
   if (opts$bar_orientation == "hor") {
     title_axis_x <- opts$title_axis_y
@@ -19,8 +24,15 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
   }
 
   # Handle different hdtype scenarios with consolidated conditional logic
+
+  if (hdtype == "Num") {
+    opts$legend_show <- FALSE
+    hc <- hc |> add_Num_features(data, opts, "bar")
+  }
+
   if (hdtype == "CatNum") {
     opts$legend_show <- FALSE
+    opts$bar_graph_type <- "grouped"
     hc <- hc |> add_CatNum_features(data, opts, bar_type)
   }
 
@@ -36,7 +48,6 @@ hc_add_bar <- function(hc, data, hdtype, ...) {
     hc_add_theme(hgch_theme(opts = opts_theme))
 
   hc
-
 }
 
 hc_add_pie <- function(hc, data, hdtype, ...) {
@@ -84,10 +95,16 @@ hc_add_line <- function(hc, data, hdtype, ...) {
 
 
   # Handle different hdtype scenarios with consolidated conditional logic
-  if (hdtype == "DatNum") {
+  if (hdtype == "DatNum" | hdtype == "CatNum") {
     opts$legend_show <- FALSE
     opts$palette_colors <- data$color
     hc <- hc |> add_DatNum_features(data, opts, 'line')
+  }
+
+  if (hdtype == "CatYeaNum" | hdtype == "CatCatNum") {
+
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_CatCatNum_features(data, opts, 'line')
   }
 
   if (hdtype == "CatDatNum") {
@@ -102,6 +119,16 @@ hc_add_line <- function(hc, data, hdtype, ...) {
   if (hdtype == "Num") {
     opts <- c(opts, dsopts_merge(..., categories = "legend"))
     hc <- hc |> add_Num_features(data, opts, "line")
+  }
+
+  if (hdtype == "NumNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_NumNum_features(data, opts, "line")
+  }
+
+  if (hdtype == "CatNumNum") {
+    opts <- c(opts, dsopts_merge(..., categories = "legend"))
+    hc <- hc |> add_CatNumNum_features(data, opts, "line")
   }
 
   hc <- hc |>
@@ -120,8 +147,8 @@ hc_add_item <- function(hc, data, hdtype, ...) {
       layout= 'horizontal',
       data = data
     ) |>
-    # hc_tooltip(useHTML = TRUE,
-    #            formatter = JS(paste0("function () {return this.point.label;}")))|>
+    hc_tooltip(useHTML = TRUE,
+               formatter = JS(paste0("function () {return this.point.label;}")))|>
     hc_plotOptions(
       series = list(
         states = list(
@@ -162,19 +189,71 @@ hc_add_bubbles <- function(hc, data, hdtype, ...) {
 
 hc_add_treemap <- function(hc, data, hdtype, ...) {
 
-  opts <- dsopts_merge(..., categories = "treemap")
+  opts <- c(
+    dsopts_merge(..., categories = "treemap"),
+    dsopts_merge(..., categories = "legend")
+  )
+
   opts_theme <-  dsopts_merge(..., categories = "theme")
+  opts_color <- dsopts_merge(..., categories = "colorprep")
+
   hc <- hc |>
     hc_chart(type = "treemap")
 
 
+  palette_type <- opts_color$color_palette_type %||% "categorical"
+  colors <- opts_color$color_palette
+
+  if (is.null(colors)) {
+    colors <- opts_color[[paste0("color_palette_", palette_type)]] %||% c("#385573", "#ffa92a", "#f06142", "#99e8b3", "#32a8ce", "#996295", "#e59fd7")
+  }
+  opts_theme[[paste0("color_palette_", palette_type)]] <- colors
+
+  if (!is.null(palette_type) && palette_type == "sequential") {
+    palette <- colors#opts_color$color_palette_sequential
+
+    hc <- hc |>
+      hc_colorAxis(
+        minColor = palette[1],
+        maxColor = palette[length(palette)]
+      )
+  }
+
   # Handle different hdtype scenarios with consolidated conditional logic
   if (hdtype == "CatNum") {
+    if (!is.null(palette_type) && palette_type == "sequential") {
+      data <- purrr::map(data, ~ .x[setdiff(names(.x), "color")])
+    }
+
     hc <- hc |> add_CatNum_features(data, opts, "treemap")
   }
 
   if (hdtype == "CatCatNum") {
+    if (!is.null(palette_type) && palette_type == "sequential") {
+      data$data <- purrr::map(data$data, ~ .x[setdiff(names(.x), "color")])
+    }
+
     hc <- hc |> add_CatCatNum_features(data, opts, "treemap")
+  }
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+
+  hc
+
+}
+
+hc_add_heatmap <- function(hc, data, hdtype, ...) {
+
+  opts <- dsopts_merge(..., categories = "legend")
+  opts_theme <-  dsopts_merge(..., categories = "theme")
+  opts$title_axis_y <- opts$title_axis_y %||% ""
+
+  hc <- hc |>
+    hc_chart(type = "heatmap")
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "heatmap")
   }
 
   hc <- hc |>
@@ -352,6 +431,41 @@ hc_add_sankey <- function(hc, data, hdtype, ...){
   hc
 }
 
+hc_add_dependency_wheel <- function(hc, data, hdtype, ...) {
+  opts <- c(dsopts_merge(..., categories = "axis"),
+            dsopts_merge(..., categories = "sankey"))
+
+  opts_theme <- dsopts_merge(..., categories = "theme")
+  hc <- hc |>
+    hc_chart(type = "dependencywheel")
+
+  if (hdtype == "CatCatNum") {
+    hc <- hc |> add_CatCatNum_features(data, opts, "dependencywheel")
+  }
+
+  # TODO: revisar para crear las opciones en dsopts
+  hc <- hc |>
+    hc_plotOptions(
+      dependencywheel = list(
+        dataLabels = list(
+          color = "#333",
+          distance = 10,
+          textPath = list(
+            enabled = TRUE,
+            attributes = list(
+              dy = 5
+            )
+          )
+        ),
+        size = "95%"
+      )
+    )
+
+  hc <- hc |>
+    hc_add_theme(hgch_theme(opts = opts_theme))
+  hc
+}
+
 hc_add_dumbbell <- function(hc, data, hdtype, ...){
   opts <- c(dsopts_merge(..., categories = "axis"))
 
@@ -464,6 +578,14 @@ hc_add_bar_negative_stack <- function(hc, data, hdtype, ...) {
 
 
 add_Num_features <- function(hc, data, opts, viz) {
+
+  if (viz %in% "bar") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_axis(axis = "y", opts = opts) |>
+      hc_add_legend(opts = opts)
+  }
+
   if (viz %in% "line") {
     hc <- hc |>
       hc_axis(axis = "x", opts = opts) |>
@@ -481,14 +603,36 @@ add_Num_features <- function(hc, data, opts, viz) {
 
 add_NumNum_features <- function(hc, data, opts, viz) {
 
+  if (viz %in% "line") {
+    hc <- hc |>
+      hc_axis(axis = "x", opts = opts) |>
+      hc_yAxis_multiples(
+        list(
+          title = list(text = opts$title_axis_y)
+        ),
+        list(
+          title = list(text = opts$title_axis_y2),
+          opposite = TRUE
+        )
+      ) |>
+      hc_add_legend(opts = opts) |>
+      hc_data_series(data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      )
+  }
+
   if (viz %in% c("scatter")) {
-    colors <- unique(data$..colors)
 
     hc <- hc |>
       hc_chart(type = "scatter") |>
       hc_axis(axis = "x", opts = opts) |>
       hc_axis(axis = "y", opts = opts) |>
-      hc_data_series(data) |>
+      hc_add_series(
+        data = data,
+        type = "scatter"
+      ) |>
       hc_tooltip(
         useHTML = TRUE,
         formatter = JS("function () {return this.point.label;}")
@@ -511,8 +655,10 @@ add_CatNum_features <- function(hc, data, opts, viz) {
 
   if (viz %in% c("bar", "column")) {
     hc <- hc |>
-      hc_axis("x", categories = data$categories,
-              type = "category", opts = opts) |>
+      hc_axis(
+        axis = "x", categories = data$categories,
+        type = "category", opts = opts
+      ) |>
       hc_axis(axis = "y", opts = opts)
   }
 
@@ -522,11 +668,11 @@ add_CatNum_features <- function(hc, data, opts, viz) {
   }
 
   hc <- hc |>
-    hc_add_options(viz = viz, opts) |>
     hc_tooltip(
       useHTML = TRUE,
       formatter = JS("function () {return this.point.label;}")
     ) |>
+    hc_add_options(viz = viz, opts) |>
     hc_add_legend(opts)
 
   hc
@@ -534,7 +680,16 @@ add_CatNum_features <- function(hc, data, opts, viz) {
 
 add_CatCatNum_features <- function(hc, data, opts, viz) {
 
-  if (viz %in% c("bar", "column", "treemap")) {
+  if (viz %in% c( "treemap")) {
+    hc <- hc |>
+      hc_data_series(data$data) |>
+      hc_tooltip(useHTML = TRUE,
+                 formatter = JS(paste0("function () {return this.point.label;}"))) |>
+      hc_add_options(viz = viz, opts) |>
+      hc_add_legend(opts)
+  }
+
+  if (viz %in% c("bar", "column", "line")) {
     hc <- hc |>
       hc_data_series(data$data) |>
       hc_axis("x", categories = data$categories,
@@ -543,6 +698,25 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_tooltip(useHTML = TRUE,
                  formatter = JS(paste0("function () {return this.point.label;}"))) |>
       hc_add_options(viz = viz, opts) |>
+      hc_add_legend(opts)
+  }
+
+  if (viz == "heatmap") {
+    hc <- hc |>
+      hc_data_series(data$data) |>
+      hc_axis(
+        axis = "x", type = "category",
+        categories = data$categories$x, opts = opts
+      ) |>
+      hc_axis(
+        axis = "y", type = "category",
+        categories = data$categories$y, opts = opts
+      ) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
+      ) |>
+      hc_colorAxis(minColor = data$color[1], maxColor = data$color[2]) |>
       hc_add_legend(opts)
   }
 
@@ -568,7 +742,8 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_add_dependency("plugins/grouped-categories.js")
   }
 
-  if (viz == "scatter") {
+
+  if (viz %in% c("scatter")) {
     hc <- hc |>
       hc_axis(
         axis = "x", type = "category",
@@ -583,7 +758,7 @@ add_CatCatNum_features <- function(hc, data, opts, viz) {
       hc_add_legend(opts = opts)
   }
 
-  if (viz == "sankey"){
+  if (viz %in% c("sankey", "dependencywheel")){
     hc <- hc |>
       hc_tooltip(
         useHTML = TRUE,
@@ -758,7 +933,8 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
     hc <- hc |>
       hc_chart(zoomType = 'xy') |>
       hc_axis("x", categories = data$categories,
-              type = "category", opts = opts) |>
+              type = "category", opts = opts, double_axis = TRUE) |>
+      hc_axis("y", opts = opts, double_axis = TRUE) |>
       hc_tooltip(
         useHTML = TRUE,
         shared = TRUE,
@@ -780,12 +956,35 @@ add_CatNumNum_features <- function(hc, data, opts, viz) {
 
   }
 
-  if (viz %in% c("bar", "bar_line", "column")) {
-    hc <-  hc |>
+  # if (viz %in% c("bar", "bar_line", "column")) {
+  #   hc <-  hc |>
+  #     hc_yAxis_multiples(
+  #       list(title = list(text = opts$title_axis_y)),
+  #       list(title = list(text = opts$title_axis_y2),
+  #            opposite = TRUE)
+  #     )
+  # }
+
+  if (viz %in% "line") {
+    hc <- hc |>
+      hc_axis(
+        axis = "x", categories = data$categories,
+        type = "category", opts = opts
+      ) |>
       hc_yAxis_multiples(
-        list(title = list(text = opts$title_axis_y)),
-        list(title = list(text = opts$title_axis_y2),
-             opposite = TRUE)
+        list(
+          title = list(text = opts$title_axis_y)
+        ),
+        list(
+          title = list(text = opts$title_axis_y2),
+          opposite = TRUE
+        )
+      ) |>
+      hc_add_legend(opts = opts) |>
+      hc_data_series(data$data) |>
+      hc_tooltip(
+        useHTML = TRUE,
+        formatter = JS("function () {return this.point.label;}")
       )
   }
 
@@ -852,7 +1051,10 @@ add_DatNum_features <- function(hc, data, opts, viz) {
   hc
 }
 
+
+
 add_CatDatNum_features <- function(hc, data, opts, viz) {
+
   hc <- hc |>
     hc_axis("x",
             categories = data$categories,

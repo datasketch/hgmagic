@@ -1,6 +1,5 @@
 #' @keywords internal
 hgch_theme <- function(opts = NULL) {
-  message("in theme")
 
   highcharter::hc_theme(
     useHTML = TRUE,
@@ -40,6 +39,7 @@ hgch_theme <- function(opts = NULL) {
         fontSize = paste0(opts$subtitle_size, 'px'),
         color = opts$subtitle_color %||% opts$text_color,
         fontWeight = opts$subtitle_weight
+
       )
     ),
     credits = list(
@@ -74,7 +74,7 @@ hgch_theme <- function(opts = NULL) {
         #rotation = opts$axis_x_rotation,
         enabled = opts$axis_x_datalabel_show %||% TRUE,
         style = list(
-          color = opts$axis_title_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
+          color = opts$title_axis_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
           fontFamily = opts$text_family,
           fontSize = paste0(opts$text_size, 'px')
         )),
@@ -114,7 +114,7 @@ hgch_theme <- function(opts = NULL) {
         enabled = opts$axis_y_datalabel_show %||% TRUE,
         #rotation = opts$axis_y_rotation,
         style = list(
-          color = opts$axis_title_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
+          color = opts$title_axis_color %||% opts$text_color, #opts$font_color, #color nombre de las etiquetas
           fontFamily = opts$text_family,
           fontSize = paste0(opts$text_size, 'px')
         )),
@@ -139,63 +139,98 @@ hgch_theme <- function(opts = NULL) {
       #   #        # )
       #   #   ))
     ),
-    # # plotOptions = list (
-    # #   packedbubble = list(
-    # #     minSize = opts$bubble_min,
-    # #     maxSize = opts$bubble_max,
-    # #     animation = list(
-    # #       duration = opts$animation_duration
-    # #     ),
-    # #     # zMin = 0,
-    # #     # zMax = 1000,
-    # #     layoutAlgorithm = list(
-    # #       splitSeries = FALSE,
-    # #       gravitationalConstant = 0.02
-    # #     ),
-    # #     marker= list(
-    # #       fillOpacity = opts$bubble_opacity)
-    # #   ),
-    # #
-    # #   series = list(
-    # #     connectNulls = opts$connect_lines_nulls,
-    # #     colorByPoint = opts$color_by_point,
-    # #     animation = list(
-    # #       duration = opts$animation_duration
-    # #     ),
-    # #     dataLabels = list (
-    # #       enabled = opts$data_labels_show,
-    # #       format = opts$data_labels_template,#'{y} %',
-    # #       #format = paste0("",opts$format_sample_num)
-    # #       style = list(
-    # #         color = opts$data_labels_color %||% opts$text_color,
-    # #         fontFamily = opts$text_family,
-    # #         fontSize = paste0(opts$data_labels_size %||% 11, "px"),
-    # #         textDecoration= "none",
-    # #         textShadow = "none",
-    # #         textOutline = ifelse(opts$data_labels_text_outline, "1px contrast", "none")
-    # #       ),
-    # #       inside = opts$data_labels_inside,
-    # #       #format = opts$templatedataLabels %||% paste0(opts$cats, opts$format_dataLabels),
-    # #       verticalAlign = opts$data_labels_align#'middle'
-    # #     ),
-    # #     cursor =  opts$cursor,
-    # #     events = list(
-    # #       click = JS(opts$click_function)
-    # #     ),
-    # #     marker = list(
-    # #       enabled = opts$marker_enabled,
-    # #       symbol = "circle",
-    # #       radius = opts$marker_radius
-    # #     )
-    # #   ),
-    # #   pie = list(
-    # #     animation = list(
-    # #       duration = opts$animation_duration
-    # #     ),
-    # #     dataLabels = list(distance = ifelse(opts$inner_dataLabels,-100, 30)),
-    # #     showInLegend = opts$legend_show
-    # #   )
-    # # ),
+    plotOptions = list (
+      pie = list(
+        innerSize = opts$pie_inner_size,
+        borderRadius = 8,
+        animation = list(
+          duration = opts$animation_duration
+        ),
+        #dataLabels = list(distance = ifelse(opts$inner_dataLabels,-100, 30)),
+        showInLegend = opts$legend_show
+
+      ),
+      sankey = list(
+        animation = list(
+          duration = opts$animation_duration
+        ),
+        nodeWidth = opts$sankey_node_width,
+        nodePadding = 15,
+        nodeOpacity = opts$sankey_node_opacity
+        )#,
+      # #   packedbubble = list(
+      # #     minSize = opts$bubble_min,
+      # #     maxSize = opts$bubble_max,
+      # #     animation = list(
+      # #       duration = opts$animation_duration
+      # #     ),
+      # #     # zMin = 0,
+      # #     # zMax = 1000,
+      # #     layoutAlgorithm = list(
+      # #       splitSeries = FALSE,
+      # #       gravitationalConstant = 0.02
+      # #     ),
+      # #     marker= list(
+      # #       fillOpacity = opts$bubble_opacity)
+      # #   ),
+      # #
+    #   series = list(
+    #     connectNulls = opts$line_connect_na,
+    #     # colorByPoint = opts$color_by_point,
+    #     animation = list(
+    #       duration = opts$animation_duration
+    #     ),
+    #     dataLabels = list (
+    #       enabled = opts$datalabel_show,
+    #       className = "custom-data-label",
+    #       format = opts$datalabel_template,#'{y} %',
+    #       #format = paste0("",opts$format_sample_num)
+    #       style = list(
+    #         useHTML = TRUE,
+    #         color = opts$datalabel_color %||% opts$text_color,
+    #         fontFamily = opts$text_family,
+    #         fontSize = paste0(opts$datalabel_size %||% 11, "px"),
+    #         textOutline = ifelse(opts$datalabel_text_outline_show, "1px contrast", "none")
+    #       ),
+    #       inside = opts$datalabel_inside#,
+    #       #format = opts$templatedataLabels %||% paste0(opts$cats, opts$format_dataLabels),
+    #       #verticalAlign = opts$data_labels_align#'middle'
+    #     ),
+    #     cursor =  opts$cursor,
+    #     events = list(
+    #       click = JS(opts$click_function)
+    #     ),
+    #     marker = list(
+    #       enabled = opts$line_marker_show,
+    #       symbol = "circle",
+    #       radius = opts$line_marker_size
+    #     )
+    #   ),
+    #   scatter = list(
+    #     marker = list(
+    #       color = "red",
+    #       radius = 2.5,
+    #       symbol = 'circle',
+    #       states = list(
+    #         hover = list(
+    #           enabled = TRUE,
+    #           lineColor = 'rgb(100,100,100)'
+    #         )
+    #       )
+    #     ),
+    #     states = list(
+    #       hover = list(
+    #         marker = list(
+    #           enabled = TRUE
+    #         )
+    #       )
+    #     ),
+    #     jitter = list(
+    #       x= 0.005
+    #     )
+    #   )
+    ),
+
     legend = list(
       backgroundColor = opts$legend_background,
       borderColor = opts$legend_border_color,
@@ -216,6 +251,7 @@ hgch_theme <- function(opts = NULL) {
         color = opts$legend_text_color %||% opts$text_color
       )
     ),
+
     tooltip = list(
       useHTML = TRUE,
       backgroundColor = opts$tooltip_background,

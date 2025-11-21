@@ -13,15 +13,13 @@ hg_bar_line <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% 'count')
 
-  ht <- hdtable(data, dic)
+
   var_cat <- c(var_cat, var_yea, var_dat)
-  data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_processing(data, dic, var_cat, var_num, var_dat, ...)
 
   color_by <- NULL
   if (length(var_cat) > 1) {
     color_by <- var_cat[1]
-    data_viz <- completevalues(data_viz, var_find = var_cat[1],
-                               var_expand = var_cat[2], var_num = var_num)
   }
   if (length(var_num) > 1) color_by <- var_cat
   data_viz <- colors_data(data_viz, color_by = color_by, ...)

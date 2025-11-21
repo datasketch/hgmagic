@@ -4,4 +4,9 @@ test_that("hg_parallel_coordinates_CatCatCatCatCatCatCat", {
     select(hair_color, skin_color, eye_color, sex, gender, homeworld, species)
 
   hg_parallel_coordinates_CatCatCatCatCatCatCat(data = data)
+
+  data <- starwars |>
+    select(hair_color, skin_color, eye_color, sex, gender, homeworld, species)
+
+  hg_parallel_coordinates(data = data, var_cat = c("hair_color", "sex"))
 })

@@ -7,14 +7,12 @@ Authors@R:
 Description: hgmagic is a wrapper designed to enhance the usability and 
     functionality of the Highcharter R package.
 Depends:
-    hdtable,
     dsdatawiz,
     dsopts,
     dstools,
     highcharter,
     R (>= 3.0.0)
 Remotes:
-    datasketch/hdtable,
     datasketch/dsdatawiz,
     datasketch/dsopts,
     datasketch/dstools

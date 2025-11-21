@@ -28,7 +28,7 @@ test_that("hc_data_series", {
 
 
   ht <- iris |> select(Species, Sepal.Length) |> hdtable()
-  data_viz <- data_prep(ht$data, ht$dic, "species", "sepal_length", agg = "mean")
+  data_viz <- data_processing(ht$data, ht$dic, "species", "sepal_length", agg = "mean")
   data_viz <- colors_data(data_viz, color_by = "species")
   data_list <- hg_list(data_viz, "CatNum", "treemap")
   highchart() |>

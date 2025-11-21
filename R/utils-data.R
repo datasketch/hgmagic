@@ -1,28 +1,36 @@
-data_prep <- function(data,
-                      dic = NULL,
-                      var_group = NULL,
-                      var_num = NULL,
-                      ...) {
+data_processing <- function(data,
+                            dic = NULL,
+                            var_group = NULL,
+                            var_num = NULL,
+                            var_dat = NULL,
+                            viz = NULL,
+                            ...) {
 
-  opts <- list(...)
+  data_agg <- aggregate_data(data = data,
+                             dic = dic,
+                             group_vars = var_group,
+                             var_num_to_agg = var_num, ...)
 
-  dic <- dic %||% hdtable(data)$dic
-  var_group <- var_group %||% default_var_group(dic)
-
-  data <- aggregate_data(data = data,
-                         dic = dic,
-                         group_vars = var_group,
-                         var_num_to_agg = var_num, ...)
-
-  if (is.null(var_num)) var_num <- opts$agg_text %||% "Conteo"
-
-  data <- wrap_sort_data(data = data,
+  data <- wrap_sort_data(data = data_agg$data, dic = data_agg$dic,
                          var_cat_order = var_group,
-                         var_num_sort = var_num, ...)
+                         var_num_sort = var_num, viz = viz, ...)
+  if (!is.null(viz)) {
+    if (viz == "line") {
+      if (!is.null(var_dat)) {
+        data <- convert_dates(data, var_dat = var_dat)
+      }
+    }
+  }
+
+  data <- add_labels_column(data = data, dic = data_agg$dic, var_num = var_num, ...)
 
   data
-
 }
+
+
+#
+# data
+
 
 
 default_var_group <- function(dic = NULL) {
@@ -40,28 +48,7 @@ default_var_group <- function(dic = NULL) {
   var_group
 }
 
-#' @keywords internal
-completevalues <- function(data, var_find = NULL, var_expand = NULL ,var_num = NULL) {
-  if (ncol(data) < 2) {
-    stop("data must have at least two columns.")
-  }
-  var_num <-  var_num %||% names(data)[3]
-  var_find <- var_find %||% names(data)[1]
-  var_expand <- var_expand %||% names(data)[2]
 
-  all_vars <- c(var_find, var_expand, var_num)
-  if (!all(all_vars %in% names(data))) {
-    stop("One or more specified variables do not exist in the data frame.")
-  }
-
-  data <- data |>
-    as_tibble() |>
-    tidyr::complete(!!!syms(var_find),
-                    !!sym(var_expand),
-                    fill = setNames(list(NA), var_num))
-
-  data
-}
 
 
 

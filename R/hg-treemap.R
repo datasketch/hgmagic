@@ -11,13 +11,13 @@ hg_treemap <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% 'count')
 
-  ht <- hdtable(data, dic)
+
   var_cat <- c(var_cat, var_yea)
-  data_viz <- data_prep(ht$data, ht$dic, var_cat, var_num, ...)
+  data_viz <- data_processing(data, dic, var_cat, var_num, viz = "treemap", ...)
 
   color_by <- var_cat[1]
+  data_viz <- colors_data(data_viz, ..., color_by = color_by)
 
-  data_viz <- colors_data(data_viz, color_by = color_by, ...)
   data_viz <- hg_list(data_viz, hdtype, "treemap")
 
   highchart() |>

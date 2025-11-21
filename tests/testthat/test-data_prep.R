@@ -1,14 +1,14 @@
-test_that("data_prep", {
+test_that("data_processing", {
 
   # CatNum
   ht_iris <- hdtable(iris)
-  data_result <- data_prep(ht_iris$data,
+  data_result <- data_processing(ht_iris$data,
                            ht_iris$dic,
                            "species",
                            "sepal_width")
 
   # CatCatNum
-  data_result <- data_prep(starwars, NULL,
+  data_result <- data_processing(starwars, NULL,
                     var_group = c("hair_color"),
                     c("mass", "height"))
 

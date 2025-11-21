@@ -11,44 +11,37 @@ hg_bar <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% 'count')
 
-  ht <- hdtable(data, dic)
-  var_cat <- c(var_cat, var_yea)
-  data_viz <- ht$data
+  data_viz <- data_processing(data, dic, var_cat, var_num, viz = "bar", ...)
+  data_viz <- complete_values(data_viz, var_find = var_cat[1], var_expand = var_cat[2], var_num = var_num)
+  data_viz <- colors_data(data_viz, var_cat = var_cat, var_num = var_num, ...)
 
-  color_by <- NULL
-  if (length(var_cat) > 1) {
-    color_by <- var_cat[1]
-    data_viz <- completevalues(data_viz, var_find = var_cat[1],
-                               var_expand = var_cat[2], var_num = var_num)
+  if (is.null(var_cat)) {
+    if (!is.null(var_num)) {
+      if (length(var_num) == 1) {
+        h <- hchart(data_viz[[var_num]], type = "histogram", color = unique(data_viz$..colors))
+      }
+    }
+  } else {
+    data_viz <- hg_list(data_viz, hdtype, "bar")
+    h <- highchart()
   }
 
-  data_viz <- data_prep(data_viz, ht$dic, var_cat, var_num, ...)
-  if (length(var_num) > 1) color_by <- var_cat
-  data_viz <- colors_data(data_viz,  ...)
-  data_viz <- hg_list(data_viz, hdtype, "bar")
-
-  h <- highchart() |>
+ h <- h |>
+   hc_add_bar(data_viz, hdtype, ...) |>
     hc_titles(opts = dsopts_merge(..., categories = "titles"))
 
-  if (hdtype == "CatNumNum") {
-    tooltip <- paste0(
-      "this.x + `<br>", names(data)[2],": ` + this.points[0].y + '<br>",
-      names(data)[3],": ' + this.points[1].y"
-    )
-    h <- h |>
-      hc_tooltip(useHTML = TRUE,
-                 formatter = JS(sprintf("function() { return %s; }", tooltip))
-      )
-  }
-
-   suppressMessages(
-     h |>
-    hc_add_bar(data_viz, hdtype, ...) |>
-     hc_add_exporting(...)
+  suppressMessages(
+    h  |>
+      hc_add_exporting(...)
   )
 
 }
 
+#' @export
+hg_bar_Num <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_num = vars[1], ...)
+}
 
 #' @export
 hg_bar_Cat <- function(data, dic = NULL, ...) {
@@ -58,6 +51,19 @@ hg_bar_Cat <- function(data, dic = NULL, ...) {
 
 #' @export
 hg_bar_CatNum <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_cat = vars[1], var_num = vars[2], ...)
+}
+
+#' @export
+hg_bar_Dat <- function(data, dic = NULL, ...) {
+  vars <- data_vars(data)
+  hg_bar(data, dic, var_cat = vars[1], ...)
+}
+
+
+#' @export
+hg_bar_DatNum <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
   hg_bar(data, dic, var_cat = vars[1], var_num = vars[2], ...)
 }

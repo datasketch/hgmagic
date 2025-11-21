@@ -9,10 +9,10 @@ hg_dumbbell <- function(data,
                        var_yea = var_yea,
                        var_num = var_num)
 
-  ht <- hdtable(data, dic)
+
   var_cat <- c(var_cat, var_yea)
-  data_viz <- data_prep(ht$data,
-                        ht$dic,
+  data_viz <- data_processing(data,
+                        dic,
                         var_cat,
                         var_num,
                         ...)

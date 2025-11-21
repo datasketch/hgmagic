@@ -20,7 +20,7 @@ test_that("hg_bar_CatNum", {
 })
 
 test_that("hg_bar_Cat", {
-  data <- iris |> select(Species, Sepal.Length)
+  data <- iris |> select(Species)
   hg_bar_Cat(data)
 })
 

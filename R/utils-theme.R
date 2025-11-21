@@ -160,6 +160,11 @@ hgch_theme <- function(opts = NULL) {
         showInLegend = opts$legend_show
 
       ),
+      treemap = list(
+        animation = list(
+          duration = opts$animation_duration
+        )
+      ),
       sankey = list(
         animation = list(
           duration = opts$animation_duration

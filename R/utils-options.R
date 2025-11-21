@@ -67,7 +67,7 @@ default_options <- function(viz, opts) {
       # # animationLimit = 1000,
       # # alternateStartingDirection  = TRUE,
       borderColor  = '#fff',
-      borderRadius  = 6,
+      borderRadius  = 2,
       borderWidth  = 2,
       # accessibility = list(
       #   exposeAsGroupOnly = TRUE

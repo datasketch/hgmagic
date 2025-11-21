@@ -140,6 +140,16 @@ hgch_theme <- function(opts = NULL) {
       #   #   ))
     ),
     plotOptions = list (
+      column = list(
+        animation = list(
+          duration = opts$animation_duration
+        )
+      ),
+      bar = list(
+        animation = list(
+          duration = opts$animation_duration
+        )
+      ),
       pie = list(
         innerSize = opts$pie_inner_size,
         borderRadius = 8,

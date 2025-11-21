@@ -22,13 +22,14 @@ test_that("default_var_group", {
 
 })
 
-test_that("completevalues", {
+test_that("complete_values", {
 
   ht_data <- sample_data("Cat-Dat-Num")
-  data_result <- completevalues(ht_data)
+  data_result <- complete_values(ht_data)
 
 })
 
 test_that("hdtype_viz", {
-  hdt
+  result <- hdtype_viz(var_cat = "species", var_num = "value")
+  expect_equal(result, "CatNum")
 })

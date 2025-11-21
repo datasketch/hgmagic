@@ -14,8 +14,11 @@ hg_scatter <- function(data,
   var_cat <- c(var_cat, var_yea)
   opts <- dsopts_merge(..., categories = "scatter")
   data_viz <- data_processing(data, dic, var_cat, var_num, viz = "scatter", ...)
-  data_viz <- complete_values(data_viz, var_find = var_cat[1], var_expand = var_cat[2], var_num = var_num)
-
+  
+  # Only complete values when there are 2+ categorical variables
+  if (length(var_cat) > 1) {
+    data_viz <- complete_values(data_viz, var_find = var_cat[1], var_expand = var_cat[2], var_num = var_num)
+  }
 
   if (length(var_cat) == 1) color_by <- var_cat[1]
   else if (length(var_cat) == 2) color_by <- var_cat[2]

@@ -11,18 +11,7 @@ data_processing <- function(data,
                              group_vars = var_group,
                              var_num_to_agg = var_num, ...)
 
-  # Handle both cases: aggregate_data may return a list or a data frame directly
-  if (is.list(data_agg) && !is.data.frame(data_agg)) {
-    # Old behavior: returns list with $data and $dic
-    agg_data <- data_agg$data
-    agg_dic <- data_agg$dic
-  } else {
-    # New behavior: returns data frame directly
-    agg_data <- data_agg
-    agg_dic <- dic
-  }
-
-  data <- wrap_sort_data(data = agg_data,
+  data <- wrap_sort_data(data = data_agg$data, dic = data_agg$dic,
                          var_cat_order = var_group,
                          var_num_sort = var_num, viz = viz, ...)
   if (!is.null(viz)) {
@@ -32,6 +21,8 @@ data_processing <- function(data,
       }
     }
   }
+
+  data <- add_labels_column(data = data, dic = data_agg$dic, var_num = var_num, ...)
 
   data
 }
@@ -55,29 +46,6 @@ default_var_group <- function(dic = NULL) {
   }
 
   var_group
-}
-
-#' @keywords internal
-complete_values <- function(data, var_find = NULL, var_expand = NULL, var_num = NULL) {
-  if (ncol(data) < 2) {
-    stop("data must have at least two columns.")
-  }
-  var_num <- var_num %||% names(data)[3]
-  var_find <- var_find %||% names(data)[1]
-  var_expand <- var_expand %||% names(data)[2]
-
-  all_vars <- c(var_find, var_expand, var_num)
-  if (!all(all_vars %in% names(data))) {
-    stop("One or more specified variables do not exist in the data frame.")
-  }
-
-  data <- data |>
-    dplyr::as_tibble() |>
-    tidyr::complete(!!!rlang::syms(var_find),
-                    !!rlang::sym(var_expand),
-                    fill = setNames(list(NA), var_num))
-
-  data
 }
 
 

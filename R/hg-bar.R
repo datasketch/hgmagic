@@ -11,15 +11,9 @@ hg_bar <- function(data,
                        var_yea = var_yea,
                        var_num = var_num %||% 'count')
 
-  var_cat <- c(var_cat, var_yea)
   data_viz <- data_processing(data, dic, var_cat, var_num, viz = "bar", ...)
-  
-  # Only complete values when there are 2+ categorical variables
-  if (length(var_cat) > 1) {
-    data_viz <- complete_values(data_viz, var_find = var_cat[1], var_expand = var_cat[2], var_num = var_num)
-  }
-  
-  data_viz <- colors_data(data_viz, ...)
+  data_viz <- complete_values(data_viz, var_find = var_cat[1], var_expand = var_cat[2], var_num = var_num)
+  data_viz <- colors_data(data_viz, var_cat = var_cat, var_num = var_num, viz = "bar", ...)
 
   if (is.null(var_cat)) {
     if (!is.null(var_num)) {
@@ -32,8 +26,8 @@ hg_bar <- function(data,
     h <- highchart()
   }
 
- h <- h |>
-   hc_add_bar(data_viz, hdtype, ...) |>
+  h <- h |>
+    hc_add_bar(data_viz, hdtype, ...) |>
     hc_titles(opts = dsopts_merge(..., categories = "titles"))
 
   suppressMessages(
@@ -92,4 +86,3 @@ hg_bar_CatNumNum <- function(data, dic = NULL, ...) {
   vars <- data_vars(data)
   hg_bar(data, dic, var_cat = vars[1], var_num = c(vars[2], vars[3]), ...)
 }
-

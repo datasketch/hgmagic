@@ -13,7 +13,9 @@ hg_bar <- function(data,
 
   data_viz <- data_processing(data, dic, var_cat, var_num, viz = "bar", ...)
   data_viz <- complete_values(data_viz, var_find = var_cat[1], var_expand = var_cat[2], var_num = var_num)
-  data_viz <- colors_data(data_viz, var_cat = var_cat, var_num = var_num, viz = "bar", ...)
+  viz <- "bar"
+  if (is.null(var_cat)) viz <- "hist"
+  data_viz <- colors_data(data_viz, var_cat = var_cat, var_num = var_num, viz = viz, ...)
 
   if (is.null(var_cat)) {
     if (!is.null(var_num)) {

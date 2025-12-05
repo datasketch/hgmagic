@@ -1,6 +1,6 @@
 test_that("hg_pie", {
   hg_pie(data = iris, var_num = "sepal_length", var_cat = "species")
-  hg_pie(data = iris, var_cat = "species")
+  hg_pie(data = iris, var_cat = "species", color_by = NULL)
 })
 
 test_that("hg_pie_CatNum", {

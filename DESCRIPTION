@@ -10,12 +10,14 @@ Depends:
     dsdatawiz,
     dsopts,
     dstools,
+    hdtb,
     highcharter,
     R (>= 3.0.0)
 Remotes:
     datasketch/dsdatawiz,
     datasketch/dsopts,
-    datasketch/dstools
+    datasketch/dstools,
+    datasketch/hdtb
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

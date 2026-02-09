@@ -13,7 +13,7 @@ hg_bar_icons <- function(data,
                        var_img = var_img,
                        var_num = var_num %||% "count")
 
-  ht <- hdtable(data, dic)
+  ht <- hdtb::hdtable(data, dic)
   var_cat <- c(var_cat, var_yea)
 
   data_viz <- ht$data

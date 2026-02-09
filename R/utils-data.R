@@ -70,6 +70,6 @@ hdtype_viz <- function(var_cat = NULL, var_num = NULL,
 }
 
 data_vars <- function(data) {
-  data_names <- names(hdtable(data)$data)
+  data_names <- names(hdtb::hdtable(data)$data)
   data_names
 }
